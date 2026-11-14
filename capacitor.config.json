@@ -1,0 +1,6 @@
+{
+  "appId": "tr.caglarboyuinsan.oyun",
+  "appName": "Çağlar Boyu İnsan",
+  "webDir": "dist",
+  "android": { "backgroundColor": "#14110f" }
+}

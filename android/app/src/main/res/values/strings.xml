@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Çağlar Boyu İnsan</string>
+    <string name="title_activity_main">Çağlar Boyu İnsan</string>
+    <string name="package_name">tr.caglarboyuinsan.oyun</string>
+    <string name="custom_url_scheme">tr.caglarboyuinsan.oyun</string>
+</resources>
