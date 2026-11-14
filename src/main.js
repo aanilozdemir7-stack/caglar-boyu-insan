@@ -3,13 +3,15 @@ import { App as CapApp } from '@capacitor/app';
 import { Capacitor, SystemBars } from '@capacitor/core';
 import { avatarSVG, avatarThumb, CATEGORIES, DEFAULT_AVATAR, normalizeAvatar, randomAvatar } from './art/avatar.js';
 import { sceneSVG, hands, viewBoxFor } from './art/scenes.js';
+import './art/scenes2.js';
 import { ERA1 } from './story/cag1.js';
 import { ERA2 } from './story/cag2.js';
 import { ERA3 } from './story/cag3.js';
+import { ERA4 } from './story/cag4.js';
 import { newGame, load, save, wipe, canAfford, applyEffect } from './state.js';
 import { getScene, applyChoice } from './engine.js';
 
-const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3 };
+const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4 };
 const app = document.getElementById('app');
 let st = null;
 
@@ -145,10 +147,10 @@ function hud(prev) {
     n.innerHTML = html;
     if (changed) { n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); }
   };
-  set('yil', era.year);
-  set('para', `${st.para}<small>${era.currency}</small>`, prev && prev.para !== st.para);
+  set('yil', st.yil || era.year);
+  set('para', `${st.para}<small>${st.birim || era.currency}</small>`, prev && prev.para !== st.para);
   set('enerji', `%${st.enerji}`, prev && prev.enerji !== st.enerji);
-  stage.querySelector('.tag').textContent = `${up(era.place)} · GÜN ${st.day}`;
+  stage.querySelector('.tag').textContent = `${up(st.yer || era.place)} · GÜN ${st.day}`;
 }
 
 function startScene(prev) {
@@ -158,6 +160,9 @@ function startScene(prev) {
   if (!sc || sc.end) { st.finished = true; save(st); return endScreen(); }
   if (!stage || !stage.isConnected) buildStage();
   if (sc.day) st.day = sc.day;
+  if (sc.year) st.yil = sc.year;
+  if (sc.currency) st.birim = sc.currency;
+  if (sc.place) st.yer = sc.place;
   stage.classList.remove('choosing');
   stage.classList.toggle('text-top', !!sc.textTop);
 
@@ -199,7 +204,7 @@ function costText(c) {
   if (!c) return '';
   const p = [];
   if (c.enerji) p.push(`${c.enerji} enerji`);
-  if (c.para) p.push(`${c.para} ${ERAS[st.era].currency}`);
+  if (c.para) p.push(`${c.para} ${st.birim || ERAS[st.era].currency}`);
   return p.join(' · ');
 }
 
@@ -263,7 +268,7 @@ function endScreen() {
     <div class="era-text">
       <div class="era-no">ÇAĞ ${st.era} TAMAMLANDI</div>
       <h1 class="era-name outline">${up(era.name)}</h1>
-      <div class="era-meta">Bu çağda çoğunlukla ${yol} kullandın.<br>Kalan: ${st.para} ${era.currency} · %${st.enerji} enerji · ${st.history.filter((h) => h.era === st.era || !h.era).length} karar</div>
+      <div class="era-meta">Bu çağda çoğunlukla ${yol} kullandın.<br>Kalan: ${st.para} ${st.birim || era.currency} · %${st.enerji} enerji · ${st.history.filter((h) => h.era === st.era || !h.era).length} karar</div>
       <p class="subtitle" style="margin:12px 0 10px">Sıradaki çağ: <b>${era.next.name}</b> — ${era.next.place}, ${era.next.year}${nextEra ? '' : '<br>Deneme sürümü burada bitiyor.'}</p>
       ${nextEra ? '<button class="btn" data-a="ileri">Sonraki çağa geç</button>' : ''}
       <button class="btn ghost" data-a="bas">En baştan başla</button>
@@ -278,6 +283,9 @@ function endScreen() {
       st.era += 1;
       st.eraBase = { akil: st.akil, beden: st.beden };
       st.seen = [];
+      st.yil = null;
+      st.birim = null;
+      st.yer = null;
       st.returnTo = null;
       st.hub = null;
       st.scene = ne.start;

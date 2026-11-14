@@ -19,7 +19,8 @@ export function getScene(era, st) {
 
 function hubScene(era, st) {
   const h = era.hub, s = st.hub;
-  const intro = h.intro[(st.day + s.left) % h.intro.length];
+  const intros = typeof h.intro === 'function' ? h.intro(st) : h.intro;
+  const intro = intros[(st.day + s.left) % intros.length];
   // Her akşam, işlerin rastgele sıralanmış bir alt kümesi gösterilir (en fazla 3).
   let r = s.seed || 1;
   const rnd = () => ((r = (r * 9301 + 49297) % 233280) / 233280);

@@ -257,30 +257,64 @@ function headJewel(av, rx, ry) {
 }
 
 // ---------- Kıyafet (çağa göre) ----------
-export function outfitColors(era = 1) {
-  if (era >= 3) return { base: '#3e5a78', dark: '#2a4058', light: '#6a8aa8', pattern: '#e8dcc0' };
-  if (era === 2) return { base: '#b5653a', dark: '#8a4526', light: '#d98c5a', pattern: '#e8dcc0' };
-  return { base: '#7b5a3a', dark: '#5a4029', light: '#a07850', pattern: '#a07850' };
-}
+// Her çağın kıyafeti: renkler + biçim. Eller (POV) de aynı tabloyu kullanır.
+export const OUTFITS = {
+  1: { style: 'post', base: '#7b5a3a', dark: '#5a4029', light: '#a07850', pattern: '#a07850' },
+  2: { style: 'dokuma', base: '#b5653a', dark: '#8a4526', light: '#d98c5a', pattern: '#e8dcc0' },
+  3: { style: 'sacak', base: '#3e5a78', dark: '#2a4058', light: '#6a8aa8', pattern: '#e8dcc0' },
+  4: { style: 'kusak', base: '#9a3e2e', dark: '#6e2a1e', light: '#c9a46a', pattern: '#e3c27a' },
+  5: { style: 'kusak', base: '#2f4f6a', dark: '#1f3448', light: '#b08a3a', pattern: '#d9b24a' },
+  6: { style: 'chiton', base: '#efe8d8', dark: '#c9bfa8', light: '#ffffff', pattern: '#2f6f9a' },
+  7: { style: 'clavi', base: '#5a2a4a', dark: '#3e1a32', light: '#d9b24a', pattern: '#e8c45a' },
+  8: { style: 'kaftan', base: '#1f6a6e', dark: '#134a4e', light: '#e8d4a0', pattern: '#c94a3a' },
+  9: { style: 'entari', base: '#8a1f3a', dark: '#5e1428', light: '#f0e2c8', pattern: '#d9a83a' },
+  10: { style: 'ceket', base: '#2a2e38', dark: '#1a1d24', light: '#e8e4dc', pattern: '#b8892e' },
+};
+export function outfitColors(era = 1) { return OUTFITS[era] || OUTFITS[1]; }
 
 function outfit(era) {
   const c = outfitColors(era);
-  if (era >= 3) {
-    return `<path d="M18 222 C22 182 50 164 100 164 C150 164 178 182 182 222 Z" fill="${c.base}" stroke="${INK}" stroke-width="${W}" stroke-linejoin="round"/>
-      <path d="M40 176 L150 222 L182 222 C180 200 170 184 156 176 Z" fill="${c.light}" stroke="${INK}" stroke-width="3" stroke-linejoin="round" opacity=".95"/>
-      ${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<path d="M${46 + i * 14} ${179 + i * 5.8} l-4 12" stroke="${c.pattern}" stroke-width="4" stroke-linecap="round"/>`).join('')}
-      <path d="M70 166 Q100 186 130 166" fill="none" stroke="${INK}" stroke-width="${W}"/>`;
+  const body = `<path d="M18 222 C22 182 50 164 100 164 C150 164 178 182 182 222 Z" fill="${c.base}" stroke="${INK}" stroke-width="${W}" stroke-linejoin="round"/>`;
+  const collar = `<path d="M70 166 Q100 186 130 166" fill="none" stroke="${INK}" stroke-width="${W}"/>`;
+  switch (c.style) {
+    case 'dokuma':
+      return body + `<path d="M54 170 L134 222 M36 184 L100 222" stroke="${c.pattern}" stroke-width="6" opacity=".7"/>
+        <path d="M118 176 l8 6 l-8 6 M136 188 l8 6 l-8 6 M154 200 l8 6 l-8 6" fill="none" stroke="${c.dark}" stroke-width="3"/>` + collar;
+    case 'sacak':
+      return body + `<path d="M40 176 L150 222 L182 222 C180 200 170 184 156 176 Z" fill="${c.light}" stroke="${INK}" stroke-width="3" stroke-linejoin="round" opacity=".95"/>
+        ${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<path d="M${46 + i * 14} ${179 + i * 5.8} l-4 12" stroke="${c.pattern}" stroke-width="4" stroke-linecap="round"/>`).join('')}` + collar;
+    case 'kusak':
+      return body + `<path d="M66 168 L100 222 L134 168" fill="none" stroke="${c.light}" stroke-width="7"/>
+        <path d="M66 168 L100 222 L134 168" fill="none" stroke="${INK}" stroke-width="2" opacity=".5"/>
+        ${[0, 1, 2, 3].map((i) => `<circle cx="${80 + i * 13}" cy="${200 + (i % 2) * 2}" r="3" fill="${c.pattern}"/>`).join('')}` + collar;
+    case 'chiton':
+      return body + `<path d="M30 200 Q60 180 92 206 M110 206 Q140 180 170 200" fill="none" stroke="${c.dark}" stroke-width="4"/>
+        <path d="M60 172 Q100 230 160 182" fill="none" stroke="${c.dark}" stroke-width="5"/>
+        <path d="M20 218 H180" stroke="${c.pattern}" stroke-width="5"/><path d="M28 212 h12 v-6 h-6 M60 212 h12 v-6 h-6 M128 212 h12 v-6 h-6 M160 212 h12 v-6 h-6" fill="none" stroke="${c.pattern}" stroke-width="2.5"/>` + collar;
+    case 'clavi':
+      return body + `<path d="M72 170 V222 M128 170 V222" stroke="${c.light}" stroke-width="9"/>
+        <path d="M66 168 Q100 186 134 168 L134 176 Q100 196 66 176Z" fill="${c.light}" stroke="${INK}" stroke-width="2"/>
+        ${[86, 100, 114].map((x) => `<circle cx="${x}" cy="${180 + (x === 100 ? 4 : 0)}" r="3.2" fill="#c94a3a" stroke="${INK}" stroke-width="1"/>`).join('')}`;
+    case 'kaftan':
+      return body + `<path d="M100 170 V222" stroke="${INK}" stroke-width="3"/>
+        <path d="M70 166 L100 196 L130 166" fill="none" stroke="${c.light}" stroke-width="10"/>
+        <path d="M70 166 L100 196 L130 166" fill="none" stroke="${INK}" stroke-width="2"/>
+        ${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${36 + i * 6} ${190 + i * 5} l10 4 M${164 - i * 6} ${190 + i * 5} l-10 4" stroke="${c.pattern}" stroke-width="3"/>`).join('')}
+        <path d="M76 214 H124" stroke="${c.pattern}" stroke-width="6"/>`;
+    case 'entari':
+      return body + `<path d="M24 222 C30 190 46 172 76 166 L92 222Z M176 222 C170 190 154 172 124 166 L108 222Z" fill="${c.dark}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M76 166 C64 170 52 178 44 190 M124 166 C136 170 148 178 156 190" fill="none" stroke="${c.light}" stroke-width="9" stroke-linecap="round"/>
+        <path d="M92 176 H108 M92 188 H108 M92 200 H108 M92 212 H108" stroke="${c.pattern}" stroke-width="3"/>` + collar;
+    case 'ceket':
+      return body + `<path d="M84 168 L100 200 L116 168" fill="${c.light}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M100 200 V222" stroke="${INK}" stroke-width="3"/>
+        <path d="M70 166 L92 204 M130 166 L108 204" fill="none" stroke="${c.dark}" stroke-width="8"/>
+        ${[206, 216].map((y) => `<circle cx="106" cy="${y}" r="3" fill="${c.pattern}"/>`).join('')}
+        <path d="M94 176 l6 6 l6 -6 l-6 -4Z" fill="#7a1a2a" stroke="${INK}" stroke-width="1.5"/>`;
+    default:
+      return body + `${[[44, 186], [64, 176], [124, 176], [146, 186], [88, 198], [110, 208], [58, 206], [136, 204], [76, 214], [158, 212], [36, 210]].map(([x, y], i) => `<path d="M${x} ${y} l${i % 2 ? 9 : -9} -6" stroke="${c.dark}" stroke-width="3" stroke-linecap="round"/>`).join('')}
+        <path d="M26 214 q8 -6 14 0 q8 -6 14 0 M146 214 q8 -6 14 0 q8 -6 14 0" fill="none" stroke="${c.light}" stroke-width="3"/>` + collar;
   }
-  if (era === 2) {
-    return `<path d="M18 222 C22 182 50 164 100 164 C150 164 178 182 182 222 Z" fill="${c.base}" stroke="${INK}" stroke-width="${W}" stroke-linejoin="round"/>
-      <path d="M54 170 L134 222 M36 184 L100 222" stroke="${c.pattern}" stroke-width="6" opacity=".7"/>
-      <path d="M118 176 l8 6 l-8 6 M136 188 l8 6 l-8 6 M154 200 l8 6 l-8 6" fill="none" stroke="${c.dark}" stroke-width="3"/>
-      <path d="M70 166 Q100 186 130 166" fill="none" stroke="${INK}" stroke-width="${W}"/>`;
-  }
-  return `<path d="M18 222 C22 182 50 164 100 164 C150 164 178 182 182 222 Z" fill="${c.base}" stroke="${INK}" stroke-width="${W}" stroke-linejoin="round"/>
-    ${[[44, 186], [64, 176], [124, 176], [146, 186], [88, 198], [110, 208], [58, 206], [136, 204], [76, 214], [158, 212], [36, 210]].map(([x, y], i) => `<path d="M${x} ${y} l${i % 2 ? 9 : -9} -6" stroke="${c.dark}" stroke-width="3" stroke-linecap="round"/>`).join('')}
-    <path d="M70 166 Q100 186 130 166" fill="none" stroke="${INK}" stroke-width="${W}"/>
-    <path d="M26 214 q8 -6 14 0 q8 -6 14 0 M146 214 q8 -6 14 0 q8 -6 14 0" fill="none" stroke="${c.light}" stroke-width="3"/>`;
 }
 
 // ---------- Birleştirme ----------

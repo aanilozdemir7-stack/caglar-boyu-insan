@@ -2,40 +2,41 @@
 // (önemli öğeler ortadaki ~460x460'lık alanda durur ki dikey ve yatay ekranda da görünsün).
 // POV elleri ayrı bir katmandır ve her zaman ekranın altına yaslanır.
 import { INK, SKIN, avatarParts, outfitColors, randomAvatar, seeded, shade } from './avatar.js';
+export { INK, shade, avatarParts };
 
-const S = 5; // kontur kalınlığı
+export const S = 5; // kontur kalınlığı
 let gid = 0;
 
 // ---------- Ortak parçalar ----------
 
-function sky(top, mid, bottom) {
+export function sky(top, mid, bottom) {
   const id = 'sky' + (++gid);
   return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="${top}"/><stop offset=".6" stop-color="${mid}"/><stop offset="1" stop-color="${bottom}"/></linearGradient></defs>
     <rect width="1000" height="1000" fill="url(#${id})"/>`;
 }
 
-function vignette(strength = 0.55) {
+export function vignette(strength = 0.55) {
   const id = 'vg' + (++gid);
   return `<defs><radialGradient id="${id}" cx=".5" cy=".5" r=".72"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="${strength}"/></radialGradient></defs>
     <rect width="1000" height="1000" fill="url(#${id})" pointer-events="none"/>`;
 }
 
-function light(x, y, r, color, op = 0.6, cls = '') {
+export function light(x, y, r, color, op = 0.6, cls = '') {
   const id = 'lt' + (++gid);
   return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${color}" stop-opacity="${op}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient></defs>
     <circle class="${cls}" cx="${x}" cy="${y}" r="${r}" fill="url(#${id})"/>`;
 }
 
-function haze(y1, y2, color, op = 0.35) {
+export function haze(y1, y2, color, op = 0.35) {
   const id = 'hz' + (++gid);
   return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity="0"/><stop offset=".5" stop-color="${color}" stop-opacity="${op}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
     <rect x="0" y="${y1}" width="1000" height="${y2 - y1}" fill="url(#${id})"/>`;
 }
 
-function rnd(seed) { return seeded(seed); }
+export function rnd(seed) { return seeded(seed); }
 
-function stars(n = 26, seed = 7, maxY = 420) {
+export function stars(n = 26, seed = 7, maxY = 420) {
   let s = ''; const r = rnd(seed);
   for (let i = 0; i < n; i++) {
     const x = r() * 1000, y = r() * maxY, rad = 1.2 + r() * 2.6, d = (r() * 3).toFixed(2);
@@ -44,19 +45,19 @@ function stars(n = 26, seed = 7, maxY = 420) {
   return s;
 }
 
-function milkyway() {
+export function milkyway() {
   return `<path d="M-40 360 Q300 120 1040 80 L1040 170 Q340 210 -40 450Z" fill="#c9c3e8" opacity=".07"/>` + stars(40, 99, 300).replace(/r="([\d.]+)"/g, (m, v) => `r="${(v * 0.5).toFixed(1)}"`);
 }
 
-function cloud(x, y, s, fill, op = 1) {
+export function cloud(x, y, s, fill, op = 1) {
   return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${op}"><path d="M-80 0 Q-80 -34 -44 -34 Q-36 -64 -2 -60 Q28 -84 56 -50 Q92 -54 92 -18 Q110 -10 100 0Z" fill="${fill}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/></g>`;
 }
 
-function hill(d, fill, op = 1) {
+export function hill(d, fill, op = 1) {
   return `<path d="${d}" fill="${fill}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round" opacity="${op}"/>`;
 }
 
-function texture(x1, y1, x2, y2, n, color, seed = 1, len = 18) {
+export function texture(x1, y1, x2, y2, n, color, seed = 1, len = 18) {
   let s = ''; const r = rnd(seed);
   for (let i = 0; i < n; i++) {
     const x = x1 + r() * (x2 - x1), y = y1 + r() * (y2 - y1);
@@ -65,15 +66,15 @@ function texture(x1, y1, x2, y2, n, color, seed = 1, len = 18) {
   return `<path d="${s}" stroke="${color}" stroke-width="3" stroke-linecap="round" fill="none" opacity=".55"/>`;
 }
 
-function grass(x, y, s = 1, color = '#6b5a2a', delay = 0) {
+export function grass(x, y, s = 1, color = '#6b5a2a', delay = 0) {
   return `<g class="a-sway" style="animation-delay:${delay}s"><path transform="translate(${x} ${y}) scale(${s})" d="M0 0 q-6 -40 -22 -60 M4 0 q2 -48 10 -70 M8 0 q10 -30 28 -44 M-4 0 q-14 -22 -34 -28" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/></g>`;
 }
 
-function rock(x, y, s, fill) {
+export function rock(x, y, s, fill) {
   return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-60 0 Q-64 -34 -30 -44 Q0 -62 34 -42 Q64 -30 60 0Z" fill="${fill}" stroke="${INK}" stroke-width="${S / s}" stroke-linejoin="round"/><path d="M-30 -30 q20 -10 40 -4" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="${4 / s}" stroke-linecap="round"/></g>`;
 }
 
-function shadow(x, y, rx, op = 0.35) {
+export function shadow(x, y, rx, op = 0.35) {
   return `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx * 0.18}" fill="#000" opacity="${op}"/>`;
 }
 
@@ -86,7 +87,7 @@ const RELIEF = {
   leopar: `<path d="M-44 0 Q-40 -20 0 -20 Q36 -20 44 -6 L56 -10 L50 4 Q30 16 -30 14 Q-46 12 -44 0Z M-30 14 v14 M30 12 v14" fill="none"/><circle cx="-14" cy="-6" r="3"/><circle cx="4" cy="-2" r="3"/><circle cx="20" cy="-8" r="3"/>`,
 };
 
-function pillar(x, base, h, w, stone, { relief, arms = true, side = 'right' } = {}) {
+export function pillar(x, base, h, w, stone, { relief, arms = true, side = 'right' } = {}) {
   const capH = w * 0.5, cw = w * 2.25, d = w * 0.22;
   const dk = shade(stone, -0.28), lt = shade(stone, 0.18);
   const sx = side === 'right' ? 1 : -1;
@@ -120,7 +121,7 @@ function pillar(x, base, h, w, stone, { relief, arms = true, side = 'right' } = 
   </g>`;
 }
 
-function fire(x, y, s = 1) {
+export function fire(x, y, s = 1) {
   return `${light(x, y - 60 * s, 330 * s, '#ffb347', 0.55, 'a-glow')}
   <g transform="translate(${x} ${y}) scale(${s})">
     ${shadow(0, 14, 90, 0.4)}
@@ -140,7 +141,7 @@ function fire(x, y, s = 1) {
 
 // Arka plandaki insanlar: avatarla aynı çizim tarzında (göğüsten yukarısı).
 // Alt kısmı her zaman önündeki bir öğenin (tepe, ateş, sur) arkasına saklanır.
-function npc(x, y, s, seed, era = 1, { tint = 0, flip = false, bob = false } = {}) {
+export function npc(x, y, s, seed, era = 1, { tint = 0, flip = false, bob = false } = {}) {
   const av = randomAvatar(rnd(seed));
   const body = `<g transform="translate(${x - 100 * s * (flip ? -1 : 1)} ${y - 222 * s}) scale(${flip ? -s : s} ${s})">${avatarParts(av, era)}</g>`;
   const t = tint ? `<g transform="translate(${x - 100 * s} ${y - 222 * s}) scale(${s})"><rect x="0" y="0" width="200" height="222" fill="#000" opacity="0"/></g>` : '';
@@ -148,12 +149,12 @@ function npc(x, y, s, seed, era = 1, { tint = 0, flip = false, bob = false } = {
 }
 
 // Gece ateşinin önünde karanlıkta kalan siluet insanlar
-function silhouette(x, y, s, color = '#1c1418') {
+export function silhouette(x, y, s, color = '#1c1418') {
   return `<g transform="translate(${x} ${y}) scale(${s})" fill="${color}" stroke="${INK}" stroke-width="4">
     <path d="M-60 0 C-58 -60 -40 -84 0 -86 C40 -84 58 -60 60 0Z"/><circle cx="0" cy="-118" r="36"/></g>`;
 }
 
-function gazelle(x, y, s, color, delay = 0) {
+export function gazelle(x, y, s, color, delay = 0) {
   const lt = shade(color, 0.3);
   return `<g class="a-run" style="animation-delay:${delay}s"><g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
     <path class="a-legs" d="M-28 6 l-12 32 M-16 6 l6 32 M22 6 l-8 32 M32 4 l14 28" fill="none"/>
@@ -164,7 +165,7 @@ function gazelle(x, y, s, color, delay = 0) {
   </g></g>`;
 }
 
-function aurochs(x, y, s) {
+export function aurochs(x, y, s) {
   return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
     <path d="M-80 6 l-6 46 M-56 10 l2 44 M48 10 l-4 44 M70 6 l8 46" fill="none"/>
     <path d="M-100 -10 Q-104 -70 -40 -76 Q30 -86 70 -60 Q96 -44 110 -40 L130 -30 Q138 -6 116 0 L96 2 Q70 18 -60 16 Q-100 14 -100 -10Z" fill="#3a2a22"/>
@@ -176,7 +177,7 @@ function aurochs(x, y, s) {
   </g>`;
 }
 
-function house(x, y, w, h, wall, { ladder = false, roofHole = false, smoke = false } = {}) {
+export function house(x, y, w, h, wall, { ladder = false, roofHole = false, smoke = false } = {}) {
   const dk = shade(wall, -0.25), lt = shade(wall, 0.15);
   return `<g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
     <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${wall}"/>
@@ -188,7 +189,7 @@ function house(x, y, w, h, wall, { ladder = false, roofHole = false, smoke = fal
   </g>`;
 }
 
-function wheat(x, y, s, delay = 0, color = '#e2b04a') {
+export function wheat(x, y, s, delay = 0, color = '#e2b04a') {
   const dk = shade(color, -0.3);
   return `<g class="a-sway" style="animation-delay:${delay}s"><g transform="translate(${x} ${y}) scale(${s})">
     <path d="M0 0 Q4 -60 2 -120" fill="none" stroke="${dk}" stroke-width="4"/>
@@ -197,7 +198,7 @@ function wheat(x, y, s, delay = 0, color = '#e2b04a') {
   </g></g>`;
 }
 
-function hasanDagi(fill = '#8a7e9a', snow = '#f3eee6') {
+export function hasanDagi(fill = '#8a7e9a', snow = '#f3eee6') {
   return `<path d="M200 520 L380 330 L430 370 L470 300 L560 380 L760 520Z" fill="${fill}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
     <path d="M360 352 L380 330 L404 352 L390 362Z M452 320 L470 300 L492 322 L476 330Z" fill="${snow}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`;
 }
@@ -427,7 +428,7 @@ export const SCENES = {
 SCENES.gece_dam_kisi = (av) => SCENES.gece_dam(av, true);
 
 // ---------- Ek parçalar ----------
-function donkey(x, y, s, pack = '#5a4a3a', delay = 0, flip = false) {
+export function donkey(x, y, s, pack = '#5a4a3a', delay = 0, flip = false) {
   return `<g class="a-bob" style="animation-delay:${delay}s"><g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})" stroke="${INK}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
     <path d="M-40 4 l-4 40 M-24 6 l2 40 M28 6 l-2 40 M42 4 l4 40" fill="none"/>
     <path d="M-56 -6 Q-58 -44 -20 -46 L34 -46 Q52 -44 56 -24 L72 -50 Q80 -64 92 -58 L104 -40 Q108 -30 96 -28 L80 -24 Q66 6 40 8 L-40 8 Q-58 6 -56 -6Z" fill="#3a3430"/>
@@ -440,7 +441,7 @@ function donkey(x, y, s, pack = '#5a4a3a', delay = 0, flip = false) {
   </g></g>`;
 }
 
-function house2(x, y, w, h, wall, { win = true, lit = false } = {}) {
+export function house2(x, y, w, h, wall, { win = true, lit = false } = {}) {
   const stone = '#9a948a', beam = '#6b4529';
   const lh = h * 0.35;
   return `<g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
@@ -456,12 +457,12 @@ function house2(x, y, w, h, wall, { win = true, lit = false } = {}) {
   </g>${lit ? light(x + w * 0.5, y + (h - lh) * 0.26, 80, '#f6b04a', 0.55, 'a-glow') : ''}`;
 }
 
-function erciyes(fill = '#8a90a8', snow = '#f6f3ee', x = 640, scale = 1) {
+export function erciyes(fill = '#8a90a8', snow = '#f6f3ee', x = 640, scale = 1) {
   return `<g transform="translate(${x} 0) scale(${scale} 1)"><path d="M-380 520 L-60 250 L-20 270 L20 230 L360 520Z" fill="${fill}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
     <path d="M-104 288 L-60 250 L-20 270 L20 230 L68 272 L40 300 L10 280 L-24 304 L-64 284Z" fill="${snow}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`;
 }
 
-function tablets(x, y, n, s = 1, seed = 3) {
+export function tablets(x, y, n, s = 1, seed = 3) {
   let t = ''; const r = rnd(seed);
   for (let i = 0; i < n; i++) {
     const tx = x + (i % 6) * 34 * s, ty = y + Math.floor(i / 6) * 30 * s, c = ['#c8a678', '#b8956a', '#d4b488'][Math.floor(r() * 3)];
@@ -734,6 +735,17 @@ const EXTRA_HANDS = {
     + arm(era, F, POSE.right, `<path d="M0 -200 L0 60" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M0 -200 L0 60" stroke="#c8b070" stroke-width="10" stroke-linecap="round"/><path d="M-8 -196 L0 -232 L8 -196Z" fill="#a8904a" stroke="${INK}" stroke-width="3"/>`),
   yular: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
     + arm(era, F, POSE.right, '', `<path d="M0 -50 Q-120 -200 -300 -260" fill="none" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M0 -50 Q-120 -200 -300 -260" fill="none" stroke="#a8803a" stroke-width="9" stroke-linecap="round"/>`),
+  kilic: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
+    + arm(era, F, POSE.right, `<path d="M0 -420 L0 40" stroke="${INK}" stroke-width="26" stroke-linecap="round"/><path d="M0 -420 L0 -60" stroke="#c8ccd4" stroke-width="16" stroke-linecap="round"/><path d="M-4 -400 v330" stroke="#ffffff" stroke-width="4" opacity=".7"/><path d="M0 -60 L0 40" stroke="#6b4529" stroke-width="16" stroke-linecap="round"/><rect x="-46" y="-78" width="92" height="18" rx="8" fill="#b08a3a" stroke="${INK}" stroke-width="${S}"/>`),
+  para: (era, O, F) => mirror(arm(era, O, POSE.rightLow, '', `<g transform="translate(0 -80)">${[[-24, 0], [6, -10], [26, 8]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="20" ry="14" fill="#e3c25a" stroke="${INK}" stroke-width="4"/><circle cx="${x}" cy="${y}" r="7" fill="none" stroke="#a8802a" stroke-width="3"/>`).join('')}</g>`))
+    + arm(era, O, POSE.right),
+  kitap: (era, O, F) => mirror(arm(era, O, POSE.rightCenter)) + arm(era, O, POSE.rightCenter)
+    + `<g transform="translate(500 300)"><path d="M-200 -70 Q-100 -100 0 -70 Q100 -100 200 -70 L200 90 Q100 60 0 90 Q-100 60 -200 90Z" fill="#f4ecd8" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M0 -70 V90" stroke="${INK}" stroke-width="4"/>
+      ${[-40, -10, 20, 50].map((y) => `<path d="M-170 ${y} Q-100 ${y - 14} -30 ${y} M30 ${y} Q100 ${y - 14} 170 ${y}" fill="none" stroke="#8a7a60" stroke-width="5" stroke-dasharray="14 8"/>`).join('')}</g>`,
+  fener: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
+    + arm(era, F, POSE.right, '', `<g transform="translate(0 -60)"><path d="M0 0 V-40" stroke="${INK}" stroke-width="5"/><rect x="-40" y="-150" width="80" height="110" rx="12" fill="#ffe7a0" stroke="${INK}" stroke-width="${S}"/>${light(0, -95, 160, '#ffd070', 0.6, 'a-glow')}<path class="a-flame" d="M0 -120 C14 -100 14 -80 0 -68 C-14 -80 -14 -100 0 -120Z" fill="#f08a24"/><path d="M-46 -160 H46 L36 -150 H-36Z M-40 -40 H40" stroke="${INK}" stroke-width="${S}" fill="#5a4a3a"/></g>`),
+  cekic: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
+    + arm(era, F, POSE.right, `<path d="M0 -200 L0 60" stroke="${INK}" stroke-width="24" stroke-linecap="round"/><path d="M0 -200 L0 60" stroke="#8a6440" stroke-width="14" stroke-linecap="round"/><rect x="-60" y="-250" width="120" height="56" rx="8" fill="#5a5e66" stroke="${INK}" stroke-width="${S}"/><path d="M-50 -236 h90" stroke="#9aa0aa" stroke-width="5"/>`),
   kese: (era, O, F) => mirror(arm(era, O, POSE.rightLow, '', `<g transform="translate(0 -90)"><path d="M-46 -30 Q-60 50 0 60 Q60 50 46 -30 Q20 -44 0 -40 Q-20 -44 -46 -30Z" fill="#8a5a34" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M-30 -36 Q0 -20 30 -36" fill="none" stroke="${INK}" stroke-width="4"/>${[-24, 0, 24].map((x) => `<ellipse cx="${x}" cy="-46" rx="14" ry="7" fill="#d8dce4" stroke="${INK}" stroke-width="3"/>`).join('')}</g>`))
     + arm(era, O, POSE.right),
 };
@@ -744,24 +756,45 @@ export function extraHands(pose, era, O, F) { return EXTRA_HANDS[pose] ? EXTRA_H
 
 function sleeve(era) {
   const c = outfitColors(era);
-  if (era === 3) {
-    return `<path d="M-50 8 L-66 300 L66 300 L50 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
-      <path d="M-20 40 L-30 290 M20 40 L26 290" stroke="${c.dark}" stroke-width="6" opacity=".6"/>
-      <rect x="-54" y="0" width="108" height="22" rx="6" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
-      ${[-42, -28, -14, 0, 14, 28, 42].map((x) => `<path d="M${x} 22 v18" stroke="${c.pattern}" stroke-width="5" stroke-linecap="round"/>`).join('')}`;
+  const tube = (fill) => `<path d="M-50 8 L-66 300 L66 300 L50 8Z" fill="${fill}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>`;
+  switch (c.style) {
+    case 'dokuma':
+      return tube(c.base) + `<path d="M-54 60 L52 110 M-58 140 L56 190 M-62 220 L60 270" stroke="${c.pattern}" stroke-width="10" opacity=".7"/>
+        <rect x="-54" y="0" width="108" height="26" rx="8" fill="${c.dark}" stroke="${INK}" stroke-width="${S}"/>
+        <path d="M-40 13 l10 -6 l10 6 l10 -6 l10 6 l10 -6 l10 6 l10 -6" fill="none" stroke="${c.pattern}" stroke-width="3"/>`;
+    case 'sacak':
+      return tube(c.base) + `<path d="M-20 40 L-30 290 M20 40 L26 290" stroke="${c.dark}" stroke-width="6" opacity=".6"/>
+        <rect x="-54" y="0" width="108" height="22" rx="6" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
+        ${[-42, -28, -14, 0, 14, 28, 42].map((x) => `<path d="M${x} 22 v18" stroke="${c.pattern}" stroke-width="5" stroke-linecap="round"/>`).join('')}`;
+    case 'kusak':
+      return tube(c.base) + `<rect x="-54" y="0" width="108" height="30" rx="6" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
+        <path d="M-44 15 h88" stroke="${c.pattern}" stroke-width="4" stroke-dasharray="8 6"/><path d="M-30 60 L-40 290" stroke="${c.dark}" stroke-width="7" opacity=".6"/>`;
+    case 'chiton':
+      return `<path d="M-60 8 Q-80 160 -70 300 L70 300 Q80 160 60 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+        <path d="M-30 30 Q-44 160 -36 290 M10 30 Q0 160 8 290 M44 30 Q52 160 46 290" fill="none" stroke="${c.dark}" stroke-width="5"/>
+        <path d="M-62 14 H62" stroke="${c.pattern}" stroke-width="7"/>`;
+    case 'clavi':
+      return tube(c.base) + `<rect x="-54" y="0" width="108" height="28" rx="6" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
+        ${[-30, 0, 30].map((x) => `<circle cx="${x}" cy="14" r="5" fill="#c94a3a" stroke="${INK}" stroke-width="2"/>`).join('')}
+        <path d="M-10 40 L-14 290" stroke="${c.light}" stroke-width="10" opacity=".8"/>`;
+    case 'kaftan':
+      return tube(c.base) + `<rect x="-54" y="0" width="108" height="30" rx="6" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
+        ${[-36, -12, 12, 36].map((x) => `<path d="M${x - 8} 15 l8 -7 l8 7 l-8 7Z" fill="${c.pattern}"/>`).join('')}`;
+    case 'entari':
+      return tube(c.base) + `<path d="M-60 0 Q0 -12 60 0 L58 36 Q0 26 -58 36Z" fill="${c.light}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+        ${[-36, -18, 0, 18, 36].map((x) => `<path d="M${x} 8 l2 18" stroke="#c8b898" stroke-width="3"/>`).join('')}
+        <path d="M30 60 L44 290" stroke="${c.dark}" stroke-width="10" opacity=".6"/>`;
+    case 'ceket':
+      return tube(c.base) + `<path d="M-50 0 H50 L48 40 H-48Z" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
+        <rect x="-54" y="36" width="108" height="26" rx="4" fill="${c.dark}" stroke="${INK}" stroke-width="${S}"/>
+        ${[-20, 0, 20].map((x) => `<circle cx="${x}" cy="49" r="4" fill="${c.pattern}"/>`).join('')}`;
+    default: {
+      let fur = '';
+      for (let i = 0; i < 7; i++) fur += `<circle cx="${-48 + i * 16}" cy="${10 + (i % 2) * 5}" r="14" fill="${c.light}" stroke="${INK}" stroke-width="4"/>`;
+      return tube(c.base) + `${[[-30, 60], [10, 90], [-20, 140], [24, 170], [-36, 210], [6, 240]].map(([x, y]) => `<path d="M${x} ${y} l14 -10 M${x + 8} ${y + 8} l14 -10" stroke="${c.dark}" stroke-width="4" stroke-linecap="round"/>`).join('')}
+        <path d="M30 20 L44 290" stroke="${c.dark}" stroke-width="8" opacity=".5"/>${fur}`;
+    }
   }
-  if (era === 2) {
-    return `<path d="M-50 8 L-66 300 L66 300 L50 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
-      <path d="M-54 60 L52 110 M-58 140 L56 190 M-62 220 L60 270" stroke="${c.pattern}" stroke-width="10" opacity=".7"/>
-      <rect x="-54" y="0" width="108" height="26" rx="8" fill="${c.dark}" stroke="${INK}" stroke-width="${S}"/>
-      <path d="M-40 13 l10 -6 l10 6 l10 -6 l10 6 l10 -6 l10 6 l10 -6" fill="none" stroke="${c.pattern}" stroke-width="3"/>`;
-  }
-  let fur = '';
-  for (let i = 0; i < 7; i++) fur += `<circle cx="${-48 + i * 16}" cy="${10 + (i % 2) * 5}" r="14" fill="${c.light}" stroke="${INK}" stroke-width="4"/>`;
-  return `<path d="M-50 8 L-66 300 L66 300 L50 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
-    ${[[-30, 60], [10, 90], [-20, 140], [24, 170], [-36, 210], [6, 240]].map(([x, y]) => `<path d="M${x} ${y} l14 -10 M${x + 8} ${y + 8} l14 -10" stroke="${c.dark}" stroke-width="4" stroke-linecap="round"/>`).join('')}
-    <path d="M30 20 L44 290" stroke="${c.dark}" stroke-width="8" opacity=".5"/>
-    ${fur}`;
 }
 
 // İki katmanlı çizim: önce kalın kontur, sonra dolgu → birleşik siluet.
