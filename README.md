@@ -12,9 +12,20 @@ Linki telefonda aç, dosyayı indir ve kur. İlk kurulumda telefon "bilinmeyen k
 
 ## Proje yapısı
 
-- `src/story/` — senaryolar (her çağ bir dosya; şu an 1-10. çağlar hazır)
-- `src/art/` — kodla çizilen sahneler (`scenes.js`: çağ 1-3, `scenes2.js`: çağ 4-10) ve avatar
+- `src/story/` — senaryolar (her çağ bir dosya; 14 çağın hepsi hazır; 14. çağ kurmaca bir yakın gelecek)
+- `src/art/` — kodla çizilen sahneler (`scenes.js`: çağ 1-3, `scenes2.js`: çağ 4-14) ve avatar
 - `src/main.js` — oyun akışı (sahne, seçim, checkpoint)
 - `src/state.js` — cihaza kayıt
 - `android/` — Android uygulama kabı (Capacitor)
 - `.github/workflows/android.yml` — APK'yı otomatik üreten iş akışı
+
+## Oyunun sonu
+14. çağ bitince "Yolculuk tamamlandı" ekranı açılır: her çağdaki akıl/beden izi gösterilir.
+"Ya diğerini seçseydin?" ile herhangi bir çağın başına dönülüp farklı kararlar denenebilir;
+bu denemeler kaydedilmez, asıl yolculuk değişmez. Sonunda iki yol yan yana karşılaştırılır.
+
+## Ekran uyumu
+Uygulama tam ekran çalışır (çentik/kamera deliği alanı dahil). `MainActivity.java`, Android'in
+bildirdiği çentik ve sistem çubuğu boşluklarını `--safe-area-inset-*` CSS değişkenleri olarak
+sayfaya verir; iOS'ta aynı değerler `env(safe-area-inset-*)` ile gelir. Bütün yazı ve düğmeler
+bu güvenli alanın içinde kalır.

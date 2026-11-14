@@ -1,7 +1,7 @@
 // Çağ 4-10 sahneleri. Ortak çizim parçaları scenes.js'ten gelir.
 import {
   SCENES, FOCUS, S, INK, shade, sky, vignette, light, haze, rnd, stars, milkyway, cloud, hill, texture, grass, rock,
-  shadow, fire, npc, silhouette, donkey, house2, tablets, erciyes,
+  shadow, fire, npc, silhouette, donkey, house2, tablets, erciyes, pillar,
 } from './scenes.js';
 
 // ---------- Ortak parçalar ----------
@@ -1423,6 +1423,90 @@ Object.assign(SCENES, {
 Object.assign(FOCUS, {
   kampus: [520, 560, 860], bilgisayar_odasi: [480, 520, 860], cep_dukkan: [500, 480, 860], internet_kafe: [500, 480, 860],
   korfez_gece: [500, 560, 860], deprem_gece: [500, 600, 860], cadir_kent: [500, 640, 820], ofis2000: [480, 560, 860], ev2008: [560, 560, 860],
+});
+
+// ---------- ÇAĞ 14: YAKIN GELECEK ----------
+function tower(x, y, w, h, c, seed) {
+  const r = rnd(seed);
+  let o = `<g stroke="${INK}" stroke-width="${S}"><path d="M${x} ${y} V${y - h} Q${x + w / 2} ${y - h - 40} ${x + w} ${y - h} V${y}Z" fill="${c}"/>`;
+  for (let i = 0; i < h / 30; i++) o += `<path d="M${x + 6} ${y - 20 - i * 30} H${x + w - 6}" stroke="${r() < 0.5 ? '#7ae8ff' : '#2a3a5a'}" stroke-width="5" opacity=".8"/>`;
+  return o + `</g>`;
+}
+function solarRoof(x, y, w) {
+  return `<g stroke="${INK}" stroke-width="3">${[...Array(Math.floor(w / 40))].map((_, i) => `<path d="M${x + i * 40} ${y} l20 -16 h18 l-20 16Z" fill="#2a4a8a"/>`).join('')}</g>`;
+}
+
+Object.assign(SCENES, {
+  istanbul2041: () => `
+    ${sky('#f0a060', '#f6c088', '#f8e0b8')}
+    <circle cx="200" cy="220" r="70" fill="#fff0c0" stroke="${INK}" stroke-width="${S}"/>${light(200, 220, 300, '#ffd890', 0.45)}
+    ${hill('M0 420 Q300 360 600 400 T1000 380 L1000 520 L0 520Z', '#8a8a7a')}
+    <g opacity=".85">${mosque(300, 400, 40)}${tower(560, 470, 60, 240, '#c8d4e0', 1401)}${tower(640, 470, 70, 300, '#b8c8d8', 1402)}${tower(730, 470, 60, 210, '#d8e0e8', 1403)}</g>
+    ${haze(380, 520, '#f8e0b8', 0.4)}
+    ${sea(510, '#3a8ab0', '#1f4f6e')}
+    <g class="a-bob" stroke="${INK}" stroke-width="4"><path d="M300 700 L320 730 H680 L700 700Z" fill="#f2f2f2"/><rect x="360" y="660" width="280" height="40" rx="10" fill="#e8eef4"/>${solarRoof(370, 660, 260)}<path d="M330 715 H670" stroke="#7ae8ff" stroke-width="4"/></g>
+    <path d="M-20 1000 V800 Q300 760 600 800 Q800 820 1020 790 V1000Z" fill="#b8b4a8" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(220, 1000, 1, 1411, 14)}${npc(800, 1000, 1, 1412, 14, { flip: true })}
+    ${vignette(0.3)}`,
+
+  ai_oda: () => `
+    <rect width="1000" height="1000" fill="#141826"/>
+    ${light(500, 420, 520, '#7ae8ff', 0.3, 'a-glow')}
+    <path d="M0 760 H1000 V1000 H0Z" fill="#202436" stroke="${INK}" stroke-width="${S}"/>
+    <g opacity=".9">${[[200, 260, '#7ae8ff'], [420, 220, '#b57bff'], [640, 260, '#7ae8ff']].map(([x, y, c], i) => `<g class="a-bob" style="animation-delay:${i * 0.5}s"><rect x="${x}" y="${y}" width="160" height="200" rx="10" fill="${c}" opacity=".18" stroke="${c}" stroke-width="3"/>${[0, 1, 2].map((k) => `<rect x="${x + 16}" y="${y + 16 + k * 60}" width="128" height="44" rx="6" fill="${c}" opacity=".35"/><circle cx="${x + 40}" cy="${y + 38 + k * 60}" r="12" fill="#e8f6ff" opacity=".8"/>`).join('')}</g>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="4"><ellipse cx="500" cy="760" rx="220" ry="40" fill="#2a2e44"/><circle cx="500" cy="620" r="60" fill="none" stroke="#b57bff" stroke-width="6" class="a-glow"/><circle cx="500" cy="620" r="24" fill="#b57bff" opacity=".6"/></g>
+    ${npc(250, 1000, 1, 1421, 14)}${npc(760, 1000, 1, 1422, 14, { flip: true })}
+    ${vignette(0.5)}`,
+
+  cay_bahce: () => `
+    ${sky('#a8c4cc', '#c8d8d8', '#e8ece4')}
+    ${cloud(300, 260, 1.6, '#f2f4f2', 0.9)}${cloud(780, 220, 1.3, '#f2f4f2', 0.85)}
+    ${hill('M-20 600 L-20 300 Q200 220 420 320 Q640 200 1020 280 V600Z', '#3a6a3a')}
+    ${(() => { let o = ''; for (let r = 0; r < 9; r++) o += `<path d="M-20 ${360 + r * 70} Q300 ${330 + r * 70} 600 ${360 + r * 70} T1020 ${350 + r * 70}" fill="none" stroke="${r % 2 ? '#4a8a3a' : '#5a9a4a'}" stroke-width="44" stroke-linecap="round"/>`; return o; })()}
+    ${haze(300, 500, '#e8ece4', 0.4)}
+    <g stroke="${INK}" stroke-width="4">${[[640, 560], [760, 600], [880, 640]].map(([x, y]) => `<g class="a-run"><rect x="${x - 30}" y="${y - 30}" width="60" height="40" rx="8" fill="#e8eef4"/><circle cx="${x - 18}" cy="${y + 14}" r="10" fill="#3a3a42"/><circle cx="${x + 18}" cy="${y + 14}" r="10" fill="#3a3a42"/><path d="M${x} ${y - 30} V${y - 56} L${x + 26} ${y - 66}" fill="none" stroke-width="5"/><circle cx="${x}" cy="${y - 16}" r="6" fill="#7ae8ff"/></g>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="${S}"><rect x="60" y="440" width="160" height="110" fill="#e8dcc8"/><path d="M50 440 L140 390 L230 440Z" fill="#8a3a2a"/><rect x="90" y="470" width="40" height="40" fill="#ffe39a"/></g>
+    ${npc(300, 1000, 1, 1431, 14)}
+    ${vignette(0.3)}`,
+
+  dalis: () => `
+    <defs><linearGradient id="dal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a8ab0"/><stop offset="1" stop-color="#0a1e34"/></linearGradient></defs>
+    <rect width="1000" height="1000" fill="url(#dal)"/>
+    ${[...Array(6)].map((_, i) => `<path d="M${100 + i * 160} 0 L${60 + i * 160} 700" stroke="#bfe8f8" stroke-width="30" opacity=".06"/>`).join('')}
+    ${[...Array(18)].map((_, i) => `<circle class="a-bob" style="animation-delay:${(i * 0.2).toFixed(1)}s" cx="${(i * 57) % 1000}" cy="${200 + (i * 91) % 600}" r="${3 + (i % 3) * 2}" fill="none" stroke="#bfe8f8" stroke-width="2" opacity=".6"/>`).join('')}
+    <path d="M-20 1000 V800 Q300 760 600 790 Q800 810 1020 780 V1000Z" fill="#c8b890" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 820, 1000, 1000, 40, '#a8986e', 1441, 16)}
+    <g stroke="${INK}" stroke-width="${S}" transform="translate(520 800) rotate(-10)"><path d="M-70 -60 L70 -60 L80 40 L-80 40Z" fill="#8a8478"/><circle cx="0" cy="-20" r="18" fill="#3a3632"/><path d="M-60 -50 q30 -20 60 0" fill="none" stroke="#5a8a4a" stroke-width="8"/><circle cx="50" cy="20" r="10" fill="#c96a5a"/></g>
+    ${[[200, 860], [800, 870]].map(([x, y]) => `<path d="M${x} ${y} q-10 -60 6 -110 M${x + 10} ${y} q14 -50 -4 -90" fill="none" stroke="#3a8a5a" stroke-width="8" class="a-sway"/>`).join('')}
+    ${light(520, 760, 260, '#fff6c8', 0.4)}
+    ${silhouette(820, 560, 0.6, '#0a1420')}
+    ${vignette(0.6)}`,
+
+  gobekli2049: () => `
+    ${sky('#f2b36e', '#f6cf92', '#f6e3bd')}
+    <circle cx="820" cy="200" r="60" fill="#fff3c4" stroke="${INK}" stroke-width="${S}"/>${light(820, 200, 240, '#fff3c4', 0.5)}
+    ${hill('M0 470 Q200 420 420 450 T1000 440 L1000 640 L0 640Z', '#c9a46c')}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M-20 300 Q250 220 500 250 Q750 220 1020 300 L1020 330 Q750 260 500 280 Q250 260 -20 330Z" fill="#f4f2ec"/>${[60, 260, 500, 740, 940].map((x) => `<path d="M${x} ${x === 500 ? 280 : 300} V620" stroke="#c8ccd4" stroke-width="10"/>`).join('')}</g>
+    <path d="M0 620 H1000 V1000 H0Z" fill="#c8a878" stroke="${INK}" stroke-width="${S}"/>
+    <ellipse cx="500" cy="760" rx="380" ry="110" fill="#b8956a" stroke="${INK}" stroke-width="${S}"/>
+    ${pillar(330, 760, 180, 52, '#c2ab84', { arms: true, relief: 'tilki' })}${pillar(500, 740, 200, 58, '#c8b08a', { arms: true, relief: 'domuz' })}${pillar(680, 770, 170, 50, '#bca47c', { arms: true, relief: 'akbaba', side: 'left' })}
+    <path d="M60 900 H940" stroke="#8a6440" stroke-width="14"/><path d="M60 880 H940" stroke="#8a6440" stroke-width="4"/>${[...Array(12)].map((_, i) => `<path d="M${80 + i * 76} 880 V900" stroke="#8a6440" stroke-width="4"/>`).join('')}
+    ${npc(820, 1000, 0.95, 1451, 14, { flip: true })}
+    ${vignette(0.3)}`,
+
+  gobekli_gece: () => `
+    ${sky('#0e1430', '#1a1e3e', '#2e2a48')}
+    ${milkyway()}${stars(60, 1461, 520)}
+    ${hill('M0 520 Q300 480 600 500 T1000 490 L1000 640 L0 640Z', '#1e1a24')}
+    <path d="M-20 300 Q250 220 500 250 Q750 220 1020 300 L1020 330 Q750 260 500 280 Q250 260 -20 330Z" fill="#3a3a48" stroke="${INK}" stroke-width="${S}" opacity=".7"/>
+    <path d="M0 620 H1000 V1000 H0Z" fill="#2a2220" stroke="${INK}" stroke-width="${S}"/>
+    ${pillar(300, 780, 180, 52, '#6a5a4a', { arms: true })}${pillar(700, 790, 170, 50, '#6a5a4a', { arms: true, side: 'left' })}
+    ${fire(500, 860, 1.0)}
+    ${vignette(0.55)}`,
+});
+Object.assign(FOCUS, {
+  istanbul2041: [520, 560, 860], ai_oda: [500, 500, 860], cay_bahce: [460, 560, 860], dalis: [520, 700, 860],
+  gobekli2049: [500, 620, 880], gobekli_gece: [500, 640, 860],
 });
 
 export { wall, interior, horse, chariot, lion };

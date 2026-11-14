@@ -17,10 +17,11 @@ import { ERA10 } from './story/cag10.js';
 import { ERA11 } from './story/cag11.js';
 import { ERA12 } from './story/cag12.js';
 import { ERA13 } from './story/cag13.js';
-import { newGame, load, save, wipe, canAfford, applyEffect } from './state.js';
+import { ERA14 } from './story/cag14.js';
+import { newGame, load, save, wipe, canAfford, applyEffect, snapshot } from './state.js';
 import { getScene, applyChoice } from './engine.js';
 
-const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9, 10: ERA10, 11: ERA11, 12: ERA12, 13: ERA13 };
+const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9, 10: ERA10, 11: ERA11, 12: ERA12, 13: ERA13, 14: ERA14 };
 const app = document.getElementById('app');
 let st = null;
 
@@ -95,6 +96,7 @@ function avatarScreen(initial) {
       await wipe();
       st = newGame(av);
       st.scene = ERAS[st.era].start;
+      st.eraStarts = { 1: snapshot(st) };
       await save(st);
       eraCard();
     }
@@ -142,7 +144,7 @@ function buildStage() {
     <div class="choices"></div>
   </div>`);
   stage.addEventListener('click', (e) => {
-    if (e.target.closest('.reset')) return confirmRestart(() => avatarScreen(st.avatar));
+    if (e.target.closest('.reset')) return st.sandbox ? leaveSandbox() : confirmRestart(() => avatarScreen(st.avatar));
     if (e.target.closest('.choices')) return;
     advance();
   });
@@ -166,7 +168,10 @@ function startScene(prev) {
   const era = ERAS[st.era];
   theme(st.era);
   const sc = getScene(era, st);
-  if (!sc || sc.end) { st.finished = true; save(st); return endScreen(); }
+  if (!sc || sc.end) {
+    if (st.sandbox) return sandboxEnd();
+    st.finished = true; save(st); return endScreen();
+  }
   if (!stage || !stage.isConnected) buildStage();
   if (sc.day) st.day = sc.day;
   if (sc.year) st.yil = sc.year;
@@ -265,9 +270,15 @@ function toast(msg) {
 }
 
 // ---------- Çağ sonu ----------
+function eraStats(s, eraNo) {
+  const ak = s.akil - (s.eraBase?.akil || 0), be = s.beden - (s.eraBase?.beden || 0);
+  return { era: eraNo, akil: ak, beden: be, para: s.para, karar: s.history.filter((h) => h.era === eraNo).length };
+}
+
 function endScreen() {
   stage = null;
   const era = ERAS[st.era];
+  if (era.final) return gameEndScreen();
   theme(st.era);
   const nextEra = ERAS[st.era + 1];
   const ak = st.akil - (st.eraBase?.akil || 0), be = st.beden - (st.eraBase?.beden || 0);
@@ -288,6 +299,7 @@ function endScreen() {
     if (a === 'bas') confirmRestart(() => avatarScreen(st.avatar));
     if (a === 'ileri') {
       const ne = ERAS[st.era + 1];
+      st.eraLog = (st.eraLog || []).filter((l) => l.era !== st.era).concat([eraStats(st, st.era)]);
       const carry = ne.carry ? ne.carry(st) : '';
       st.era += 1;
       st.eraBase = { akil: st.akil, beden: st.beden };
@@ -300,11 +312,124 @@ function endScreen() {
       st.scene = ne.start;
       st.day = 1;
       st.finished = false;
+      st.eraStarts = st.eraStarts || {};
+      st.eraStarts[st.era] = snapshot(st);
       await save(st);
       eraCard(carry);
     }
   });
   show(s);
+}
+
+// ---------- Oyunun sonu ----------
+let mainSt = null; // "Ya diğerini seçseydin" denemesi sırasında asıl kayıt
+
+function gameEndScreen() {
+  stage = null;
+  theme(st.era);
+  if (!(st.eraLog || []).some((l) => l.era === st.era)) {
+    st.eraLog = (st.eraLog || []).concat([eraStats(st, st.era)]);
+    save(st);
+  }
+  const log = st.eraLog || [];
+  const max = Math.max(3, ...log.map((l) => Math.max(l.akil, l.beden)));
+  const rows = Object.keys(ERAS).map(Number).map((n) => {
+    const l = log.find((x) => x.era === n);
+    const a = l ? Math.max(0, l.akil) : 0, b = l ? Math.max(0, l.beden) : 0;
+    return `<div class="erow"><span class="en">${n}</span><span class="et">${esc(ERAS[n].name)}</span>
+      <span class="bars"><i class="ba" style="width:${(a / max) * 100}%"></i><i class="bb" style="width:${(b / max) * 100}%"></i></span></div>`;
+  }).join('');
+  const toplamKarar = st.history.length;
+  const yol = st.akil > st.beden ? 'aklına' : st.beden > st.akil ? 'bedenine' : 'aklına ve bedenine eşit';
+  const s = el(`<div class="screen era-card game-end">
+    <div class="av-preview">${avatarSVG(st.avatar, { era: st.era })}</div>
+    <div class="era-text">
+      <div class="era-no">YOLCULUK TAMAMLANDI</div>
+      <h1 class="era-name outline">ÇAĞLAR BOYU İNSAN</h1>
+      <div class="era-meta">On dört çağ, ${toplamKarar} karar. Yüzyıllar boyunca çoğunlukla ${yol} yaslandın.</div>
+      <div class="legend"><span><i class="ba"></i>akıl</span><span><i class="bb"></i>beden</span></div>
+      <div class="erows">${rows}</div>
+      <button class="btn" data-a="diger">Ya diğerini seçseydin?</button>
+      <button class="btn ghost" data-a="bas">En baştan başla</button>
+    </div>
+  </div>`);
+  s.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-a]')?.dataset.a;
+    if (a === 'bas') confirmRestart(() => avatarScreen(st.avatar));
+    if (a === 'diger') eraPicker();
+  });
+  show(s);
+}
+
+function eraPicker() {
+  const s = el(`<div class="screen era-card game-end">
+    <div class="era-text">
+      <div class="era-no">YA DİĞERİNİ SEÇSEYDİN?</div>
+      <p class="subtitle" style="margin:6px 0 12px">Bir çağı seç. O çağın başına dönüp başka kararlar verebilirsin. Asıl yolculuğun değişmez.</p>
+      <div class="pick">${Object.keys(ERAS).map((n) => `<button class="btn ghost small" data-e="${n}"><b>${n}</b> ${esc(ERAS[n].name)}</button>`).join('')}</div>
+      <button class="btn" data-a="geri">Geri</button>
+    </div>
+  </div>`);
+  s.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-e]');
+    if (b) return startSandbox(Number(b.dataset.e));
+    if (e.target.closest('[data-a="geri"]')) gameEndScreen();
+  });
+  show(s);
+}
+
+function startSandbox(n) {
+  mainSt = st;
+  const base = (st.eraStarts || {})[n];
+  let s2;
+  if (base) s2 = JSON.parse(JSON.stringify(base));
+  else {
+    // Eski kayıtlarda çağ başlangıcı yok: yaklaşık bir başlangıç kur.
+    s2 = newGame(st.avatar);
+    s2.era = n;
+    s2.para = 5;
+    const prev = (st.eraLog || []).filter((l) => l.era < n);
+    s2.akil = prev.reduce((t, l) => t + Math.max(0, l.akil), 0);
+    s2.beden = prev.reduce((t, l) => t + Math.max(0, l.beden), 0);
+    s2.eraBase = { akil: s2.akil, beden: s2.beden };
+  }
+  Object.assign(s2, { sandbox: true, history: [], seen: [], hub: null, returnTo: null, finished: false, scene: ERAS[n].start, era: n, day: 1, yil: null, birim: null, yer: null });
+  st = s2;
+  eraCard('Ya diğerini seçseydin? Bu bir deneme: Asıl yolculuğun değişmeyecek. Üstteki ↺ düğmesiyle istediğin an çıkabilirsin.');
+}
+
+function sandboxEnd() {
+  stage = null;
+  const n = st.era;
+  const yeni = eraStats(st, n);
+  const eski = (mainSt.eraLog || []).find((l) => l.era === n);
+  const sec = (s, k) => s.history.filter((h) => h.era === k).map((h) => ERAS[k].scenes[h.scene]?.choices?.[h.choice]?.text).filter(Boolean).slice(0, 4);
+  const eskiSec = sec(mainSt, n), yeniSec = sec(st, n);
+  const s = el(`<div class="screen era-card game-end">
+    <div class="era-text">
+      <div class="era-no">ÇAĞ ${n} · DİĞER YOL</div>
+      <h1 class="era-name outline">${up(ERAS[n].name)}</h1>
+      <div class="cmp">
+        <div><b>Asıl yolun</b>${eski ? `<span>Akıl ${eski.akil} · Beden ${eski.beden}</span>` : ''}${eskiSec.map((t) => `<em>${esc(t)}</em>`).join('')}</div>
+        <div><b>Bu sefer</b><span>Akıl ${yeni.akil} · Beden ${yeni.beden}</span>${yeniSec.map((t) => `<em>${esc(t)}</em>`).join('')}</div>
+      </div>
+      <button class="btn" data-a="baska">Başka bir çağ dene</button>
+      <button class="btn ghost" data-a="don">Yolculuğa dön</button>
+    </div>
+  </div>`);
+  s.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-a]')?.dataset.a;
+    if (a === 'baska') { st = mainSt; eraPicker(); }
+    if (a === 'don') leaveSandbox();
+  });
+  show(s);
+}
+
+function leaveSandbox() {
+  if (mainSt) st = mainSt;
+  mainSt = null;
+  stage = null;
+  gameEndScreen();
 }
 
 // ---------- Ortak ----------

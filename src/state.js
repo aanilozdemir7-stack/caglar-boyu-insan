@@ -19,7 +19,9 @@ export function newGame(avatar) {
     flags: [],
     seen: [], // görülen rastgele olaylar
     returnTo: null,
-    history: [], // [{ scene, choice }] — oyun sonu "ya diğerini seçseydin" modu için
+    history: [], // [{ era, scene, choice }] — oyun sonu "ya diğerini seçseydin" modu için
+    eraLog: [], // her çağın sonunda { era, akil, beden, para, karar }
+    eraStarts: {}, // her çağın başındaki durum (yeniden deneme için)
     finished: false,
   };
 }
@@ -33,7 +35,15 @@ export async function load() {
   }
 }
 
+// Bir durumun, geçmiş ve kayıt kopyaları olmadan anlık görüntüsü (çağ başlangıcı için).
+export function snapshot(st) {
+  const { history, eraStarts, eraLog, ...rest } = st;
+  void history; void eraStarts; void eraLog;
+  return JSON.parse(JSON.stringify(rest));
+}
+
 export async function save(st) {
+  if (st && st.sandbox) return; // "Ya diğerini seçseydin" denemeleri asıl kaydı bozmaz
   try {
     await Preferences.set({ key: KEY, value: JSON.stringify(st) });
   } catch {
