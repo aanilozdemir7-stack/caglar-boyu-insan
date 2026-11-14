@@ -1215,4 +1215,101 @@ Object.assign(SCENES, {
 });
 Object.assign(FOCUS, { maden_ocak: [480, 600, 860], maden_ic: [500, 560, 860] });
 
+// ---------- ÇAĞ 12: KALKINMA YILLARI ----------
+function devrimCar(x, y, s, c = '#1a1a1e') {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="${S / s}" stroke-linejoin="round">
+    <path d="M-230 -20 Q-232 -70 -190 -80 L-120 -90 Q-90 -150 -20 -156 L80 -156 Q140 -150 170 -92 L220 -84 Q246 -70 240 -20 Z" fill="${c}"/>
+    <path d="M-100 -92 Q-76 -138 -20 -142 L40 -142 V-92Z M56 -142 L82 -142 Q126 -136 150 -92 H56Z" fill="#a8c8d8"/>
+    <path d="M-236 -40 H246" stroke="${shade(c, 0.5)}" stroke-width="${4 / s}"/>
+    <rect x="-246" y="-34" width="34" height="14" rx="4" fill="#e8e4dc"/><rect x="214" y="-34" width="34" height="14" rx="4" fill="#e8e4dc"/>
+    <circle cx="-226" cy="-58" r="12" fill="#fff2b0"/>
+    ${[-140, 140].map((cx) => `<circle cx="${cx}" cy="-12" r="42" fill="#1a1a1a"/><circle cx="${cx}" cy="-12" r="20" fill="#c8ccd4"/>`).join('')}
+  </g>`;
+}
+function tvSet(x, y, s) {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="${S / s}" stroke-linejoin="round">
+    <rect x="-120" y="-100" width="240" height="190" rx="14" fill="#8a5a34"/><rect x="-100" y="-82" width="160" height="150" rx="22" fill="#d8dcdc"/>
+    <g class="a-glow"><rect x="-96" y="-78" width="152" height="142" rx="20" fill="#b8c4c8"/><circle cx="-20" cy="-10" r="30" fill="#8a9498"/><path d="M-60 40 Q-20 10 20 40" fill="#8a9498"/></g>
+    ${[-40, -10].map((yy) => `<circle cx="88" cy="${yy}" r="10" fill="#3a2a22"/>`).join('')}<path d="M70 30 H106 M70 46 H106" stroke-width="3"/>
+    <path d="M-60 -100 L-110 -170 M40 -100 L90 -170" stroke-width="${4 / s}"/>
+  </g>`;
+}
+
+Object.assign(SCENES, {
+  devrim_atolye: () => `
+    <rect width="1000" height="1000" fill="#b8b4a8"/>
+    ${[0, 1, 2, 3, 4].map((i) => `<rect x="${60 + i * 190}" y="80" width="140" height="240" fill="#d8e4ea" stroke="${INK}" stroke-width="${S}"/>${[0, 1, 2].map((r) => `<path d="M${60 + i * 190} ${160 + r * 60} h140" stroke="${INK}" stroke-width="3"/>`).join('')}<path d="M${130 + i * 190} 80 V320" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${light(500, 220, 600, '#fffaf0', 0.35)}
+    <path d="M0 340 H1000" stroke="#5a5e66" stroke-width="20"/>
+    <g stroke="${INK}" stroke-width="5"><path d="M760 340 V500" stroke-width="4"/><path d="M730 500 H790 L780 540 H740Z" fill="#c94a3a"/></g>
+    <path d="M0 640 H1000 V1000 H0Z" fill="#7a7468" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 660, 1000, 1000, 30, '#6a645a', 1201, 24)}
+    ${devrimCar(500, 760, 1.05)}
+    <g stroke="${INK}" stroke-width="4"><rect x="60" y="560" width="160" height="90" fill="#5a6a7a"/><path d="M80 560 V520 H200 V560" fill="none" stroke-width="6"/><circle cx="140" cy="600" r="24" fill="#3a4a5a"/></g>
+    ${npc(860, 1000, 1, 1202, 12, { flip: true })}
+    ${vignette(0.35)}`,
+
+  toren: () => `
+    ${sky('#8ab8d8', '#b8d4e2', '#f0ece2')}
+    ${cloud(220, 130, 1, '#fbf8f0')}
+    <g stroke="${INK}" stroke-width="${S}"><rect x="160" y="260" width="680" height="300" fill="#e8dcc4"/>${[...Array(10)].map((_, i) => `<rect x="${190 + i * 64}" y="300" width="34" height="240" fill="#d8ccb4" stroke-width="3"/>`).join('')}<path d="M140 260 H860 V230 H140Z" fill="#c8b896"/></g>
+    ${[200, 400, 600, 800].map((x) => `<path d="M${x} 230 V140" stroke="${INK}" stroke-width="5"/><path d="M${x} 140 h50 v32 h-50Z" fill="#d81e2c" stroke="${INK}" stroke-width="3"/><circle cx="${x + 22}" cy="156" r="7" fill="#fff"/>`).join('')}
+    <path d="M0 560 H1000 V1000 H0Z" fill="#a8a094" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M300 560 L80 1000 H920 L700 560Z" fill="#8a8478"/>
+    <g opacity=".85">${[...Array(16)].map((_, i) => silhouette(30 + i * 62, 640 + (i % 3) * 8, 0.42, '#3a3430')).join('')}</g>
+    ${devrimCar(470, 820, 0.85)}
+    ${npc(840, 1000, 1, 1211, 12, { flip: true })}
+    ${vignette(0.3)}`,
+
+  kahve_tv: () => `
+    ${interior('#c8b896', '#7a5a3a', { beam: '#4a3426', window: true })}
+    <path d="M0 480 H1000" stroke="#6b4529" stroke-width="16"/>
+    ${tvSet(560, 380, 1.15)}
+    ${light(540, 370, 300, '#d8e8f0', 0.35, 'a-glow')}
+    ${[200, 400, 640, 840].map((x) => `<g stroke="${INK}" stroke-width="4"><ellipse cx="${x}" cy="760" rx="70" ry="22" fill="#a8783a"/><path d="M${x} 760 V840" stroke-width="10"/><path d="M${x - 20} 750 l4 -18 h16 l4 18Z M${x + 20} 752 l3 -14 h12 l3 14Z" fill="#f2ead8" stroke-width="2"/></g>`).join('')}
+    ${npc(160, 1000, 1, 1221, 12)}${npc(420, 980, 0.95, 1222, 12)}${npc(700, 990, 1, 1223, 12, { flip: true })}
+    ${vignette(0.45)}`,
+
+  gecekondu: () => `
+    ${sky('#9cc6dc', '#c4dae2', '#f0e8d4')}
+    <g opacity=".6">${[...Array(8)].map((_, i) => `<rect x="${600 + i * 50}" y="${280 + (i % 3) * 20}" width="36" height="${200 - (i % 3) * 20}" fill="#9aa4ac"/>`).join('')}</g>
+    ${hill('M-20 1000 L-20 420 Q300 360 600 460 Q800 520 1020 480 L1020 1000Z', '#a89a7a')}
+    ${[[40, 500], [190, 470], [340, 470], [480, 520], [80, 640], [260, 640], [440, 660], [620, 600], [780, 600], [120, 790], [340, 800], [600, 760], [820, 760]].map(([x, y], i) => `<g stroke="${INK}" stroke-width="4" stroke-linejoin="round"><rect x="${x}" y="${y}" width="${110 + (i % 3) * 20}" height="${70 + (i % 2) * 14}" fill="${['#e8dcc0', '#d8c8a8', '#c8d4dc', '#e0c8b8'][i % 4]}"/><path d="M${x - 8} ${y} L${x + 55 + (i % 3) * 10} ${y - 34} L${x + 118 + (i % 3) * 20} ${y}Z" fill="${['#b8583a', '#a8483a', '#8a6a5a'][i % 3]}"/><rect x="${x + 16}" y="${y + 18}" width="26" height="24" fill="#5a7a9a" stroke-width="2"/><rect x="${x + 60}" y="${y + 26}" width="24" height="${44 + (i % 2) * 14}" fill="#5a3a2a" stroke-width="2"/></g>${i % 3 === 0 ? `<path d="M${x + 70} ${y - 30} V${y - 80} M${x + 50} ${y - 70} H${x + 90} M${x + 56} ${y - 58} H${x + 84}" stroke="${INK}" stroke-width="3"/>` : ''}`).join('')}
+    ${npc(500, 1000, 1, 1231, 12)}
+    ${vignette(0.3)}`,
+
+  fabrika70: () => `
+    <rect width="1000" height="1000" fill="#c8ccc8"/>
+    ${[0, 1, 2, 3].map((i) => `<rect x="${i * 260}" y="60" width="200" height="180" fill="#d8e4ea" stroke="${INK}" stroke-width="${S}"/>`).join('')}
+    ${light(500, 200, 600, '#fffaf0', 0.3)}
+    <path d="M0 520 H1000 V600 H0Z" fill="#3a3e46" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(20)].map((_, i) => `<circle cx="${i * 52 + 10}" cy="600" r="12" fill="#5a5e66" stroke="${INK}" stroke-width="3"/>`).join('')}
+    <g class="a-run">${[[200, '#e8e8e4'], [520, '#3a7aa8'], [840, '#c94a3a']].map(([x, c]) => devrimCar(x, 512, 0.6, c)).join('')}</g>
+    <g stroke="${INK}" stroke-width="4">${[160, 480, 800].map((x) => `<path d="M${x} 240 V380" stroke-width="6"/><path d="M${x - 30} 380 H${x + 30} L${x + 20} 420 H${x - 20}Z" fill="#f2b632"/>`).join('')}</g>
+    <path d="M0 660 H1000 V1000 H0Z" fill="#8a8a84" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M0 700 H1000" stroke="#f2b632" stroke-width="10" stroke-dasharray="40 30"/>
+    ${npc(260, 1000, 1, 1241, 12)}${npc(740, 1000, 1, 1242, 12, { flip: true })}
+    ${vignette(0.35)}`,
+
+  bogaz_kopru: () => `
+    ${sky('#f0a878', '#f6c89a', '#f6e2c4')}
+    <circle cx="760" cy="300" r="60" fill="#fff0c0" stroke="${INK}" stroke-width="${S}"/>${light(760, 300, 260, '#ffe0a0', 0.4)}
+    ${hill('M-20 520 Q100 440 200 470 L200 560 L-20 560Z', '#6a8a5a')}${hill('M800 470 Q900 430 1020 460 L1020 560 L800 560Z', '#6a8a5a')}
+    ${sea(540, '#4a8ab0', '#1f4f6e')}
+    <g stroke="${INK}" stroke-width="${S}">
+      <path d="M150 560 V200 M190 560 V200 M150 200 H190 M150 320 H190 M150 440 H190" fill="none" stroke="#c8ccd4" stroke-width="14"/>
+      <path d="M810 560 V200 M850 560 V200 M810 200 H850 M810 320 H850 M810 440 H850" fill="none" stroke="#c8ccd4" stroke-width="14"/>
+      <path d="M-20 440 L170 200 Q500 480 830 200 L1020 440" fill="none" stroke="#e8e8ec" stroke-width="8"/>
+      <path d="M-20 470 H1020 V490 H-20Z" fill="#c8ccd4"/>
+    </g>
+    ${[...Array(30)].map((_, i) => { const x = 190 + i * 21; const t = (x - 170) / 660; const yy = 200 + (480 - 200) * 4 * t * (1 - t) * 0.9 + 0; return x < 830 ? `<path d="M${x} ${Math.min(470, 200 + 280 * (1 - Math.pow(2 * t - 1, 2)) * 0.95).toFixed(0)} V470" stroke="#e8e8ec" stroke-width="2"/>` : ''; }).join('')}
+    ${[[300, 700], [640, 760]].map(([x, y], i) => `<g class="a-bob" style="animation-delay:${i * 0.6}s" stroke="${INK}" stroke-width="4"><path d="M${x - 90} ${y} L${x - 80} ${y + 26} H${x + 80} L${x + 100} ${y}Z" fill="#f2ead8"/><rect x="${x - 50}" y="${y - 26}" width="100" height="26" fill="#e8dcc0"/><rect x="${x - 10}" y="${y - 56}" width="20" height="30" fill="#2a2a32"/></g>`).join('')}
+    ${npc(820, 1000, 1, 1251, 12, { flip: true })}
+    ${vignette(0.3)}`,
+});
+Object.assign(FOCUS, {
+  devrim_atolye: [500, 600, 860], toren: [480, 600, 860], kahve_tv: [540, 460, 860], gecekondu: [420, 620, 820],
+  fabrika70: [500, 520, 860], bogaz_kopru: [650, 420, 880],
+});
+
 export { wall, interior, horse, chariot, lion };
