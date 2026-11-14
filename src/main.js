@@ -6,9 +6,11 @@ import { avatarSVG, avatarThumb, CATEGORIES, DEFAULT_AVATAR, normalizeAvatar, ra
 import { sceneSVG, hands } from './art/scenes.js';
 import { ERA1 } from './story/cag1.js';
 import { ERA2 } from './story/cag2.js';
+import { ERA3 } from './story/cag3.js';
 import { newGame, load, save, wipe, canAfford, applyEffect } from './state.js';
+import { getScene, applyChoice } from './engine.js';
 
-const ERAS = { 1: ERA1, 2: ERA2 };
+const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3 };
 const app = document.getElementById('app');
 let st = null;
 
@@ -150,7 +152,7 @@ function hud(prev) {
 
 function startScene(prev) {
   const era = ERAS[st.era];
-  const sc = era.scenes[st.scene];
+  const sc = getScene(era, st);
   if (!sc || sc.end) { st.finished = true; save(st); return endScreen(); }
   if (!stage || !stage.isConnected) buildStage();
   if (sc.day) st.day = sc.day;
@@ -179,7 +181,7 @@ function showLine() {
   const box = stage.querySelector('.text');
   box.querySelectorAll('.line').forEach((n) => n.classList.add('old'));
   const olds = box.querySelectorAll('.line.old');
-  if (olds.length > 1) olds[0].remove();
+  olds.forEach((n, i) => { if (i < olds.length - 1) n.remove(); });
   box.appendChild(el(`<div class="line outline">${fmt(lines[lineIdx])}</div>`));
   const last = lineIdx >= lines.length - 1;
   stage.querySelector('.next-hint').textContent = last ? '' : 'Devam etmek için dokun';
@@ -203,7 +205,7 @@ function costText(c) {
 const REST = { text: 'Dinlen ve güç topla', effect: { enerji: 30 }, rest: true };
 
 function showChoices() {
-  const sc = ERAS[st.era].scenes[st.scene];
+  const sc = getScene(ERAS[st.era], st);
   const anyOk = sc.choices.some((c) => (!c.show || c.show(st)) && (!c.req || c.req(st)) && canAfford(st, c.cost));
   if (!anyOk) {
     stage.classList.add('choosing');
@@ -222,7 +224,7 @@ function showChoices() {
     if (c.show && !c.show(st)) return;
     const reqOk = !c.req || c.req(st);
     const ok = canAfford(st, c.cost) && reqOk;
-    const info = !reqOk ? c.reqText || 'Koşul sağlanmadı' : costText(c.cost);
+    const info = !reqOk ? c.reqText || 'Koşul sağlanmadı' : c.info || costText(c.cost);
     const b = el(`<button class="choice ${ok ? '' : 'locked'}" style="animation-delay:${i * 0.08}s">
       <span>${esc(c.text)}</span>${info ? `<span class="cost">${ok ? '' : '🔒 '}${esc(info)}</span>` : ''}</button>`);
     b.addEventListener('click', () => ok && choose(i));
@@ -231,14 +233,12 @@ function showChoices() {
 }
 
 async function choose(i) {
-  const sc = ERAS[st.era].scenes[st.scene];
-  const c = sc.choices[i];
+  const era = ERAS[st.era];
+  const sc = getScene(era, st);
   const prev = { para: st.para, enerji: st.enerji };
-  applyEffect(st, c.effect);
-  st.history.push({ era: st.era, scene: st.scene, choice: i });
-  st.scene = c.to;
+  applyChoice(era, st, i);
   await save(st); // checkpoint
-  if (sc.choices.filter((x) => !x.show || x.show(st)).length > 1) toast('Seçimin kaydedildi');
+  if (!sc.hub && sc.choices.filter((x) => !x.show || x.show(st)).length > 1) toast('Seçimin kaydedildi');
   startScene(prev);
 }
 
@@ -274,6 +274,9 @@ function endScreen() {
       const carry = ne.carry ? ne.carry(st) : '';
       st.era += 1;
       st.eraBase = { akil: st.akil, beden: st.beden };
+      st.seen = [];
+      st.returnTo = null;
+      st.hub = null;
       st.scene = ne.start;
       st.day = 1;
       st.finished = false;

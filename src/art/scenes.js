@@ -426,11 +426,326 @@ export const SCENES = {
 
 SCENES.gece_dam_kisi = (av) => SCENES.gece_dam(av, true);
 
+// ---------- Ek parçalar ----------
+function donkey(x, y, s, pack = '#5a4a3a', delay = 0, flip = false) {
+  return `<g class="a-bob" style="animation-delay:${delay}s"><g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})" stroke="${INK}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M-40 4 l-4 40 M-24 6 l2 40 M28 6 l-2 40 M42 4 l4 40" fill="none"/>
+    <path d="M-56 -6 Q-58 -44 -20 -46 L34 -46 Q52 -44 56 -24 L72 -50 Q80 -64 92 -58 L104 -40 Q108 -30 96 -28 L80 -24 Q66 6 40 8 L-40 8 Q-58 6 -56 -6Z" fill="#3a3430"/>
+    <path d="M78 -60 l-6 -26 l10 4Z M88 -58 l2 -26 l8 6Z" fill="#3a3430"/>
+    <path d="M-56 -20 q-16 4 -14 26" fill="none"/>
+    <circle cx="92" cy="-46" r="2.5" fill="#e8dcc0" stroke="none"/>
+    <rect x="-40" y="-74" width="34" height="36" rx="6" fill="${pack}"/><rect x="-2" y="-74" width="34" height="36" rx="6" fill="${pack}"/>
+    <path d="M-40 -60 h72 M-23 -74 v36 M15 -74 v36" stroke="${shade(pack, 0.3)}" stroke-width="3"/>
+    <circle cx="-4" cy="-56" r="6" fill="#b5502a"/>
+  </g></g>`;
+}
+
+function house2(x, y, w, h, wall, { win = true, lit = false } = {}) {
+  const stone = '#9a948a', beam = '#6b4529';
+  const lh = h * 0.35;
+  return `<g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+    <rect x="${x}" y="${y + h - lh}" width="${w}" height="${lh}" fill="${stone}"/>
+    ${[0.2, 0.5, 0.8].map((f) => `<path d="M${x + w * f} ${y + h - lh} v${lh}" stroke-width="3" opacity=".5"/>`).join('')}
+    <path d="M${x} ${y + h - lh * 0.5} H${x + w}" stroke-width="3" opacity=".5"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h - lh}" fill="${wall}"/>
+    <path d="M${x - 6} ${y + (h - lh) * 0.5} H${x + w + 6}" stroke="${beam}" stroke-width="9"/>
+    <rect x="${x - 8}" y="${y - 12}" width="${w + 16}" height="16" fill="${shade(wall, 0.12)}"/>
+    ${[0.1, 0.35, 0.6, 0.85].map((f) => `<circle cx="${x + w * f}" cy="${y - 2}" r="5" fill="${beam}"/>`).join('')}
+    ${win ? `<rect x="${x + w * 0.38}" y="${y + (h - lh) * 0.12}" width="${w * 0.24}" height="${(h - lh) * 0.28}" fill="${lit ? '#f6b04a' : '#2a1a12'}"/>` : ''}
+    <rect x="${x + w * 0.4}" y="${y + h - lh * 0.75}" width="${w * 0.2}" height="${lh * 0.75}" fill="#2a1a12"/>
+  </g>${lit ? light(x + w * 0.5, y + (h - lh) * 0.26, 80, '#f6b04a', 0.55, 'a-glow') : ''}`;
+}
+
+function erciyes(fill = '#8a90a8', snow = '#f6f3ee', x = 640, scale = 1) {
+  return `<g transform="translate(${x} 0) scale(${scale} 1)"><path d="M-380 520 L-60 250 L-20 270 L20 230 L360 520Z" fill="${fill}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    <path d="M-104 288 L-60 250 L-20 270 L20 230 L68 272 L40 300 L10 280 L-24 304 L-64 284Z" fill="${snow}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></g>`;
+}
+
+function tablets(x, y, n, s = 1, seed = 3) {
+  let t = ''; const r = rnd(seed);
+  for (let i = 0; i < n; i++) {
+    const tx = x + (i % 6) * 34 * s, ty = y + Math.floor(i / 6) * 30 * s, c = ['#c8a678', '#b8956a', '#d4b488'][Math.floor(r() * 3)];
+    t += `<rect x="${tx}" y="${ty - (r() * 6)}" width="${28 * s}" height="${22 * s}" rx="${5 * s}" fill="${c}" stroke="${INK}" stroke-width="3"/><path d="M${tx + 5 * s} ${ty + 7 * s} h${16 * s} M${tx + 5 * s} ${ty + 13 * s} h${12 * s}" stroke="${shade(c, -0.35)}" stroke-width="2"/>`;
+  }
+  return t;
+}
+
+Object.assign(SCENES, {
+  // ===== ÇAĞ 1 ek =====
+  karacadag: () => `
+    ${sky('#9cc4d8', '#cfe0dc', '#f2e6c4')}
+    ${cloud(200, 170, 1, '#fbf8f0')}${cloud(760, 220, 0.8, '#fbf8f0')}
+    <path d="M0 470 H1000 V520 H0Z" fill="#d8c48e"/>
+    ${haze(420, 540, '#f2e6c4', 0.6)}
+    ${hill('M0 500 Q200 440 420 480 Q620 420 1000 470 L1000 1000 L0 1000Z', '#5a5046')}
+    ${[[150, 560, 1.4], [820, 540, 1.6], [420, 600, 1], [660, 620, 1.2], [260, 700, 1.8], [900, 720, 2]].map(([x, y, s]) => rock(x, y, s, '#3a3532')).join('')}
+    ${(() => { let s = ''; const r = rnd(12); for (let i = 0; i < 34; i++) s += wheat(r() * 1000, 600 + r() * 140, 0.45 + r() * 0.3, r() * 2, '#d9b45a'); return s; })()}
+    ${npc(300, 760, 0.9, 101, 1)}${npc(700, 770, 0.92, 102, 1, { flip: true })}
+    ${(() => { let s = ''; const r = rnd(14); for (let i = 0; i < 36; i++) s += wheat(r() * 1000, 780 + r() * 220, 0.9 + r() * 0.5, r() * 2, '#d9b45a'); return s; })()}
+    ${vignette(0.3)}`,
+
+  ocak: () => `
+    ${sky('#f0b878', '#f6d4a0', '#f6e6c6')}
+    <circle cx="200" cy="200" r="56" fill="#fff3c4" stroke="${INK}" stroke-width="${S}"/>${light(200, 200, 220, '#fff3c4', 0.45)}
+    ${hill('M0 460 Q300 420 600 450 T1000 440 L1000 600 L0 600Z', '#c9a46c')}
+    ${haze(400, 560, '#f6e6c6', 0.5)}
+    <path d="M0 560 Q500 520 1000 560 L1000 1000 L0 1000Z" fill="#e2d4b4" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 580, 1000, 1000, 40, '#c4b490', 61, 30)}
+    <path d="M180 640 L820 610 L860 700 L150 740Z" fill="#9a8c70" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    <path d="M220 650 L790 624 L820 690 L200 722Z" fill="#e8dcc0" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    <path d="M640 630 L800 624 L820 690 L660 700Z" fill="#efe4cc" stroke="${INK}" stroke-width="${S}"/>
+    ${[260, 330, 400, 470, 540].map((x) => `<path d="M${x} ${652 - (x - 220) * 0.045} l14 30" stroke="#b8a888" stroke-width="3"/>`).join('')}
+    ${npc(240, 640, 0.75, 111, 1)}${npc(760, 610, 0.75, 112, 1, { flip: true })}
+    <g fill="#f6eed6" stroke="${INK}" stroke-width="3"><circle class="a-dust" cx="480" cy="640" r="7"/><circle class="a-dust" style="animation-delay:.7s" cx="520" cy="630" r="5"/><circle class="a-dust" style="animation-delay:1.3s" cx="450" cy="650" r="6"/></g>
+    ${rock(120, 900, 2, '#cbbd9c')}${rock(880, 920, 2.2, '#bfb092')}
+    ${vignette(0.35)}`,
+
+  firtina: () => `
+    ${sky('#2a3040', '#465060', '#6a6a66')}
+    <rect class="a-flash" width="1000" height="1000" fill="#eef4ff" opacity="0"/>
+    ${cloud(180, 160, 1.8, '#3a4250')}${cloud(560, 120, 2, '#3a4250')}${cloud(880, 200, 1.4, '#424a58')}
+    <path class="a-flash" d="M600 230 L560 360 L600 360 L540 520" fill="none" stroke="#f6f0c0" stroke-width="8" stroke-linejoin="round" opacity="0"/>
+    ${hill('M0 520 Q250 470 500 510 T1000 500 L1000 1000 L0 1000Z', '#4a4636')}
+    <g opacity=".55">${(() => { let s = ''; const r = rnd(33); for (let i = 0; i < 80; i++) { const x = r() * 1100, y = r() * 1000; s += `<path class="a-rain" style="animation-delay:${(r() * 0.6).toFixed(2)}s" d="M${x.toFixed(0)} ${y.toFixed(0)} l-14 40" stroke="#c8d4dc" stroke-width="3" stroke-linecap="round"/>`; } return s; })()}</g>
+    <path d="M-20 620 Q200 520 380 600 L380 1000 L-20 1000Z" fill="#3a3530" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M60 760 Q180 660 320 740 L320 820 L60 820Z" fill="#14100e" stroke="${INK}" stroke-width="${S}"/>
+    ${[600, 760, 880].map((x, i) => grass(x, 760 + i * 20, 1.3, '#5a5a3a', i * 0.2)).join('')}
+    ${vignette(0.7)}`,
+
+  // ===== ÇAĞ 2 ek =====
+  obsidyen_dag: () => `
+    ${sky('#9ab0c8', '#c8d0d8', '#e8e2d4')}
+    ${cloud(780, 180, 1.2, '#f4f1ea')}
+    <path d="M-40 640 L300 160 L380 230 L460 120 L620 300 L1040 640Z" fill="#7a7088" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    <path d="M250 230 L300 160 L346 210 L320 228Z M420 176 L460 120 L506 180 L470 192Z" fill="#f3eee6" stroke="${INK}" stroke-width="3"/>
+    ${haze(460, 640, '#e8e2d4', 0.5)}
+    ${hill('M0 600 Q500 560 1000 600 L1000 1000 L0 1000Z', '#6a6070')}
+    ${[[260, 700, 1.4], [520, 680, 1.8], [760, 720, 1.5], [380, 820, 2.2], [700, 860, 2]].map(([x, y, s], i) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-50 0 L-30 -50 L-4 -64 L30 -40 L50 0Z" fill="#141218" stroke="${INK}" stroke-width="${S / s}" stroke-linejoin="round"/><path class="a-glint" style="animation-delay:${i * 0.4}s" d="M-18 -40 L-2 -54" stroke="#cfd8f0" stroke-width="${5 / s}" stroke-linecap="round"/><path d="M6 -30 L24 -36" stroke="#5a6080" stroke-width="${4 / s}"/></g>`).join('')}
+    ${npc(160, 820, 0.9, 261, 2)}${npc(860, 830, 0.9, 262, 2, { flip: true })}
+    ${hill('M0 860 Q500 830 1000 860 L1000 1000 L0 1000Z', '#5a5060')}
+    ${vignette(0.4)}`,
+
+  ayna: (av) => `
+    <rect width="1000" height="1000" fill="#2a1e16"/>
+    ${light(500, 200, 600, '#fff0c8', 0.35)}
+    <path d="M0 760 H1000 V1000 H0Z" fill="#3a2a20"/>
+    <ellipse cx="500" cy="520" rx="250" ry="300" fill="#6b4529" stroke="${INK}" stroke-width="${S * 1.4}"/>
+    <ellipse cx="500" cy="520" rx="222" ry="272" fill="#0e0c12" stroke="${INK}" stroke-width="${S}"/>
+    <defs><clipPath id="aynaClip"><ellipse cx="500" cy="520" rx="222" ry="272"/></clipPath></defs>
+    <g clip-path="url(#aynaClip)">
+      <g opacity=".62" transform="translate(370 330) scale(1.3)">${avatarParts(av, 2)}</g>
+      <rect x="270" y="240" width="460" height="560" fill="#0e0c12" opacity=".35"/>
+      <path class="a-glint" d="M360 330 Q420 280 480 300" fill="none" stroke="#e8eef8" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+      <path d="M330 420 Q360 360 400 340" fill="none" stroke="#e8eef8" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+    </g>
+    ${vignette(0.7)}`,
+
+  // ===== ÇAĞ 3: KÜLTEPE / KANİŞ =====
+  karum_sokak: () => `
+    ${sky('#86b6d0', '#b8d4e0', '#efe6cc')}
+    ${cloud(220, 170, 1.1, '#fbf8f0')}
+    ${erciyes('#8a90a8', '#f6f3ee', 760, 1)}
+    ${haze(380, 540, '#efe6cc', 0.5)}
+    <path d="M60 520 Q300 380 560 400 L620 520Z" fill="#b89a6a" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    <path d="M150 440 H520 V400 H150Z" fill="#c9a874" stroke="${INK}" stroke-width="4"/>
+    ${[170, 230, 290, 350, 410, 470].map((x) => `<rect x="${x}" y="384" width="26" height="18" fill="#c9a874" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${house2(-40, 470, 220, 230, '#c8a274')}${house2(800, 460, 240, 240, '#d0aa7c')}
+    ${house2(160, 500, 190, 200, '#d4ae80', { lit: false })}${house2(650, 490, 170, 210, '#c4986a')}
+    <path d="M330 1000 L440 700 L560 700 L700 1000Z" fill="#a8a094" stroke="${INK}" stroke-width="${S}"/>
+    ${[740, 790, 850, 920].map((y, i) => `<path d="M${430 - (y - 700) * 0.36} ${y} H${570 + (y - 700) * 0.47}" stroke="${INK}" stroke-width="3" opacity=".5"/>`).join('')}
+    ${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${470 + i * 14 - i * 20} 700 L${400 + i * 60 - i * 10} 1000" stroke="${INK}" stroke-width="2" opacity=".35"/>`).join('')}
+    <path d="M0 700 H440 L330 1000 H0Z M560 700 H1000 V1000 H700Z" fill="#b8956a" stroke="${INK}" stroke-width="${S}"/>
+    ${donkey(560, 760, 0.9, '#4a5a7a', 0)}
+    ${npc(300, 840, 0.95, 301, 3)}${npc(740, 860, 1, 302, 3, { flip: true })}
+    ${hill('M0 900 H1000 V1000 H0Z', '#a8845a')}
+    ${vignette(0.35)}`,
+
+  arsiv: () => `
+    <rect width="1000" height="1000" fill="#d8c4a0"/>
+    <path d="M0 0 H1000 V140 H0Z" fill="#5a3e2a" stroke="${INK}" stroke-width="${S}"/>
+    ${[80, 280, 480, 680, 880].map((x) => `<rect x="${x - 20}" y="100" width="40" height="40" fill="#6b4a32" stroke="${INK}" stroke-width="4"/>`).join('')}
+    <path d="M0 140 H1000 V760 H0Z" fill="#e4d2ae" stroke="${INK}" stroke-width="${S}"/>
+    ${light(260, 300, 420, '#fff2cc', 0.5)}
+    <rect x="160" y="200" width="160" height="130" fill="#f6eed6" stroke="${INK}" stroke-width="${S}"/><path d="M240 200 v130 M160 265 h160" stroke="${INK}" stroke-width="4"/>
+    ${[260, 400, 540].map((y) => `<rect x="360" y="${y}" width="420" height="16" fill="#8a6440" stroke="${INK}" stroke-width="4"/>`).join('')}
+    ${tablets(370, 228, 12, 1, 4)}${tablets(370, 368, 12, 1, 7)}${tablets(370, 508, 6, 1, 9)}
+    ${[[820, 560], [890, 600]].map(([x, y]) => `<g stroke="${INK}" stroke-width="${S}"><path d="M${x - 40} ${y} Q${x - 60} ${y + 120} ${x - 30} ${y + 170} H${x + 30} Q${x + 60} ${y + 120} ${x + 40} ${y}Z" fill="#b5653a"/><ellipse cx="${x}" cy="${y}" rx="40" ry="12" fill="#8a4526"/></g>`).join('')}
+    <path d="M0 760 H1000 V1000 H0Z" fill="#c4a87e" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(260, 840, 1.05, 311, 3)}
+    <path d="M120 820 H560 V860 H120Z" fill="#8a6440" stroke="${INK}" stroke-width="${S}"/>
+    ${tablets(380, 790, 3, 1.1, 2)}
+    <g transform="translate(520 800)"><rect x="-22" y="-14" width="44" height="28" rx="8" fill="#a07850" stroke="${INK}" stroke-width="3"/><path d="M-14 -4 l6 -6 l6 6 l6 -6 l6 6" fill="none" stroke="#6b4529" stroke-width="2"/></g>
+    ${vignette(0.45)}`,
+
+  kervan_yol: () => `
+    ${sky('#e8a070', '#f2c08a', '#f6e0b8')}
+    <circle cx="760" cy="300" r="70" fill="#fff0c0" stroke="${INK}" stroke-width="${S}"/>${light(760, 300, 260, '#ffd890', 0.45)}
+    ${hill('M0 460 L160 300 L300 420 L460 260 L640 430 L800 330 L1000 450 L1000 640 L0 640Z', '#8a7a8a')}
+    ${haze(380, 560, '#f6e0b8', 0.55)}
+    ${hill('M0 560 Q300 500 560 540 T1000 520 L1000 1000 L0 1000Z', '#a8845a')}
+    <path d="M-20 820 Q300 680 560 640 T1020 600 L1020 660 Q760 680 560 700 T-20 900Z" fill="#c8a878" stroke="${INK}" stroke-width="${S}"/>
+    ${donkey(860, 610, 0.5, '#5a6a8a', 0.2)}${donkey(760, 630, 0.56, '#7a4a3a', 0.5)}${donkey(650, 650, 0.62, '#5a6a8a', 0.8)}${donkey(520, 680, 0.72, '#7a4a3a', 0.1)}
+    ${npc(400, 760, 0.8, 321, 3)}
+    ${donkey(300, 760, 0.86, '#5a6a8a', 0.4)}
+    <g fill="#e8d4a8" opacity=".6"><circle class="a-dust" cx="560" cy="700" r="12"/><circle class="a-dust" style="animation-delay:.8s" cx="360" cy="780" r="14"/></g>
+    ${hill('M0 880 Q500 840 1000 880 L1000 1000 L0 1000Z', '#9a7a50')}
+    ${vignette(0.4)}`,
+
+  saray_kapi: () => `
+    ${sky('#8cb8d0', '#bcd6e0', '#efe6cc')}
+    ${cloud(160, 160, 1, '#fbf8f0')}${cloud(820, 130, 1.2, '#fbf8f0')}
+    <path d="M-20 700 Q100 460 500 420 Q900 460 1020 700Z" fill="#b8956a" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+      <rect x="180" y="300" width="640" height="170" fill="#d4b080"/>
+      ${[200, 260, 320, 380, 440, 500, 560, 620, 680, 740, 790].map((x) => `<rect x="${x}" y="282" width="30" height="22" fill="#d4b080"/>`).join('')}
+      <rect x="330" y="230" width="110" height="240" fill="#c8a272"/><rect x="560" y="230" width="110" height="240" fill="#c8a272"/>
+      ${[335, 375, 410, 565, 605, 640].map((x) => `<rect x="${x}" y="212" width="26" height="22" fill="#c8a272"/>`).join('')}
+      <path d="M440 470 V330 Q500 280 560 330 V470Z" fill="#2a1a12"/>
+      <path d="M180 380 H820" stroke="#6b4529" stroke-width="9"/>
+    </g>
+    <path d="M420 470 L360 1000 H640 L580 470Z" fill="#a8a094" stroke="${INK}" stroke-width="${S}"/>
+    ${[560, 650, 760, 880].map((y) => `<path d="M${420 - (y - 470) * 0.11} ${y} H${580 + (y - 470) * 0.11}" stroke="${INK}" stroke-width="3" opacity=".45"/>`).join('')}
+    ${npc(380, 600, 0.75, 331, 3)}${npc(620, 600, 0.75, 332, 3, { flip: true })}
+    <path d="M370 480 L380 600 M630 480 L620 600" stroke="#6b4529" stroke-width="8"/><path d="M362 470 L370 440 L378 470Z M622 470 L630 440 L638 470Z" fill="#9a9aa0" stroke="${INK}" stroke-width="3"/>
+    ${npc(200, 860, 1.05, 333, 3)}${donkey(780, 830, 0.95, '#5a6a8a', 0.3, true)}
+    ${vignette(0.35)}`,
+
+  dar_yol: () => `
+    ${sky('#070a1c', '#141a34', '#24223e')}
+    ${stars(40, 91)}
+    <circle cx="760" cy="200" r="40" fill="#f3e9c6" stroke="${INK}" stroke-width="${S}"/>${light(760, 200, 180, '#f3e9c6', 0.2)}
+    ${hill('M0 520 L200 260 L320 380 L480 220 L620 400 L800 300 L1000 480 L1000 1000 L0 1000Z', '#1e1c2a')}
+    <path d="M-20 1000 L-20 520 Q160 560 260 700 Q340 820 300 1000Z" fill="#14121c" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M1020 1000 L1020 500 Q840 540 760 700 Q700 820 740 1000Z" fill="#14121c" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M300 1000 Q360 820 460 700 Q520 620 560 600 L600 610 Q560 660 540 720 Q500 840 740 1000Z" fill="#3a3448" stroke="${INK}" stroke-width="${S}"/>
+    ${donkey(520, 650, 0.45, '#2a2a36', 0.3)}${donkey(470, 720, 0.55, '#2a2a36', 0.6)}
+    <g class="a-blink" style="animation-delay:.4s">${light(640, 520, 50, '#ff9a3a', 0.8)}<circle cx="640" cy="520" r="6" fill="#ffb347"/></g>
+    ${vignette(0.75)}`,
+
+  atolye: () => `
+    <rect width="1000" height="1000" fill="#3a2a22"/>
+    <path d="M0 0 H1000 V180 H0Z" fill="#241a14" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M0 180 H1000 V760 H0Z" fill="#5a4436" stroke="${INK}" stroke-width="${S}"/>
+    ${light(500, 600, 520, '#ff8a2a', 0.5, 'a-glow')}
+    <g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+      <path d="M380 760 V560 Q380 470 500 470 Q620 470 620 560 V760Z" fill="#8a6a50"/>
+      <path d="M430 760 V610 Q430 560 500 560 Q570 560 570 610 V760Z" fill="#ff8a2a"/>
+      <path class="a-flame" d="M500 580 C530 620 540 660 520 700 L480 700 C460 660 470 620 500 580Z" fill="#ffe27a"/>
+      <path d="M470 470 L480 240 L520 240 L530 470Z" fill="#6a5040"/>
+    </g>
+    <circle class="a-smoke" cx="500" cy="220" r="30" fill="#7a7070" opacity=".5"/>
+    <g stroke="${INK}" stroke-width="${S}">
+      <rect x="120" y="560" width="200" height="90" rx="10" fill="#9a948a"/><path d="M150 605 L290 605 M170 590 l-20 15 l20 15" fill="none" stroke-width="4"/><path d="M150 605 h140" stroke="#e8c45a" stroke-width="6"/>
+      <rect x="680" y="560" width="200" height="90" rx="10" fill="#9a948a"/><path d="M720 605 h80 l20 -14 v28 l-20 -14" fill="none" stroke-width="4"/>
+    </g>
+    <path d="M0 760 H1000 V1000 H0Z" fill="#2e221c" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(220, 860, 1, 341, 3)}${npc(800, 870, 1, 342, 3, { flip: true })}
+    <rect x="-20" y="850" width="1040" height="160" fill="#2e221c"/><path d="M-20 850 H1020" stroke="${INK}" stroke-width="${S}"/>
+    ${vignette(0.6)}`,
+
+  gece_karum: () => `
+    ${sky('#0a0d22', '#18183a', '#2a2240')}
+    ${stars(30, 71)}
+    ${erciyes('#2e3048', '#8a8ca8', 760, 1)}
+    ${house2(-40, 470, 220, 230, '#4a3a30', { lit: true })}${house2(800, 460, 240, 240, '#52402f', { lit: true })}
+    ${house2(160, 500, 190, 200, '#4e3c2e')}${house2(650, 490, 170, 210, '#4a3a30', { lit: true })}
+    <path d="M330 1000 L440 700 L560 700 L700 1000Z" fill="#3a3640" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M0 700 H440 L330 1000 H0Z M560 700 H1000 V1000 H700Z" fill="#2e2620" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(480, 840, 0.9, 351, 3)}
+    <rect x="300" y="900" width="400" height="100" fill="#2e2620"/>
+    ${vignette(0.7)}`,
+
+  erciyes_ova: () => `
+    ${sky('#e08a6a', '#f2b48a', '#f8dcb4')}
+    ${light(300, 360, 360, '#ffd8a0', 0.45)}
+    ${erciyes('#8a7c98', '#fbf4ea', 540, 1.4)}
+    ${haze(380, 560, '#f8dcb4', 0.6)}
+    ${hill('M0 540 Q500 500 1000 540 L1000 1000 L0 1000Z', '#b8955a')}
+    ${house2(260, 560, 90, 90, '#c8a274')}${house2(360, 550, 100, 100, '#d0aa7c')}${house2(470, 565, 80, 85, '#c4986a')}${house2(560, 555, 100, 95, '#c8a274')}${house2(670, 568, 80, 82, '#d0aa7c')}
+    <path d="M0 680 Q500 640 1000 680 L1000 1000 L0 1000Z" fill="#c8a468" stroke="${INK}" stroke-width="${S}"/>
+    ${(() => { let s = ''; const r = rnd(21); for (let i = 0; i < 20; i++) s += wheat(r() * 1000, 760 + r() * 240, 0.8 + r() * 0.5, r() * 2); return s; })()}
+    ${vignette(0.35)}`,
+});
+
+Object.assign(SCENES, {
+  kaya_oda: () => `
+    <rect width="1000" height="1000" fill="#8a7a62"/>
+    ${sky('#c8a878', '#b89a6c', '#9a8460')}
+    <path d="M0 0 H1000 V260 Q500 200 0 260Z" fill="#6f6250" stroke="${INK}" stroke-width="${S}"/>
+    ${light(500, 120, 520, '#fff0c8', 0.45)}
+    <path d="M0 260 Q500 200 1000 260 V760 H0Z" fill="#d6c4a0" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 280, 1000, 740, 50, '#b8a684', 77, 26)}
+    ${[180, 330, 670, 820].map((x, i) => `<g stroke="${INK}" stroke-width="${S}"><path d="M${x - 34} 760 L${x - 28} ${420 + (i % 2) * 40} Q${x} ${380 + (i % 2) * 40} ${x + 28} ${420 + (i % 2) * 40} L${x + 34} 760Z" fill="#c8b48e"/><path d="M${x - 20} 700 V${450 + (i % 2) * 40}" stroke="#e8dcc0" stroke-width="5" opacity=".6"/></g>`).join('')}
+    <g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+      <path d="M500 300 Q430 300 420 380 Q412 450 450 500 Q470 530 500 534 Q530 530 550 500 Q588 450 580 380 Q570 300 500 300Z" fill="#cdb894"/>
+      <path d="M470 400 q10 -8 20 0 M510 400 q10 -8 20 0" fill="none"/>
+      <circle cx="480" cy="410" r="7" fill="${INK}"/><circle cx="520" cy="410" r="7" fill="${INK}"/>
+      <path d="M498 420 l-6 40 h14" fill="none" stroke-width="4"/>
+      <path d="M478 480 q22 10 44 0" fill="none" stroke-width="4"/>
+      <path d="M500 534 Q500 600 520 640 Q560 700 600 700" fill="none" stroke-width="10"/>
+      <path d="M500 534 Q500 600 520 640 Q560 700 600 700" fill="none" stroke="#cdb894" stroke-width="4"/>
+    </g>
+    <path class="a-sway" d="M620 560 q20 -10 10 -30 q-10 -20 10 -30 q20 -10 10 -30" fill="none" stroke="#7a6a4e" stroke-width="7" stroke-linecap="round"/>
+    <path d="M0 760 H1000 V1000 H0Z" fill="#b8a684" stroke="${INK}" stroke-width="${S}"/>
+    <ellipse cx="500" cy="860" rx="300" ry="60" fill="#5a7a80" stroke="${INK}" stroke-width="${S}" opacity=".85"/>
+    <path class="a-ripple" d="M320 860 q30 -8 60 0 t60 0 t60 0 t60 0 t60 0 t60 0" fill="none" stroke="#c6e8ea" stroke-width="4" stroke-linecap="round"/>
+    ${npc(140, 930, 0.9, 121, 1)}${npc(860, 940, 0.9, 122, 1, { flip: true })}
+    ${vignette(0.55)}`,
+
+  kizilirmak: () => `
+    ${sky('#8cb8d0', '#b8d4e0', '#efe2c4')}
+    ${cloud(220, 180, 1.1, '#fbf8f0')}${cloud(760, 140, 1, '#fbf8f0')}
+    ${hill('M0 440 Q250 380 500 420 T1000 410 L1000 560 L0 560Z', '#b07a58')}
+    ${haze(380, 540, '#efe2c4', 0.5)}
+    <path d="M0 540 Q500 500 1000 540 L1000 600 L0 600Z" fill="#c48a5a" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M-20 590 Q300 560 520 600 T1020 590 L1020 820 Q700 860 500 820 T-20 840Z" fill="#a8583a" stroke="${INK}" stroke-width="${S}"/>
+    ${[640, 690, 740, 790].map((y, i) => `<path class="a-ripple" style="animation-delay:${i * 0.3}s" d="M${60 + i * 50} ${y} q40 -12 80 0 t80 0 t80 0 t80 0 t80 0 t80 0" fill="none" stroke="#e0a080" stroke-width="5" stroke-linecap="round"/>`).join('')}
+    <g class="a-bob"><g stroke="${INK}" stroke-width="${S}">${[0, 1, 2, 3, 4, 5].map((i) => `<rect x="${380 + i * 34}" y="680" width="30" height="40" rx="12" fill="#8a5a34"/>`).join('')}<path d="M380 694 H584" stroke-width="4"/></g>
+      <rect x="420" y="640" width="44" height="40" rx="6" fill="#5a6a8a" stroke="${INK}" stroke-width="4"/><rect x="480" y="640" width="44" height="40" rx="6" fill="#7a4a3a" stroke="${INK}" stroke-width="4"/></g>
+    <path d="M0 820 Q500 780 1000 830 L1000 1000 L0 1000Z" fill="#c8a070" stroke="${INK}" stroke-width="${S}"/>
+    ${donkey(780, 880, 0.9, '#5a6a8a', 0.3, true)}
+    ${npc(220, 980, 1.05, 361, 3)}
+    ${vignette(0.35)}`,
+
+  kis: () => `
+    ${sky('#8a9ab0', '#b8c4d0', '#e4e8ee')}
+    ${cloud(200, 160, 1.4, '#eef2f6')}${cloud(780, 200, 1.2, '#eef2f6')}
+    <g fill="#fff" opacity=".85">${(() => { let s = ''; const r = rnd(44); for (let i = 0; i < 70; i++) { s += `<circle class="a-snow" style="animation-delay:${(r() * 6).toFixed(2)}s" cx="${(r() * 1000).toFixed(0)}" cy="${(r() * 1000).toFixed(0)}" r="${(2 + r() * 4).toFixed(1)}"/>`; } return s; })()}</g>
+    ${hasanDagi('#9a96aa', '#ffffff')}
+    ${hill('M0 500 Q500 470 1000 500 L1000 600 L0 600Z', '#e8ecf0')}
+    ${house(40, 560, 170, 120, '#b8916a', { smoke: true })}${house(200, 540, 160, 140, '#c49c70')}${house(350, 556, 150, 124, '#b8916a', { ladder: true, roofHole: true, smoke: true })}
+    ${house(490, 534, 170, 146, '#c4a074')}${house(650, 552, 160, 128, '#b8916a', { ladder: true, roofHole: true })}${house(800, 540, 180, 140, '#c49c70', { smoke: true })}
+    ${[40, 200, 350, 490, 650, 800].map((x, i) => `<path d="M${x - 6} ${[546, 526, 542, 520, 538, 526][i]} q${[85, 80, 75, 85, 80, 90][i]} -14 ${[182, 172, 162, 182, 172, 192][i]} 0 v10 H${x - 6}Z" fill="#fff" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${house(-20, 660, 230, 160, '#b0895f', { ladder: true, roofHole: true })}${house(200, 640, 200, 180, '#bc9468')}${house(390, 660, 220, 160, '#b0895f', { smoke: true })}
+    ${house(600, 645, 210, 175, '#bc9468', { ladder: true, roofHole: true })}${house(800, 660, 230, 160, '#b0895f')}
+    <path d="M-20 800 H1020 V1000 H-20Z" fill="#f2f4f6" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(640, 990, 1.1, 271, 2, { flip: true })}
+    <rect x="-20" y="960" width="1040" height="60" fill="#f2f4f6"/>
+    ${vignette(0.35)}`,
+});
+
+// Çağ 3 elleri ve çağdan bağımsız ek pozlar
+const EXTRA_HANDS = {
+  tablet: (era, O, F) => mirror(arm(era, O, POSE.rightLow, '', `<g transform="translate(0 -96) rotate(10)"><rect x="-70" y="-50" width="140" height="104" rx="16" fill="#c8a678" stroke="${INK}" stroke-width="${S}"/>${[-28, -8, 12, 32].map((y) => `<path d="M-50 ${y} h${70 + (y % 3) * 10}" stroke="#8a6a44" stroke-width="5" stroke-dasharray="10 6"/>`).join('')}</g>`))
+    + arm(era, F, POSE.right, `<path d="M0 -200 L0 60" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><path d="M0 -200 L0 60" stroke="#c8b070" stroke-width="10" stroke-linecap="round"/><path d="M-8 -196 L0 -232 L8 -196Z" fill="#a8904a" stroke="${INK}" stroke-width="3"/>`),
+  yular: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
+    + arm(era, F, POSE.right, '', `<path d="M0 -50 Q-120 -200 -300 -260" fill="none" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M0 -50 Q-120 -200 -300 -260" fill="none" stroke="#a8803a" stroke-width="9" stroke-linecap="round"/>`),
+  kese: (era, O, F) => mirror(arm(era, O, POSE.rightLow, '', `<g transform="translate(0 -90)"><path d="M-46 -30 Q-60 50 0 60 Q60 50 46 -30 Q20 -44 0 -40 Q-20 -44 -46 -30Z" fill="#8a5a34" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M-30 -36 Q0 -20 30 -36" fill="none" stroke="${INK}" stroke-width="4"/>${[-24, 0, 24].map((x) => `<ellipse cx="${x}" cy="-46" rx="14" ry="7" fill="#d8dce4" stroke="${INK}" stroke-width="3"/>`).join('')}</g>`))
+    + arm(era, O, POSE.right),
+};
+export function extraHands(pose, era, O, F) { return EXTRA_HANDS[pose] ? EXTRA_HANDS[pose](era, O, F) : null; }
+
 // ---------- POV elleri ----------
 // Eller yerel koordinatta yukarıyı gösterir: bilek (0,0), parmaklar -y yönünde.
 
 function sleeve(era) {
   const c = outfitColors(era);
+  if (era === 3) {
+    return `<path d="M-50 8 L-66 300 L66 300 L50 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+      <path d="M-20 40 L-30 290 M20 40 L26 290" stroke="${c.dark}" stroke-width="6" opacity=".6"/>
+      <rect x="-54" y="0" width="108" height="22" rx="6" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
+      ${[-42, -28, -14, 0, 14, 28, 42].map((x) => `<path d="M${x} 22 v18" stroke="${c.pattern}" stroke-width="5" stroke-linecap="round"/>`).join('')}`;
+  }
   if (era === 2) {
     return `<path d="M-50 8 L-66 300 L66 300 L50 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
       <path d="M-54 60 L52 110 M-58 140 L56 190 M-62 220 L60 270" stroke="${c.pattern}" stroke-width="10" opacity=".7"/>
@@ -497,7 +812,8 @@ export function hands(pose, avIn, era = 1) {
   const skin = SKIN[avIn?.skin ?? 4] ?? SKIN[4];
   const O = openHand(skin), F = fist(skin);
   let out = '';
-  switch (pose) {
+  if (EXTRA_HANDS[pose]) out = EXTRA_HANDS[pose](era, O, F);
+  else switch (pose) {
     case 'mizrak':
       out = mirror(arm(era, O, POSE.rightLow))
         + arm(era, F, POSE.right, `<path d="M0 -520 L0 260" stroke="${INK}" stroke-width="26" stroke-linecap="round"/><path d="M0 -520 L0 260" stroke="#7a5030" stroke-width="16" stroke-linecap="round"/><path d="M-4 -500 v700" stroke="#a87048" stroke-width="4"/><path d="M0 -600 L-20 -520 L20 -520Z" fill="#3a3a3e" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M-12 -526 l24 -8 M-12 -510 l24 -8" stroke="#a87048" stroke-width="5"/>`);

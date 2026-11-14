@@ -258,12 +258,19 @@ function headJewel(av, rx, ry) {
 
 // ---------- Kıyafet (çağa göre) ----------
 export function outfitColors(era = 1) {
+  if (era >= 3) return { base: '#3e5a78', dark: '#2a4058', light: '#6a8aa8', pattern: '#e8dcc0' };
   if (era === 2) return { base: '#b5653a', dark: '#8a4526', light: '#d98c5a', pattern: '#e8dcc0' };
   return { base: '#7b5a3a', dark: '#5a4029', light: '#a07850', pattern: '#a07850' };
 }
 
 function outfit(era) {
   const c = outfitColors(era);
+  if (era >= 3) {
+    return `<path d="M18 222 C22 182 50 164 100 164 C150 164 178 182 182 222 Z" fill="${c.base}" stroke="${INK}" stroke-width="${W}" stroke-linejoin="round"/>
+      <path d="M40 176 L150 222 L182 222 C180 200 170 184 156 176 Z" fill="${c.light}" stroke="${INK}" stroke-width="3" stroke-linejoin="round" opacity=".95"/>
+      ${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<path d="M${46 + i * 14} ${179 + i * 5.8} l-4 12" stroke="${c.pattern}" stroke-width="4" stroke-linecap="round"/>`).join('')}
+      <path d="M70 166 Q100 186 130 166" fill="none" stroke="${INK}" stroke-width="${W}"/>`;
+  }
   if (era === 2) {
     return `<path d="M18 222 C22 182 50 164 100 164 C150 164 178 182 182 222 Z" fill="${c.base}" stroke="${INK}" stroke-width="${W}" stroke-linejoin="round"/>
       <path d="M54 170 L134 222 M36 184 L100 222" stroke="${c.pattern}" stroke-width="6" opacity=".7"/>
