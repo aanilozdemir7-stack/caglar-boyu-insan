@@ -12,10 +12,11 @@ import { ERA5 } from './story/cag5.js';
 import { ERA6 } from './story/cag6.js';
 import { ERA7 } from './story/cag7.js';
 import { ERA8 } from './story/cag8.js';
+import { ERA9 } from './story/cag9.js';
 import { newGame, load, save, wipe, canAfford, applyEffect } from './state.js';
 import { getScene, applyChoice } from './engine.js';
 
-const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8 };
+const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9 };
 const app = document.getElementById('app');
 let st = null;
 

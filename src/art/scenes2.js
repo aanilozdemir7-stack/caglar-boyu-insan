@@ -845,4 +845,123 @@ Object.assign(FOCUS, {
   ahi_zaviye: [500, 560, 860], kervansaray: [500, 500, 860], kervansaray_ic: [500, 680, 820], kosedag: [500, 540, 820], cacabey: [500, 380, 900],
 });
 
+// ---------- ÇAĞ 9: LALE DEVRİ İSTANBUL ----------
+function tulip(x, y, s, c = '#c9243a') {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="3" stroke-linejoin="round">
+    <path d="M0 0 V-60" stroke="#3a7a3a" stroke-width="5"/><path d="M0 -20 Q-20 -30 -22 -50 Q-6 -40 0 -26Z" fill="#4a8a3a"/>
+    <path d="M-12 -60 Q-16 -90 -8 -104 L-2 -84 L0 -110 L4 -84 L10 -104 Q16 -90 12 -60 Q0 -54 -12 -60Z" fill="${c}"/>
+  </g>`;
+}
+function woodHouse(x, y, w, h, c = '#a8784a', { cumba = true, burning = false } = {}) {
+  let o = `<g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+    <rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${c}"/>
+    ${[...Array(Math.floor(h / 24))].map((_, i) => `<path d="M${x} ${y - h + 24 * (i + 1)} H${x + w}" stroke="${shade(c, -0.3)}" stroke-width="2.5"/>`).join('')}
+    <path d="M${x - 16} ${y - h} L${x + w / 2} ${y - h - 50} L${x + w + 16} ${y - h}Z" fill="#8a3a2a"/>`;
+  if (cumba) o += `<rect x="${x + w * 0.2}" y="${y - h + 30}" width="${w * 0.6}" height="${h * 0.38}" fill="${shade(c, 0.12)}"/>${[0, 1, 2].map((i) => `<rect x="${x + w * 0.26 + i * w * 0.18}" y="${y - h + 44}" width="${w * 0.12}" height="${h * 0.22}" fill="#3a2a22"/>`).join('')}`;
+  o += `<rect x="${x + w * 0.38}" y="${y - h * 0.32}" width="${w * 0.24}" height="${h * 0.32}" fill="#3a2a22"/></g>`;
+  if (burning) o += fire(x + w / 2, y - h - 10, 1.1);
+  return o;
+}
+function minaret(x, y, h, c = '#e8e0d0') {
+  return `<g stroke="${INK}" stroke-width="4"><rect x="${x - 9}" y="${y - h}" width="18" height="${h}" fill="${c}"/><rect x="${x - 14}" y="${y - h * 0.7}" width="28" height="8" fill="${c}"/><path d="M${x - 9} ${y - h} L${x} ${y - h - 40} L${x + 9} ${y - h}Z" fill="#6a7a8a"/></g>`;
+}
+function mosque(cx, y, r, c = '#e8e0d0') {
+  return `${dome(cx, y, r, '#8a9aa8')}${dome(cx - r * 1.1, y + r * 0.3, r * 0.45, '#8a9aa8')}${dome(cx + r * 1.1, y + r * 0.3, r * 0.45, '#8a9aa8')}<rect x="${cx - r * 1.6}" y="${y + 18}" width="${r * 3.2}" height="${r * 0.6}" fill="${c}" stroke="${INK}" stroke-width="4"/>${minaret(cx - r * 1.9, y + r * 0.78, r * 2.2)}${minaret(cx + r * 1.9, y + r * 0.78, r * 2.2)}`;
+}
+
+Object.assign(SCENES, {
+  sadabad: () => `
+    ${sky('#8cc0dc', '#b8d8e4', '#f2ead8')}
+    ${cloud(220, 130, 1, '#fbf8f0')}
+    ${hill('M0 420 Q250 360 500 400 T1000 380 L1000 560 L0 560Z', '#8aa86a')}
+    <g opacity=".7">${mosque(260, 380, 40)}${mosque(760, 390, 34)}</g>
+    ${haze(360, 520, '#f2ead8', 0.45)}
+    <path d="M0 520 H1000 V1000 H0Z" fill="#7aa85a" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M380 520 L260 1000 H740 L620 520Z" fill="#6ab4d0" stroke="${INK}" stroke-width="${S}"/>
+    ${[0, 1, 2, 3].map((i) => `<path class="a-ripple" style="animation-delay:${i * 0.4}s" d="M${440 - i * 30} ${600 + i * 90} q30 -8 60 0 t60 0" fill="none" stroke="#d8f0f8" stroke-width="4"/>`).join('')}
+    ${[[80, 480], [780, 470]].map(([x, y]) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x}" y="${y}" width="160" height="110" fill="#f6f0e4"/><path d="M${x - 20} ${y} L${x + 80} ${y - 50} L${x + 180} ${y}Z" fill="#b84a3a"/>${[0, 1, 2].map((i) => `<path d="M${x + 20 + i * 46} ${y + 110} V${y + 40} Q${x + 40 + i * 46} ${y + 20} ${x + 60 + i * 46} ${y + 40} V${y + 110}" fill="#8ac0d8" stroke-width="3"/>`).join('')}</g>`).join('')}
+    <g stroke="${INK}" stroke-width="${S}"><rect x="410" y="420" width="180" height="100" fill="#f6f0e4"/><path d="M390 420 L500 370 L610 420Z" fill="#b84a3a"/>${[0, 1, 2].map((i) => `<path d="M${430 + i * 50} 520 V460 Q${450 + i * 50} 440 ${470 + i * 50} 460 V520" fill="#8ac0d8" stroke-width="3"/>`).join('')}<circle cx="500" cy="356" r="10" fill="#e8c45a"/></g>
+    ${[[60, 760], [140, 820], [220, 760], [100, 900], [200, 940], [800, 760], [880, 820], [940, 760], [820, 920], [920, 960], [330, 640], [360, 720], [300, 800], [670, 640], [640, 720], [700, 800]].map(([x, y], i) => tulip(x, y, 1, ['#c9243a', '#e8b030', '#f2f2f2', '#a83a8a'][i % 4])).join('')}
+    ${npc(820, 1000, 0.95, 901, 9, { flip: true })}
+    ${vignette(0.3)}`,
+
+  kahvehane: () => `
+    ${interior('#d8c4a0', '#8a6a4a', { beam: '#5a3a24', window: true })}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M0 640 H1000 V700 H0Z" fill="#a8342a"/>${[...Array(10)].map((_, i) => `<path d="M${i * 100 + 20} 652 l30 18 l30 -18" fill="none" stroke="#e8c45a" stroke-width="4"/>`).join('')}</g>
+    ${fire(780, 560, 0.5)}
+    <g stroke="${INK}" stroke-width="4" transform="translate(780 520)"><path d="M-20 0 Q-30 -40 0 -50 Q30 -40 20 0Z" fill="#b08a3a"/><path d="M20 -30 Q50 -40 46 -70" fill="none" stroke-width="6"/></g>
+    ${[300, 440, 560].map((x) => `<g stroke="${INK}" stroke-width="3"><path d="M${x - 14} 640 l4 -24 h20 l4 24Z" fill="#f2ead8"/></g>`).join('')}
+    ${light(780, 480, 300, '#ffb060', 0.35, 'a-glow')}
+    ${npc(200, 960, 1, 911, 9)}${npc(500, 940, 0.95, 912, 9)}${npc(820, 970, 1, 913, 9, { flip: true })}
+    ${vignette(0.45)}`,
+
+  hattat: () => `
+    ${interior('#e8dcc0', '#a8342a', { beam: '#6b4529', window: true })}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M240 760 L300 620 H760 L820 760Z" fill="#8a5a34"/><rect x="380" y="560" width="300" height="70" fill="#f6eed8"/>
+      <path d="M400 600 q30 -30 60 0 t60 -10 q20 -30 50 0 q30 20 60 -6" fill="none" stroke="#2a1a12" stroke-width="5"/></g>
+    <g stroke="${INK}" stroke-width="3">${[[700, 600, '#2a1a12'], [730, 604, '#a8342a']].map(([x, y, c]) => `<ellipse cx="${x}" cy="${y}" rx="14" ry="8" fill="${c}"/>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="4">${[0, 1, 2, 3].map((i) => `<rect x="${640 + i * 70}" y="200" width="56" height="80" fill="#f6eed8"/><path d="M${652 + i * 70} 240 q10 -14 20 0 t20 0" fill="none" stroke="#2a1a12" stroke-width="3"/>`).join('')}</g>
+    ${npc(530, 960, 1.05, 921, 9)}
+    ${vignette(0.45)}`,
+
+  lale_gece: () => `
+    ${sky('#141a34', '#2a2a4a', '#4a3a4a')}
+    ${stars(30, 931, 360)}
+    <path d="M0 520 H1000 V1000 H0Z" fill="#2a3a2a" stroke="${INK}" stroke-width="${S}"/>
+    ${[[120, 260], [880, 240]].map(([x, y]) => `<g stroke="${INK}" stroke-width="${S}"><path d="M${x} 560 V${y + 80}" stroke="#3a2a1a" stroke-width="16"/><circle cx="${x}" cy="${y}" r="110" fill="#1e2e1e"/></g>`).join('')}
+    ${[[120, 300], [60, 340], [180, 330], [880, 280], [820, 330], [940, 320], [300, 220], [500, 200], [700, 220]].map(([x, y], i) => `<g><path d="M${x} ${y - 30} V${y - 10}" stroke="${INK}" stroke-width="2"/><rect x="${x - 10}" y="${y - 10}" width="20" height="28" rx="6" fill="#ffd98a" stroke="${INK}" stroke-width="3"/>${light(x, y, 50, '#ffd98a', 0.6, 'a-glow')}</g>`).join('')}
+    <path d="M200 400 Q500 360 800 400" fill="none" stroke="${INK}" stroke-width="2"/>
+    ${[[160, 760], [240, 820], [340, 760], [660, 760], [760, 820], [840, 760], [200, 920], [800, 920]].map(([x, y], i) => tulip(x, y, 1, ['#c9243a', '#e8b030', '#f2f2f2', '#a83a8a'][i % 4])).join('')}
+    ${[[420, 860], [580, 880], [300, 900], [700, 900]].map(([x, y]) => `<g transform="translate(${x} ${y})" stroke="${INK}" stroke-width="3"><ellipse cx="0" cy="0" rx="34" ry="20" fill="#5a6a3a"/><path d="M-20 -6 l10 -8 l10 8 l10 -8 l10 8" fill="none" stroke="#3a4a2a" stroke-width="2"/><circle cx="36" cy="4" r="9" fill="#6a7a4a"/><rect x="-5" y="-40" width="10" height="22" fill="#f6f0e0"/><path class="a-flame" d="M0 -52 q6 6 0 12 q-6 -6 0 -12Z" fill="#ffb040"/>${light(0, -44, 40, '#ffd070', 0.7, 'a-glow')}</g>`).join('')}
+    ${npc(860, 1000, 1, 932, 9, { flip: true })}
+    ${vignette(0.5)}`,
+
+  ahsap_mahalle: () => `
+    ${sky('#9cc6dc', '#c4dce4', '#f0e8d8')}
+    <g opacity=".7">${mosque(500, 300, 50)}</g>
+    ${woodHouse(-20, 760, 220, 380, '#a8784a')}${woodHouse(190, 760, 200, 330, '#c8a070')}${woodHouse(610, 760, 200, 340, '#b88a5a')}${woodHouse(800, 760, 230, 390, '#9a6a42')}
+    <path d="M0 760 H1000 V1000 H0Z" fill="#a8a094" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 780, 1000, 1000, 40, '#8a8478', 941, 20)}
+    ${npc(420, 960, 0.95, 941, 9)}${npc(600, 980, 1, 942, 9, { flip: true })}
+    ${vignette(0.3)}`,
+
+  ahsap_yangin: () => `
+    ${sky('#3a1a14', '#8a3a1a', '#e8803a')}
+    ${light(500, 500, 700, '#ff8a2a', 0.45, 'a-glow')}
+    <g fill="none" stroke="#2a1a1a" opacity=".55">${[0, 1, 2].map((i) => `<path class="a-smoke" style="animation-delay:${i * 0.6}s" d="M${200 + i * 300} 380 q-40 -100 10 -200 q50 -100 0 -200" stroke-width="70" stroke-linecap="round"/>`).join('')}</g>
+    ${woodHouse(-20, 760, 220, 380, '#5a3a24', { burning: true })}${woodHouse(190, 760, 200, 330, '#6a4a2a')}${woodHouse(610, 760, 200, 340, '#5a3a24', { burning: true })}${woodHouse(800, 760, 230, 390, '#4a2a1a', { burning: true })}
+    <path d="M0 760 H1000 V1000 H0Z" fill="#4a3a30" stroke="${INK}" stroke-width="${S}"/>
+    <g transform="translate(470 880)" stroke="${INK}" stroke-width="${S}"><rect x="-80" y="-60" width="160" height="70" fill="#a8342a"/><path d="M-60 -60 V-90 H60 V-60" fill="none" stroke-width="6"/><path d="M80 -40 L200 -40 L240 -120" fill="none" stroke="#3a3a3a" stroke-width="12"/><path d="M240 -120 q20 -60 -10 -140" fill="none" stroke="#9ad0f0" stroke-width="10" opacity=".8"/><circle cx="-50" cy="20" r="22" fill="#5a3a24"/><circle cx="50" cy="20" r="22" fill="#5a3a24"/></g>
+    ${[...Array(6)].map((_, i) => silhouette(100 + i * 160, 960 - (i % 2) * 20, 0.6, '#1a1210')).join('')}
+    ${vignette(0.55)}`,
+
+  matbaa: () => `
+    ${interior('#c8b08a', '#7a5a3a', { beam: '#4a3220', window: true })}
+    <g stroke="${INK}" stroke-width="${S}" transform="translate(620 760)">
+      <path d="M-140 0 V-420 M140 0 V-420" stroke="#6b4529" stroke-width="30"/><rect x="-170" y="-450" width="340" height="50" fill="#6b4529"/>
+      <rect x="-170" y="-260" width="340" height="40" fill="#6b4529"/><path d="M0 -400 V-300" stroke="#5a5e66" stroke-width="24"/><rect x="-90" y="-300" width="180" height="30" fill="#8a8e96"/>
+      <path d="M0 -360 L200 -400" stroke="#6b4529" stroke-width="16"/><circle cx="200" cy="-400" r="14" fill="#6b4529"/>
+      <rect x="-200" y="-220" width="400" height="30" fill="#a8784a"/><rect x="-120" y="-232" width="240" height="14" fill="#f6eed8"/>
+    </g>
+    <g stroke="${INK}" stroke-width="4"><rect x="40" y="420" width="260" height="200" fill="#8a5a34"/>${[...Array(5)].map((_, r) => [...Array(7)].map((__, c) => `<rect x="${50 + c * 36}" y="${430 + r * 38}" width="30" height="30" fill="#5a3a24"/><circle cx="${65 + c * 36}" cy="${450 + r * 38}" r="5" fill="#9aa0a8" stroke-width="1"/>`).join('')).join('')}</g>
+    <g stroke="${INK}" stroke-width="3">${[0, 1, 2].map((i) => `<path d="M${320 + i * 60} 200 V260" stroke-width="2"/><rect x="${300 + i * 60}" y="260" width="44" height="60" fill="#f6eed8"/>`).join('')}</g>
+    ${npc(260, 980, 1.05, 951, 9)}
+    ${vignette(0.45)}`,
+
+  halic: () => `
+    ${sky('#f0a878', '#f6c89a', '#f6e4c8')}
+    <circle cx="200" cy="300" r="56" fill="#fff0c0" stroke="${INK}" stroke-width="${S}"/>${light(200, 300, 260, '#ffe0a0', 0.4)}
+    ${hill('M0 460 Q300 380 600 420 T1000 400 L1000 560 L0 560Z', '#9a8a7a')}
+    ${mosque(400, 380, 56)}${mosque(760, 400, 40)}
+    ${haze(380, 560, '#f6e4c8', 0.4)}
+    ${sea(540, '#5a8ab0', '#2a4a6a')}
+    ${[[200, 720], [620, 680], [820, 800]].map(([x, y], i) => `<g class="a-bob" style="animation-delay:${i * 0.5}s" stroke="${INK}" stroke-width="4"><path d="M${x - 80} ${y} Q${x} ${y + 30} ${x + 80} ${y} L${x + 100} ${y - 20} L${x - 100} ${y - 20}Z" fill="#8a5a34"/><path d="M${x - 60} ${y - 20} L${x - 90} ${y + 40} M${x + 60} ${y - 20} L${x + 90} ${y + 40}" stroke-width="5"/></g>`).join('')}
+    ${npc(820, 1000, 1, 961, 9, { flip: true })}
+    ${vignette(0.3)}`,
+});
+Object.assign(FOCUS, {
+  sadabad: [500, 560, 860], kahvehane: [500, 560, 860], hattat: [520, 560, 860], lale_gece: [500, 640, 820],
+  ahsap_mahalle: [500, 520, 860], ahsap_yangin: [500, 600, 860], matbaa: [560, 520, 860], halic: [480, 520, 860],
+});
+
 export { wall, interior, horse, chariot, lion };
