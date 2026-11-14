@@ -15,6 +15,7 @@ export function newGame(avatar) {
     enerji: 70,
     akil: 0,
     beden: 0,
+    eraBase: { akil: 0, beden: 0 },
     flags: [],
     history: [], // [{ scene, choice }] — oyun sonu "ya diğerini seçseydin" modu için
     finished: false,

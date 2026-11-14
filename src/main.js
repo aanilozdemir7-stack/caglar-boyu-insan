@@ -2,12 +2,13 @@ import './style.css';
 import { App as CapApp } from '@capacitor/app';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
-import { avatarSVG, OPTIONS, SKIN, HAIR_COLORS, DEFAULT_AVATAR } from './art/avatar.js';
+import { avatarSVG, avatarThumb, CATEGORIES, DEFAULT_AVATAR, normalizeAvatar, randomAvatar } from './art/avatar.js';
 import { sceneSVG, hands } from './art/scenes.js';
 import { ERA1 } from './story/cag1.js';
+import { ERA2 } from './story/cag2.js';
 import { newGame, load, save, wipe, canAfford, applyEffect } from './state.js';
 
-const ERAS = { 1: ERA1 };
+const ERAS = { 1: ERA1, 2: ERA2 };
 const app = document.getElementById('app');
 let st = null;
 
@@ -27,7 +28,7 @@ async function titleScreen() {
   </div>`);
   s.addEventListener('click', async (e) => {
     const a = e.target.closest('[data-a]')?.dataset.a;
-    if (a === 'devam') { st = saved; st.finished ? endScreen() : startScene(); }
+    if (a === 'devam') { st = saved; st.avatar = normalizeAvatar(st.avatar); st.finished ? endScreen() : startScene(); }
     if (a === 'yeni') {
       if (saved) confirmRestart(() => avatarScreen(saved.avatar));
       else avatarScreen(DEFAULT_AVATAR);
@@ -38,33 +39,46 @@ async function titleScreen() {
 
 // ---------- Avatar ----------
 function avatarScreen(initial) {
-  const av = { ...DEFAULT_AVATAR, ...(initial || {}) };
-  const labels = { face: 'YÜZ ŞEKLİ', hair: 'SAÇ', eyes: 'GÖZLER', brows: 'KAŞLAR', beard: 'SAKAL' };
+  const av = normalizeAvatar(initial || DEFAULT_AVATAR);
+  let cat = 0;
   const s = el(`<div class="screen avatar-screen">
-    <h2>Kendini yarat</h2>
-    <div class="av-preview"></div>
-    <div class="av-rows">
-      <div class="av-row"><label>TEN</label><div class="chips">${SKIN.map((c, i) => `<button class="sw" data-k="skin" data-v="${i}" style="background:${c}"></button>`).join('')}</div></div>
-      ${Object.entries(OPTIONS).map(([k, opts]) => `<div class="av-row"><label>${labels[k]}</label><div class="chips">${opts.map(([v, t]) => `<button class="chip" data-k="${k}" data-v="${v}">${t}</button>`).join('')}</div></div>`).join('')}
-      <div class="av-row"><label>SAÇ RENGİ</label><div class="chips">${HAIR_COLORS.map((c, i) => `<button class="sw" data-k="hairColor" data-v="${i}" style="background:${c}"></button>`).join('')}</div></div>
-      <button class="btn" data-a="basla" style="align-self:center;margin:8px 0 20px">Yolculuğa başla</button>
+    <div class="av-left">
+      <h2>Kendini yarat</h2>
+      <div class="av-preview big"></div>
+      <button class="btn ghost small" data-a="rastgele">🎲 Rastgele</button>
+    </div>
+    <div class="av-right">
+      <div class="av-tabs">${CATEGORIES.map(([, t], i) => `<button class="tab" data-c="${i}">${t}</button>`).join('')}</div>
+      <div class="av-grid"></div>
+      <button class="btn" data-a="basla">Yolculuğa başla</button>
     </div>
   </div>`);
-  const draw = () => {
-    s.querySelector('.av-preview').innerHTML = avatarSVG(av);
-    s.querySelectorAll('[data-k]').forEach((b) => {
-      const k = b.dataset.k, v = b.dataset.v;
-      b.classList.toggle('on', String(av[k]) === v);
-    });
-  };
-  s.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-k]');
-    if (b) {
-      const k = b.dataset.k;
-      av[k] = k === 'skin' || k === 'hairColor' ? Number(b.dataset.v) : b.dataset.v;
-      draw();
+  const grid = s.querySelector('.av-grid');
+  const drawGrid = () => {
+    const [k, , opts, list] = CATEGORIES[cat];
+    s.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('on', i === cat));
+    if (opts === 'swatch') {
+      grid.className = 'av-grid swatches';
+      grid.innerHTML = list.map((c, i) => `<button class="sw ${av[k] === i ? 'on' : ''}" data-v="${i}" style="background:${c}" aria-label="${i + 1}"></button>`).join('');
+    } else {
+      grid.className = 'av-grid';
+      grid.innerHTML = opts.map(([v, t]) => `<button class="opt ${av[k] === v ? 'on' : ''}" data-v="${v}">${avatarThumb({ ...av, [k]: v })}<span>${t}</span></button>`).join('');
     }
-    if (e.target.closest('[data-a="basla"]')) {
+  };
+  const draw = () => { s.querySelector('.av-preview').innerHTML = avatarSVG(av); drawGrid(); };
+  s.addEventListener('click', async (e) => {
+    const tab = e.target.closest('[data-c]');
+    if (tab) { cat = Number(tab.dataset.c); drawGrid(); tab.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); return; }
+    const opt = e.target.closest('[data-v]');
+    if (opt) {
+      const [k, , opts] = CATEGORIES[cat];
+      av[k] = opts === 'swatch' ? Number(opt.dataset.v) : opt.dataset.v;
+      draw();
+      return;
+    }
+    const a = e.target.closest('[data-a]')?.dataset.a;
+    if (a === 'rastgele') { Object.assign(av, randomAvatar()); draw(); }
+    if (a === 'basla') {
       await wipe();
       st = newGame(av);
       st.scene = ERAS[st.era].start;
@@ -77,14 +91,17 @@ function avatarScreen(initial) {
 }
 
 // ---------- Çağ kartı ----------
-function eraCard() {
+function eraCard(carry) {
   const era = ERAS[st.era];
   const s = el(`<div class="screen era-card">
-    <div class="era-no">ÇAĞ ${st.era}</div>
-    <h1 class="era-name outline">${up(era.name)}</h1>
-    <div class="era-meta">${era.year} · ${era.place} (${era.region})</div>
     <div class="av-preview">${avatarSVG(st.avatar, { era: st.era })}</div>
-    <div class="tap-hint">Başlamak için dokun</div>
+    <div class="era-text">
+      <div class="era-no">ÇAĞ ${st.era}</div>
+      <h1 class="era-name outline">${up(era.name)}</h1>
+      <div class="era-meta">${era.year} · ${era.place} (${era.region})</div>
+      ${carry ? `<p class="subtitle" style="margin:10px 0 0">${carry}</p>` : ''}
+      <div class="tap-hint" style="margin-top:12px">Başlamak için dokun</div>
+    </div>
   </div>`);
   s.addEventListener('click', () => startScene());
   show(s);
@@ -138,6 +155,7 @@ function startScene(prev) {
   if (!stage || !stage.isConnected) buildStage();
   if (sc.day) st.day = sc.day;
   stage.classList.remove('choosing');
+  stage.classList.toggle('text-top', !!sc.textTop);
 
   const bgLayer = stage.querySelector('.bg-layer');
   const key = sc.bg + '|' + st.scene;
@@ -181,16 +199,32 @@ function costText(c) {
   return p.join(' · ');
 }
 
+// Hiçbir seçeneğe gücün yetmezse oyun kilitlenmesin: dinlenip enerji topla.
+const REST = { text: 'Dinlen ve güç topla', effect: { enerji: 30 }, rest: true };
+
 function showChoices() {
   const sc = ERAS[st.era].scenes[st.scene];
+  const anyOk = sc.choices.some((c) => (!c.show || c.show(st)) && (!c.req || c.req(st)) && canAfford(st, c.cost));
+  if (!anyOk) {
+    stage.classList.add('choosing');
+    const box = stage.querySelector('.choices');
+    box.innerHTML = '';
+    const b = el(`<button class="choice"><span>${REST.text}</span><span class="cost">+30 enerji</span></button>`);
+    b.addEventListener('click', async () => { const prev = { para: st.para, enerji: st.enerji }; applyEffect(st, REST.effect); await save(st); hud(prev); showChoices(); });
+    box.appendChild(b);
+    return;
+  }
   stage.classList.add('choosing');
   stage.querySelector('.next-hint').textContent = '';
   const box = stage.querySelector('.choices');
   box.innerHTML = '';
   sc.choices.forEach((c, i) => {
-    const ok = canAfford(st, c.cost);
+    if (c.show && !c.show(st)) return;
+    const reqOk = !c.req || c.req(st);
+    const ok = canAfford(st, c.cost) && reqOk;
+    const info = !reqOk ? c.reqText || 'Koşul sağlanmadı' : costText(c.cost);
     const b = el(`<button class="choice ${ok ? '' : 'locked'}" style="animation-delay:${i * 0.08}s">
-      <span>${esc(c.text)}</span>${c.cost ? `<span class="cost">${ok ? '' : '🔒 '}${costText(c.cost)}</span>` : ''}</button>`);
+      <span>${esc(c.text)}</span>${info ? `<span class="cost">${ok ? '' : '🔒 '}${esc(info)}</span>` : ''}</button>`);
     b.addEventListener('click', () => ok && choose(i));
     box.appendChild(b);
   });
@@ -201,10 +235,10 @@ async function choose(i) {
   const c = sc.choices[i];
   const prev = { para: st.para, enerji: st.enerji };
   applyEffect(st, c.effect);
-  st.history.push({ scene: st.scene, choice: i });
+  st.history.push({ era: st.era, scene: st.scene, choice: i });
   st.scene = c.to;
   await save(st); // checkpoint
-  if (sc.choices.length > 1) toast('Seçimin kaydedildi');
+  if (sc.choices.filter((x) => !x.show || x.show(st)).length > 1) toast('Seçimin kaydedildi');
   startScene(prev);
 }
 
@@ -218,16 +252,35 @@ function toast(msg) {
 function endScreen() {
   stage = null;
   const era = ERAS[st.era];
-  const yol = st.akil > st.beden ? 'aklını' : st.beden > st.akil ? 'bedenini' : 'aklınla bedenini dengeli';
+  const nextEra = ERAS[st.era + 1];
+  const ak = st.akil - (st.eraBase?.akil || 0), be = st.beden - (st.eraBase?.beden || 0);
+  const yol = ak > be ? 'aklını' : be > ak ? 'bedenini' : 'aklınla bedenini dengeli';
   const s = el(`<div class="screen era-card">
-    <div class="era-no">ÇAĞ ${st.era} TAMAMLANDI</div>
-    <h1 class="era-name outline">${up(era.name)}</h1>
     <div class="av-preview">${avatarSVG(st.avatar, { era: st.era })}</div>
-    <div class="era-meta">Bu çağda çoğunlukla ${yol} kullandın.<br>Kalan: ${st.para} ${era.currency} · %${st.enerji} enerji · ${st.history.length} karar</div>
-    <p class="subtitle" style="margin-top:16px">Sıradaki çağ: <b>${era.next.name}</b> — ${era.next.place}, ${era.next.year}<br>Deneme sürümü burada bitiyor.</p>
-    <button class="btn ghost" data-a="bas">En baştan başla</button>
+    <div class="era-text">
+      <div class="era-no">ÇAĞ ${st.era} TAMAMLANDI</div>
+      <h1 class="era-name outline">${up(era.name)}</h1>
+      <div class="era-meta">Bu çağda çoğunlukla ${yol} kullandın.<br>Kalan: ${st.para} ${era.currency} · %${st.enerji} enerji · ${st.history.filter((h) => h.era === st.era || !h.era).length} karar</div>
+      <p class="subtitle" style="margin:12px 0 10px">Sıradaki çağ: <b>${era.next.name}</b> — ${era.next.place}, ${era.next.year}${nextEra ? '' : '<br>Deneme sürümü burada bitiyor.'}</p>
+      ${nextEra ? '<button class="btn" data-a="ileri">Sonraki çağa geç</button>' : ''}
+      <button class="btn ghost" data-a="bas">En baştan başla</button>
+    </div>
   </div>`);
-  s.querySelector('[data-a="bas"]').addEventListener('click', () => confirmRestart(() => avatarScreen(st.avatar)));
+  s.addEventListener('click', async (e) => {
+    const a = e.target.closest('[data-a]')?.dataset.a;
+    if (a === 'bas') confirmRestart(() => avatarScreen(st.avatar));
+    if (a === 'ileri') {
+      const ne = ERAS[st.era + 1];
+      const carry = ne.carry ? ne.carry(st) : '';
+      st.era += 1;
+      st.eraBase = { akil: st.akil, beden: st.beden };
+      st.scene = ne.start;
+      st.day = 1;
+      st.finished = false;
+      await save(st);
+      eraCard(carry);
+    }
+  });
   show(s);
 }
 

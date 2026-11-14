@@ -25,21 +25,34 @@ button { font-family: inherit; }
 .subtitle { color: var(--krem); opacity: .8; font-size: 15px; margin: 0 0 22px; text-align: center; }
 
 /* ---------- Avatar ---------- */
-.avatar-screen { justify-content: flex-start; overflow-y: auto; background: #241a14; gap: 10px; }
-.avatar-screen h2 { margin: 4px 0 0; font-size: 22px; }
-.av-preview { width: min(46vw, 220px); flex-shrink: 0; background: #3a2a20; border: 3px solid var(--ink); border-radius: 50%; padding: 10px 6px 0; overflow: hidden; }
+.avatar-screen { justify-content: flex-start; background: radial-gradient(circle at 50% 22%, #4a3324 0%, #241a14 60%); gap: 10px; padding-left: 14px; padding-right: 14px; }
+.av-left { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.av-left h2 { margin: 0; font-size: 22px; }
+.av-right { width: 100%; max-width: 560px; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.av-preview { width: min(46vw, 220px); flex-shrink: 0; background: radial-gradient(circle at 50% 40%, #6a4a34, #3a2a20 70%); border: 3px solid var(--ink); border-radius: 50%; padding: 10px 6px 0; overflow: hidden; box-shadow: 0 6px 0 rgba(0,0,0,.35); }
+.av-preview.big { width: min(42vw, 30vh, 230px); }
 .av-preview svg { display: block; width: 100%; }
-.av-rows { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 10px; }
-.av-row label { display: block; font-size: 13px; color: var(--krem); margin-bottom: 6px; letter-spacing: .5px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { background: #2a1f18; color: #fff; border: 2px solid rgba(232, 220, 192, .25); border-radius: 999px; padding: 8px 14px; font-size: 14px; }
-.chip.on { border-color: var(--sari); color: var(--sari); }
-.sw { width: 38px; height: 38px; border-radius: 50%; border: 3px solid var(--ink); outline: 2px solid transparent; }
+.btn.small { min-width: 0; padding: 8px 16px; font-size: 14px; }
+.av-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; flex-shrink: 0; }
+.av-tabs::-webkit-scrollbar { display: none; }
+.tab { flex-shrink: 0; background: transparent; color: var(--krem); border: 0; border-bottom: 3px solid transparent; padding: 8px 10px; font-size: 15px; font-weight: 600; }
+.tab.on { color: var(--sari); border-bottom-color: var(--sari); }
+.av-grid { flex: 1; min-height: 0; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; align-content: start; padding: 2px; }
+.av-grid.swatches { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); }
+.opt { background: #2a1f18; border: 2.5px solid rgba(232, 220, 192, .18); border-radius: 14px; padding: 6px 4px 6px; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.opt svg { width: 100%; max-width: 86px; aspect-ratio: 148 / 166; display: block; }
+.opt span { font-size: 12px; color: var(--krem); }
+.opt.on { border-color: var(--sari); background: #3a2a1c; }
+.opt.on span { color: var(--sari); }
+.sw { width: 46px; height: 46px; border-radius: 50%; border: 3px solid var(--ink); outline: 3px solid transparent; outline-offset: 2px; justify-self: center; }
 .sw.on { outline-color: var(--sari); }
+.av-right > .btn { align-self: center; flex-shrink: 0; }
 @media (orientation: landscape) {
-  .avatar-screen { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
-  .avatar-screen h2 { width: 100%; text-align: center; }
-  .av-preview { width: min(30vh, 200px); position: sticky; top: 0; }
+  .avatar-screen { flex-direction: row; align-items: stretch; justify-content: flex-start; gap: 18px; padding-left: calc(env(safe-area-inset-left) + 16px); padding-right: calc(env(safe-area-inset-right) + 16px); }
+  .av-left { flex: 0 0 auto; }
+  .av-left { justify-content: center; }
+  .av-preview.big { width: min(52vh, 240px); }
+  .av-right { max-width: none; min-width: 0; flex: 1 1 0; }
 }
 
 /* ---------- Çağ kartı ---------- */
@@ -48,6 +61,15 @@ button { font-family: inherit; }
 .era-name { font-size: clamp(30px, 8vw, 54px); margin: 0; }
 .era-meta { color: var(--krem); font-size: 15px; }
 .era-card .av-preview { margin: 14px 0; }
+.era-card { overflow-y: auto; }
+.era-text { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+@media (orientation: landscape) {
+  .era-card { flex-direction: row; gap: 28px; justify-content: center; }
+  .era-card .av-preview { width: min(48vh, 200px); margin: 0; }
+  .era-card .era-text { max-width: 52vw; }
+  .era-name { font-size: clamp(26px, 7vh, 46px); }
+  .era-card .subtitle { margin: 4px 0 8px; }
+}
 .tap-hint { color: var(--krem); opacity: .6; font-size: 13px; animation: pulse 1.6s ease-in-out infinite; }
 
 /* ---------- Oyun ekranı ---------- */
@@ -70,6 +92,7 @@ button { font-family: inherit; }
 .text { position: absolute; left: 4%; right: 4%; bottom: 38%; z-index: 4; display: flex; flex-direction: column; gap: 6px; text-align: center; pointer-events: none; }
 .line { font-size: clamp(20px, 5.6vw, 30px); line-height: 1.25; animation: up .45s ease; }
 .line.old { font-size: clamp(15px, 4vw, 20px); opacity: .55; }
+.stage.text-top .text { bottom: auto; top: calc(env(safe-area-inset-top) + 110px); }
 .next-hint { position: absolute; bottom: calc(env(safe-area-inset-bottom) + 14px); left: 0; right: 0; text-align: center; z-index: 4; }
 
 .choices { position: absolute; left: 4%; right: 4%; bottom: calc(env(safe-area-inset-bottom) + 16px); z-index: 6; display: flex; flex-direction: column; gap: 10px; }
@@ -88,7 +111,7 @@ button { font-family: inherit; }
 
 /* Yatay ekran düzeni */
 @media (orientation: landscape) {
-  .hands { height: 52%; }
+  .hands { height: 42%; }
   .text { left: 18%; right: 18%; bottom: 30%; }
   .line { font-size: clamp(18px, 3.4vh + 6px, 30px); }
   .choices { flex-direction: row; left: 3%; right: 3%; }
@@ -110,6 +133,15 @@ button { font-family: inherit; }
 .a-run { animation: run 2.8s ease-in-out infinite alternate; }
 .a-dust { animation: spark 2.4s linear infinite; }
 .a-glint { animation: twinkle 1.4s ease-in-out infinite; }
+.a-eyeblink { transform-box: fill-box; transform-origin: 50% 50%; animation: eyeblink 4.5s ease-in-out infinite; }
+.a-smoke { animation: smoke 4s ease-in infinite; }
+.a-rain { animation: rain .6s linear infinite; }
+.a-water { animation: ripple 3s ease-in-out infinite; }
+.a-bob { animation: bob 3.2s ease-in-out infinite; }
+@keyframes eyeblink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+@keyframes smoke { 0% { transform: translateY(0) scale(.8); opacity: .55; } 100% { transform: translateY(-120px) scale(1.6); opacity: 0; } }
+@keyframes rain { from { transform: translate(0, -60px); } to { transform: translate(-20px, 60px); } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 @keyframes flame { 0%, 100% { transform: scale(1, 1); } 30% { transform: scale(.94, 1.12); } 60% { transform: scale(1.05, .92); } }
 @keyframes glow { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }

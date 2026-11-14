@@ -139,7 +139,7 @@ export const ERA1 = {
       choices: [{ text: 'Dereye inip soluklan', to: 's7' }],
     },
     s7: {
-      bg: 'dere', hands: 'dinlen', day: 3,
+      bg: 'dere', hands: 'dinlen', day: 3, textTop: true,
       lines: [
         'Dere kenarına diz çöküyorsun. Su *serin*.',
         'Suyun yüzeyinde kendi *yüzünü* görüyorsun.',
