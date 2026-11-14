@@ -29,3 +29,11 @@ Uygulama tam ekran çalışır (çentik/kamera deliği alanı dahil). `MainActiv
 bildirdiği çentik ve sistem çubuğu boşluklarını `--safe-area-inset-*` CSS değişkenleri olarak
 sayfaya verir; iOS'ta aynı değerler `env(safe-area-inset-*)` ile gelir. Bütün yazı ve düğmeler
 bu güvenli alanın içinde kalır.
+
+## Müzik
+Ses dosyası yok: `src/audio/music.js` her çağın müziğini Web Audio ile anında üretir, her açılışta
+ezgi biraz farklı olur. Çağların dizi, tempo, çalgı ve ritim ayarları `src/audio/profiles.js` içinde
+(ör. Bizans'ta ison üstünde ilahi, Selçuklu'da Uşşak'ta ney ve bendir, Lale Devri'nde Rast'ta ud ve
+kanun, 1930'larda tango, 1970'lerde Anadolu pop). Yangın, deprem, salgın gibi sahnelerde ritim susar,
+ezgi seyrekleşir. Sağ üstteki ♪ düğmesi müziği açıp kapatır; tercih kaydedilir. Uygulama arka plana
+geçince müzik durur.

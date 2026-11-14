@@ -20,6 +20,16 @@ import { ERA13 } from './story/cag13.js';
 import { ERA14 } from './story/cag14.js';
 import { newGame, load, save, wipe, canAfford, applyEffect, snapshot } from './state.js';
 import { getScene, applyChoice } from './engine.js';
+import { initMusic, setEra as musicEra, setMood, musicEnabled, setMusicEnabled, pauseMusic, resumeMusic } from './audio/music.js';
+
+// Yangın, deprem, salgın gibi ağır sahnelerde müzik çekilir (ezgi seyrekleşir, ritim susar).
+const DARK_BG = new Set(['firtina', 'firtina_deniz', 'nehir_tasma', 'karanlik', 'yangin_sehir', 'ahsap_yangin', 'veba', 'kosedag', 'deprem_gece', 'cadir_kent', 'tutulma', 'maden_ic']);
+
+const muzikBtn = () => `<button class="muzik${musicEnabled() ? '' : ' off'}" aria-label="Müzik">♪</button>`;
+function toggleMusic(btn) {
+  const on = setMusicEnabled(!musicEnabled());
+  btn.classList.toggle('off', !on);
+}
 
 const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9, 10: ERA10, 11: ERA11, 12: ERA12, 13: ERA13, 14: ERA14 };
 const app = document.getElementById('app');
@@ -35,12 +45,15 @@ async function titleScreen() {
   const saved = await load();
   theme(saved?.era || 1);
   const s = el(`<div class="screen title-screen">
+    ${muzikBtn()}
     <h1 class="logo outline">ÇAĞLAR<br>BOYU <em>İNSAN</em></h1>
     <p class="subtitle">Taş Devri'nden yarına. Her seçim kalıcı.</p>
     ${saved ? '<button class="btn" data-a="devam">Devam et</button>' : ''}
     <button class="btn ${saved ? 'ghost' : ''}" data-a="yeni">${saved ? 'En baştan başla' : 'Yeni oyun'}</button>
   </div>`);
   s.addEventListener('click', async (e) => {
+    const mb = e.target.closest('.muzik');
+    if (mb) return toggleMusic(mb);
     const a = e.target.closest('[data-a]')?.dataset.a;
     if (a === 'devam') { st = saved; st.avatar = normalizeAvatar(st.avatar); st.finished ? endScreen() : startScene(); }
     if (a === 'yeni') {
@@ -139,11 +152,14 @@ function buildStage() {
     </div>
     <div class="tag"></div>
     <button class="reset" aria-label="En baştan başla">↺</button>
+    ${muzikBtn()}
     <div class="text"></div>
     <div class="next-hint tap-hint"></div>
     <div class="choices"></div>
   </div>`);
   stage.addEventListener('click', (e) => {
+    const mb = e.target.closest('.muzik');
+    if (mb) return toggleMusic(mb);
     if (e.target.closest('.reset')) return st.sandbox ? leaveSandbox() : confirmRestart(() => avatarScreen(st.avatar));
     if (e.target.closest('.choices')) return;
     advance();
@@ -173,6 +189,7 @@ function startScene(prev) {
     st.finished = true; save(st); return endScreen();
   }
   if (!stage || !stage.isConnected) buildStage();
+  setMood(sc.mood === 'dark' || DARK_BG.has(sc.bg) ? 'dark' : 'calm');
   if (sc.day) st.day = sc.day;
   if (sc.year) st.yil = sc.year;
   if (sc.currency) st.birim = sc.currency;
@@ -459,14 +476,16 @@ addEventListener('resize', fitScene);
 addEventListener('orientationchange', () => setTimeout(fitScene, 250));
 
 // Her çağın kendi renk teması (style.css içindeki [data-era] kuralları).
-function theme(era) { document.documentElement.dataset.era = String(era || 1); }
+function theme(era) { document.documentElement.dataset.era = String(era || 1); musicEra(era || 1); }
 
 // ---------- Başlangıç ----------
 if (Capacitor.isNativePlatform()) {
   // Tam ekran: durum çubuğu ve gezinme çubuğu gizli (kaydırınca geçici olarak görünür).
   SystemBars.hide().catch(() => {});
   CapApp.addListener('resume', () => SystemBars.hide().catch(() => {}));
+  CapApp.addListener('appStateChange', ({ isActive }) => (isActive ? resumeMusic() : pauseMusic()));
   // Geri tuşu oyunda geri götürmez: geri dönüş yok. Uygulamayı arka plana alır.
   CapApp.addListener('backButton', () => CapApp.minimizeApp());
 }
+initMusic();
 titleScreen();

@@ -278,6 +278,7 @@ export const ERA5 = {
       choices: devam('f3', 'Şölene git'),
     },
     f2b: {
+      mood: 'dark',
       bg: 'gordion_tumulus', hands: 'uzan', day: 6,
       lines: [
         'Yaşlı bir kadın: "Kral öldü. Altmış yıldan fazla *yaşadı*."',

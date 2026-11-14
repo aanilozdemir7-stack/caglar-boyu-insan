@@ -361,6 +361,7 @@ export const ERA11 = {
       choices: aksam('k3'),
     },
     k3: {
+      mood: 'dark',
       bg: 'celtik_tarla', hands: 'uzan', day: 10, year: '1938', place: 'Karabük',
       lines: [
         'Bir yıl. Tarlaların yerinde *bacalar*, kuleler, ray hatları.',
@@ -384,6 +385,7 @@ export const ERA11 = {
       choices: aksam('k4b'),
     },
     k4b: {
+      mood: 'dark',
       bg: 'lojman', hands: 'yok', day: 11,
       lines: [
         'Kasım ayı. Bir sabah şantiyenin radyosundan *acı* bir haber.',

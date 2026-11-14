@@ -214,3 +214,9 @@ button { font-family: inherit; }
   .game-end .av-preview { width: min(40vh, 160px); }
 }
 @media (orientation: landscape) { .pick { grid-template-columns: repeat(3, 1fr); } }
+
+/* Müzik düğmesi */
+.muzik { position: absolute; top: calc(var(--sat) + 54px); right: calc(var(--sar) + 10px); z-index: 6; width: 36px; height: 36px; border-radius: 50%; background: var(--kart); border: 1.5px solid var(--kart-kenar); color: var(--krem); font-size: 17px; line-height: 1; padding: 0; }
+.muzik.off { opacity: .6; }
+.muzik.off::after { content: ''; position: absolute; left: 7px; right: 7px; top: 50%; height: 2px; background: currentColor; transform: rotate(-45deg); border-radius: 1px; }
+.title-screen .muzik { top: calc(var(--sat) + 14px); right: calc(var(--sar) + 14px); }

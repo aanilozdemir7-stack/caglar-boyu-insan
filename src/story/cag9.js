@@ -345,6 +345,7 @@ export const ERA9 = {
       ],
     },
     p3: {
+      mood: 'dark',
       bg: 'sadabad', hands: 'yok', day: 10,
       lines: [
         'Birkaç gün içinde her şey *değişiyor*. Sadrazam öldürüldü. Padişah tahttan indi.',

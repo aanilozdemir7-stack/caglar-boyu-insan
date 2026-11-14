@@ -212,6 +212,7 @@ export const ERA7 = {
       ],
     },
     n5a: {
+      mood: 'dark',
       bg: 'hipodrom', hands: 'uzan', day: 6,
       lines: [
         'Bir avuç insanı dar bir geçitten *çıkarıyorsun*.',
@@ -221,6 +222,7 @@ export const ERA7 = {
       choices: [{ text: 'Sabahı bekle', to: 'n6' }],
     },
     n5b: {
+      mood: 'dark',
       bg: 'mese', hands: 'yok', day: 6,
       lines: [
         'Sokaklarda koşuyorsun. Arkanda *çığlıklar*.',
@@ -401,6 +403,7 @@ export const ERA7 = {
       ],
     },
     v5: {
+      mood: 'dark',
       bg: 'mese', hands: 'uzan', day: 13,
       lines: [
         'Aylar sonra hastalık *azalıyor*. İmparator iyileşiyor.',
