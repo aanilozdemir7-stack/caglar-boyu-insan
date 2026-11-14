@@ -906,7 +906,7 @@ export const FOCUS = {
   gece_ates: [500, 620, 820], karanlik: [500, 700, 760], sutun_gunduz: [480, 600, 900], av_safak: [450, 620, 760],
   dere: [500, 650, 820], toplanma: [500, 720, 800], ziyafet: [500, 730, 800], catal_damlar: [500, 600, 800],
   ev_ici: [520, 480, 860], tarla: [500, 660, 800], yaban_sigiri: [480, 600, 780], nehir_tasma: [500, 620, 820],
-  gece_dam: [500, 620, 820], gece_dam_kisi: [500, 660, 820], karacadag: [500, 650, 800], ocak: [660, 640, 1000],
+  gece_dam: [500, 620, 820], gece_dam_kisi: [500, 660, 820], karacadag: [500, 650, 800], ocak: [640, 620, 800],
   firtina: [450, 600, 820], obsidyen_dag: [500, 640, 820], ayna: [500, 520, 900], karum_sokak: [500, 660, 820],
   arsiv: [540, 460, 860], kervan_yol: [600, 650, 800], saray_kapi: [500, 420, 900], dar_yol: [520, 640, 800],
   atolye: [500, 600, 820], gece_karum: [500, 680, 820], erciyes_ova: [500, 470, 820], kaya_oda: [500, 440, 860],

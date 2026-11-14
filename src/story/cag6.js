@@ -37,7 +37,7 @@ export const ERA6 = {
   next: { name: 'Bizans', place: 'Konstantinopolis', year: 'MS 532' },
 
   carry(st) {
-    st.para = Math.max(3, st.para);
+    st.para = Math.min(25, Math.max(3, st.para));
     st.enerji = Math.max(st.enerji, 70);
     return `${st.para} sikken artık Bergama drahmisi olarak sayılıyor.`;
   },

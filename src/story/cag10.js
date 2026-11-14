@@ -35,7 +35,7 @@ export const ERA10 = {
   next: { name: 'Cumhuriyet sanayisi', place: 'Karabük', year: '1939' },
 
   carry(st) {
-    st.para = Math.max(5, st.para * 3);
+    st.para = Math.min(30, Math.max(5, st.para * 2));
     st.enerji = Math.max(st.enerji, 70);
     return `Yüz yılda fiyatlar arttı: Kesende ${st.para} kuruş var.`;
   },

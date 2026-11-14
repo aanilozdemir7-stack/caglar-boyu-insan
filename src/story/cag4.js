@@ -37,7 +37,7 @@ export const ERA4 = {
   next: { name: 'Demir Çağı krallıkları', place: 'Tuşpa', year: 'MÖ 790' },
 
   carry(st) {
-    st.para = Math.max(3, st.para);
+    st.para = Math.min(25, Math.max(3, st.para));
     st.enerji = Math.max(st.enerji, 70);
     const yazi = st.flags.includes('yazi') ? ' Kâtiplik bilgin hâlâ aklında.' : '';
     return `Gümüşün hâlâ gümüş: ${st.para} şekel.${yazi}`;

@@ -109,7 +109,7 @@ function eraCard(carry) {
     <div class="era-text">
       <div class="era-no">ÇAĞ ${st.era}</div>
       <h1 class="era-name outline">${up(era.name)}</h1>
-      <div class="era-meta">${era.year} · ${era.place} (${era.region})</div>
+      <div class="era-meta">${era.year} · ${era.place}${era.region && era.region !== era.place ? ` (${era.region})` : ''}</div>
       ${carry ? `<p class="subtitle" style="margin:10px 0 0">${carry}</p>` : ''}
       <div class="tap-hint" style="margin-top:12px">Başlamak için dokun</div>
     </div>

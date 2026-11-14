@@ -38,7 +38,7 @@ export const ERA5 = {
   next: { name: 'Antik çağ', place: 'Bergama', year: 'MÖ 180' },
 
   carry(st) {
-    st.para = Math.max(3, st.para);
+    st.para = Math.min(25, Math.max(3, st.para));
     st.enerji = Math.max(st.enerji, 70);
     st.flags = st.flags.filter((f) => !['iz'].includes(f));
     const demir = st.flags.includes('demirci') ? ' Hattuşa\'da gördüğün demir sırrı artık herkesin.' : '';

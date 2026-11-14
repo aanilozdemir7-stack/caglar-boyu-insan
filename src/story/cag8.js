@@ -38,9 +38,9 @@ export const ERA8 = {
 
   carry(st) {
     const eski = st.para;
-    st.para = Math.max(3, Math.round(eski / 2));
+    st.para = Math.min(25, Math.max(3, Math.round(eski / 2)));
     st.enerji = Math.max(st.enerji, 70);
-    return `${eski} bronz follis, ${st.para} gümüş dirhem ediyor.`;
+    return `Bronz paraların gümüş dirheme çevrildi: ${st.para} dirhem.`;
   },
 
   scenes: {

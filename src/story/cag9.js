@@ -36,7 +36,7 @@ export const ERA9 = {
   next: { name: 'Makine devri', place: 'Hereke', year: '1843' },
 
   carry(st) {
-    st.para = Math.max(4, st.para + 2);
+    st.para = Math.min(25, Math.max(4, st.para + 2));
     st.enerji = Math.max(st.enerji, 70);
     const bilgi = st.flags.includes('yazi') ? ' Yazıyı bilmen bu çağda kapı açacak.' : '';
     return `Gümüş dirhemlerin ${st.para} kuruş ediyor.${bilgi}`;

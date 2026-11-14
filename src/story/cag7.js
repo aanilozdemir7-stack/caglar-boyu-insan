@@ -35,9 +35,9 @@ export const ERA7 = {
 
   carry(st) {
     const eski = st.para;
-    st.para = Math.max(4, eski * 2);
+    st.para = Math.min(25, Math.max(4, eski));
     st.enerji = Math.max(st.enerji, 70);
-    return `${eski} dinarın ${st.para} bronz follis ediyor.`;
+    return `Dinarların bronz follise çevrildi: ${st.para} follis.`;
   },
 
   scenes: {
