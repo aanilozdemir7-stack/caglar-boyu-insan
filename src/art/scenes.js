@@ -787,6 +787,14 @@ function sleeve(era) {
       return tube(c.base) + `<path d="M-60 0 Q0 -12 60 0 L58 36 Q0 26 -58 36Z" fill="${c.light}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
         ${[-36, -18, 0, 18, 36].map((x) => `<path d="M${x} 8 l2 18" stroke="#c8b898" stroke-width="3"/>`).join('')}
         <path d="M30 60 L44 290" stroke="${c.dark}" stroke-width="10" opacity=".6"/>`;
+    case 'kazak':
+      return tube(c.base) + `<rect x="-56" y="0" width="112" height="34" rx="8" fill="${c.dark}" stroke="${INK}" stroke-width="${S}"/>${[8, 18, 26].map((y) => `<path d="M-46 ${y} H46" stroke="${shade(c.dark, -0.2)}" stroke-width="3"/>`).join('')}
+        ${[90, 150, 210].map((y) => `<path d="M-56 ${y} H56" stroke="${c.pattern}" stroke-width="6" stroke-dasharray="12 8"/>`).join('')}`;
+    case 'tisort':
+      return `<path d="M-46 8 L-60 300 L60 300 L46 8Z" fill="${c.base}" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M-46 8 H46 L48 30 H-48Z" fill="${c.dark}" stroke="${INK}" stroke-width="3"/>`;
+    case 'gelecek':
+      return tube(c.base) + `<rect x="-54" y="0" width="108" height="24" rx="6" fill="${c.dark}" stroke="${INK}" stroke-width="${S}"/>
+        <path d="M-30 30 L-38 290" stroke="${c.pattern}" stroke-width="5" class="a-glow"/><rect x="10" y="60" width="34" height="22" rx="4" fill="${c.light}" stroke="${INK}" stroke-width="3"/>`;
     case 'ceket':
       return tube(c.base) + `<path d="M-50 0 H50 L48 40 H-48Z" fill="${c.light}" stroke="${INK}" stroke-width="${S}"/>
         <rect x="-54" y="36" width="108" height="26" rx="4" fill="${c.dark}" stroke="${INK}" stroke-width="${S}"/>

@@ -269,6 +269,10 @@ export const OUTFITS = {
   8: { style: 'kaftan', base: '#1f6a6e', dark: '#134a4e', light: '#e8d4a0', pattern: '#c94a3a' },
   9: { style: 'entari', base: '#8a1f3a', dark: '#5e1428', light: '#f0e2c8', pattern: '#d9a83a' },
   10: { style: 'ceket', base: '#2a2e38', dark: '#1a1d24', light: '#e8e4dc', pattern: '#b8892e' },
+  11: { style: 'ceket', base: '#5a5048', dark: '#3e3630', light: '#f0ece4', pattern: '#8a8a8a' },
+  12: { style: 'kazak', base: '#c9822e', dark: '#9a5e1e', light: '#f2e2c0', pattern: '#2f6a6a' },
+  13: { style: 'tisort', base: '#2f5a9a', dark: '#1f3e6e', light: '#e8eef6', pattern: '#f2f2f2' },
+  14: { style: 'gelecek', base: '#2a2a3e', dark: '#1a1a28', light: '#c9a8ff', pattern: '#7ae8ff' },
 };
 export function outfitColors(era = 1) { return OUTFITS[era] || OUTFITS[1]; }
 
@@ -305,6 +309,16 @@ function outfit(era) {
       return body + `<path d="M24 222 C30 190 46 172 76 166 L92 222Z M176 222 C170 190 154 172 124 166 L108 222Z" fill="${c.dark}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
         <path d="M76 166 C64 170 52 178 44 190 M124 166 C136 170 148 178 156 190" fill="none" stroke="${c.light}" stroke-width="9" stroke-linecap="round"/>
         <path d="M92 176 H108 M92 188 H108 M92 200 H108 M92 212 H108" stroke="${c.pattern}" stroke-width="3"/>` + collar;
+    case 'kazak':
+      return body + `<path d="M66 166 Q100 196 134 166 L134 176 Q100 206 66 176Z" fill="${c.dark}" stroke="${INK}" stroke-width="3"/>
+        ${[192, 204, 216].map((y) => `<path d="M30 ${y} H170" stroke="${c.pattern}" stroke-width="4" stroke-dasharray="10 6"/>`).join('')}`;
+    case 'tisort':
+      return body + `<path d="M76 166 Q100 186 124 166" fill="${c.dark}" stroke="${INK}" stroke-width="3"/>
+        <circle cx="100" cy="204" r="12" fill="none" stroke="${c.pattern}" stroke-width="4"/><path d="M92 204 h16" stroke="${c.pattern}" stroke-width="3"/>`;
+    case 'gelecek':
+      return body + `<path d="M70 166 L100 222 L130 166" fill="none" stroke="${c.dark}" stroke-width="12"/>
+        <path d="M44 186 L70 222 M156 186 L130 222" stroke="${c.pattern}" stroke-width="4" class="a-glow"/>
+        <circle cx="100" cy="186" r="5" fill="${c.pattern}"/>`;
     case 'ceket':
       return body + `<path d="M84 168 L100 200 L116 168" fill="${c.light}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
         <path d="M100 200 V222" stroke="${INK}" stroke-width="3"/>
