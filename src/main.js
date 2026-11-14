@@ -1,9 +1,8 @@
 import './style.css';
 import { App as CapApp } from '@capacitor/app';
-import { StatusBar } from '@capacitor/status-bar';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, SystemBars } from '@capacitor/core';
 import { avatarSVG, avatarThumb, CATEGORIES, DEFAULT_AVATAR, normalizeAvatar, randomAvatar } from './art/avatar.js';
-import { sceneSVG, hands } from './art/scenes.js';
+import { sceneSVG, hands, viewBoxFor } from './art/scenes.js';
 import { ERA1 } from './story/cag1.js';
 import { ERA2 } from './story/cag2.js';
 import { ERA3 } from './story/cag3.js';
@@ -22,6 +21,7 @@ const el = (html) => { const t = document.createElement('template'); t.innerHTML
 // ---------- Başlık ----------
 async function titleScreen() {
   const saved = await load();
+  theme(saved?.era || 1);
   const s = el(`<div class="screen title-screen">
     <h1 class="logo outline">ÇAĞLAR<br>BOYU <em>İNSAN</em></h1>
     <p class="subtitle">Taş Devri'nden yarına. Her seçim kalıcı.</p>
@@ -95,6 +95,7 @@ function avatarScreen(initial) {
 // ---------- Çağ kartı ----------
 function eraCard(carry) {
   const era = ERAS[st.era];
+  theme(st.era);
   const s = el(`<div class="screen era-card">
     <div class="av-preview">${avatarSVG(st.avatar, { era: st.era })}</div>
     <div class="era-text">
@@ -152,6 +153,7 @@ function hud(prev) {
 
 function startScene(prev) {
   const era = ERAS[st.era];
+  theme(st.era);
   const sc = getScene(era, st);
   if (!sc || sc.end) { st.finished = true; save(st); return endScreen(); }
   if (!stage || !stage.isConnected) buildStage();
@@ -162,7 +164,7 @@ function startScene(prev) {
   const bgLayer = stage.querySelector('.bg-layer');
   const key = sc.bg + '|' + st.scene;
   if (bgLayer.dataset.bg !== sc.bg) {
-    bgLayer.innerHTML = `<div class="layer bg-wrap">${sceneSVG(sc.bg, st.avatar)}</div>`;
+    bgLayer.innerHTML = `<div class="layer bg-wrap">${sceneSVG(sc.bg, st.avatar, innerWidth, innerHeight)}</div>`;
     bgLayer.dataset.bg = sc.bg;
   }
   const hl = stage.querySelector('.hands-layer');
@@ -252,6 +254,7 @@ function toast(msg) {
 function endScreen() {
   stage = null;
   const era = ERAS[st.era];
+  theme(st.era);
   const nextEra = ERAS[st.era + 1];
   const ak = st.akil - (st.eraBase?.akil || 0), be = st.beden - (st.eraBase?.beden || 0);
   const yol = ak > be ? 'aklını' : be > ak ? 'bedenini' : 'aklınla bedenini dengeli';
@@ -306,9 +309,21 @@ function show(node) {
   app.appendChild(node);
 }
 
+// Ekran döndürülünce ya da boyutu değişince sahnenin görüş alanını yeniden hesapla.
+function fitScene() {
+  document.querySelectorAll('svg.bg').forEach((svg) => svg.setAttribute('viewBox', viewBoxFor(svg.dataset.key, innerWidth, innerHeight)));
+}
+addEventListener('resize', fitScene);
+addEventListener('orientationchange', () => setTimeout(fitScene, 250));
+
+// Her çağın kendi renk teması (style.css içindeki [data-era] kuralları).
+function theme(era) { document.documentElement.dataset.era = String(era || 1); }
+
 // ---------- Başlangıç ----------
 if (Capacitor.isNativePlatform()) {
-  StatusBar.hide().catch(() => {});
+  // Tam ekran: durum çubuğu ve gezinme çubuğu gizli (kaydırınca geçici olarak görünür).
+  SystemBars.hide().catch(() => {});
+  CapApp.addListener('resume', () => SystemBars.hide().catch(() => {}));
   // Geri tuşu oyunda geri götürmez: geri dönüş yok. Uygulamayı arka plana alır.
   CapApp.addListener('backButton', () => CapApp.minimizeApp());
 }

@@ -489,13 +489,17 @@ Object.assign(SCENES, {
     <circle cx="200" cy="200" r="56" fill="#fff3c4" stroke="${INK}" stroke-width="${S}"/>${light(200, 200, 220, '#fff3c4', 0.45)}
     ${hill('M0 460 Q300 420 600 450 T1000 440 L1000 600 L0 600Z', '#c9a46c')}
     ${haze(400, 560, '#f6e6c6', 0.5)}
-    <path d="M0 560 Q500 520 1000 560 L1000 1000 L0 1000Z" fill="#e2d4b4" stroke="${INK}" stroke-width="${S}"/>
-    ${texture(0, 580, 1000, 1000, 40, '#c4b490', 61, 30)}
-    <path d="M180 640 L820 610 L860 700 L150 740Z" fill="#9a8c70" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
-    <path d="M220 650 L790 624 L820 690 L200 722Z" fill="#e8dcc0" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
-    <path d="M640 630 L800 624 L820 690 L660 700Z" fill="#efe4cc" stroke="${INK}" stroke-width="${S}"/>
-    ${[260, 330, 400, 470, 540].map((x) => `<path d="M${x} ${652 - (x - 220) * 0.045} l14 30" stroke="#b8a888" stroke-width="3"/>`).join('')}
-    ${npc(240, 640, 0.75, 111, 1)}${npc(760, 610, 0.75, 112, 1, { flip: true })}
+    <path d="M0 540 Q500 500 1000 540 L1000 1000 L0 1000Z" fill="#e2d4b4" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 560, 1000, 1000, 40, '#c4b490', 61, 30)}
+    <g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+      <path d="M150 600 L690 590 L700 560 L880 560 L900 760 L700 760 L690 730 L140 740Z" fill="#8a7c62"/>
+      <path d="M190 620 L690 612 L700 590 L850 590 L866 732 L700 732 L690 712 L182 720Z" fill="#efe6d0"/>
+      <path d="M190 620 L182 720 L200 728 L206 630Z" fill="#cfc2a4"/>
+      <path d="M700 590 L850 590 L866 732 L700 732Z" fill="#f6efdc"/>
+    </g>
+    <g stroke="#b8a888" stroke-width="3" stroke-linecap="round">${[240, 300, 360, 420, 480, 540, 600, 650].map((x) => `<path d="M${x} 640 l10 18 M${x + 14} 676 l10 18"/>`).join('')}</g>
+    <path d="M300 660 Q440 650 600 664" fill="none" stroke="#d6c8a8" stroke-width="5"/>
+    ${npc(300, 600, 0.72, 111, 1)}${npc(760, 585, 0.72, 112, 1, { flip: true })}
     <g fill="#f6eed6" stroke="${INK}" stroke-width="3"><circle class="a-dust" cx="480" cy="640" r="7"/><circle class="a-dust" style="animation-delay:.7s" cx="520" cy="630" r="5"/><circle class="a-dust" style="animation-delay:1.3s" cx="450" cy="650" r="6"/></g>
     ${rock(120, 900, 2, '#cbbd9c')}${rock(880, 920, 2.2, '#bfb092')}
     ${vignette(0.35)}`,
@@ -859,7 +863,34 @@ export function hands(pose, avIn, era = 1) {
   return `<svg class="hands" viewBox="170 0 660 470" preserveAspectRatio="xMidYMax meet" overflow="visible" aria-hidden="true">${out}</svg>`;
 }
 
-export function sceneSVG(key, av) {
+// Her sahnenin odak noktası: [x, y, dikey ekranda gösterilecek yükseklik].
+// Ekranın oranına göre görüş alanı bu noktaya göre hesaplanır; böylece uzun telefonlarda,
+// tabletlerde ve yatay ekranda sahnenin asıl konusu yazıların üstünde, görünür kalır.
+export const FOCUS = {
+  gece_ates: [500, 620, 820], karanlik: [500, 700, 760], sutun_gunduz: [480, 600, 900], av_safak: [450, 620, 760],
+  dere: [500, 650, 820], toplanma: [500, 720, 800], ziyafet: [500, 730, 800], catal_damlar: [500, 600, 800],
+  ev_ici: [520, 480, 860], tarla: [500, 660, 800], yaban_sigiri: [480, 600, 780], nehir_tasma: [500, 620, 820],
+  gece_dam: [500, 620, 820], gece_dam_kisi: [500, 660, 820], karacadag: [500, 650, 800], ocak: [660, 640, 1000],
+  firtina: [450, 600, 820], obsidyen_dag: [500, 640, 820], ayna: [500, 520, 900], karum_sokak: [500, 660, 820],
+  arsiv: [540, 460, 860], kervan_yol: [600, 650, 800], saray_kapi: [500, 420, 900], dar_yol: [520, 640, 800],
+  atolye: [500, 600, 820], gece_karum: [500, 680, 820], erciyes_ova: [500, 470, 820], kaya_oda: [500, 440, 860],
+  kizilirmak: [500, 680, 800], kis: [500, 600, 800],
+};
+
+export function viewBoxFor(key, w, h) {
+  const [fx, fy, ph] = FOCUS[key] || [500, 560, 860];
+  const a = w / h;
+  let vw, vh;
+  if (a < 1) { vh = Math.min(1000, ph); vw = vh * a; if (vw > 1000) { vw = 1000; vh = vw / a; } }
+  else { vw = 1000; vh = 1000 / a; if (vh > 1000) { vh = 1000; vw = vh * a; } }
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  // Odak, ekranın üstten %42'sine gelsin (alt kısım yazı ve seçimlerle dolu).
+  const x = clamp(fx - vw / 2, 0, 1000 - vw);
+  const y = clamp(fy - vh * 0.42, 0, 1000 - vh);
+  return `${x.toFixed(1)} ${y.toFixed(1)} ${vw.toFixed(1)} ${vh.toFixed(1)}`;
+}
+
+export function sceneSVG(key, av, w = 1000, h = 1000) {
   const fn = SCENES[key] || SCENES.gece_ates;
-  return `<svg class="bg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${fn(av)}</svg>`;
+  return `<svg class="bg" data-key="${key}" viewBox="${viewBoxFor(key, w, h)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${fn(av)}</svg>`;
 }
