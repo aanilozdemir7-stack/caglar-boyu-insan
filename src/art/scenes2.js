@@ -1312,4 +1312,117 @@ Object.assign(FOCUS, {
   fabrika70: [500, 520, 860], bogaz_kopru: [650, 420, 880],
 });
 
+// ---------- ÇAĞ 13: BİLGİ ÇAĞI ----------
+function crt(x, y, s, glow = '#3aff8a') {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="${S / s}" stroke-linejoin="round">
+    <path d="M-80 -70 H80 L96 70 H-96Z" fill="#d8d4c4"/><rect x="-64" y="-56" width="128" height="96" rx="10" fill="#0e1a12"/>
+    ${[0, 1, 2, 3, 4].map((i) => `<path d="M-52 ${-40 + i * 16} h${40 + (i * 37) % 60}" stroke="${glow}" stroke-width="${4 / s}" opacity=".85"/>`).join('')}
+    <path d="M-30 70 L-40 100 H40 L30 70" fill="#c8c4b4"/><rect x="-110" y="100" width="220" height="24" rx="4" fill="#c8c4b4"/>
+  </g>`;
+}
+function building(x, y, w, h, c, { lit = 0.5, seed = 1 } = {}) {
+  const r = rnd(seed); let o = `<rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${c}" stroke="${INK}" stroke-width="${S}"/>`;
+  const cols = Math.max(2, Math.floor(w / 34)), rows = Math.max(2, Math.floor(h / 44));
+  for (let i = 0; i < rows; i++) for (let k = 0; k < cols; k++) o += `<rect x="${x + 10 + k * (w - 20) / cols}" y="${y - h + 14 + i * (h - 20) / rows}" width="${(w - 20) / cols - 10}" height="${(h - 20) / rows - 14}" fill="${r() < lit ? '#ffe39a' : '#3a4a5a'}" stroke-width="2"/>`;
+  return o;
+}
+
+Object.assign(SCENES, {
+  kampus: () => `
+    ${sky('#8cc0dc', '#b8d6e2', '#eef0e4')}
+    ${cloud(220, 140, 1.1, '#fbf8f0')}${cloud(800, 120, 0.9, '#fbf8f0')}
+    ${building(560, 560, 380, 260, '#c8c4bc', { lit: 0.2, seed: 1301 })}${building(80, 560, 260, 200, '#d8d0c4', { lit: 0.2, seed: 1302 })}
+    <path d="M0 560 H1000 V1000 H0Z" fill="#8ab06a" stroke="${INK}" stroke-width="${S}"/>
+    ${[[120, 640], [420, 620], [880, 650]].map(([x, y]) => `<g stroke="${INK}" stroke-width="4"><path d="M${x} ${y} v60" stroke="#6b4529" stroke-width="10"/><circle cx="${x}" cy="${y - 30}" r="50" fill="#5a8a3a"/></g>`).join('')}
+    <path d="M300 1000 L460 620 H540 L700 1000Z" fill="#c8c0b0" stroke="${INK}" stroke-width="4"/>
+    <path d="M520 700 Q600 760 760 780 Q900 800 1000 790" fill="none" stroke="#8a6440" stroke-width="30"/><path d="M520 700 Q600 760 760 780 Q900 800 1000 790" fill="none" stroke="#5a3a24" stroke-width="10" stroke-dasharray="20 14"/>
+    <g stroke="${INK}" stroke-width="4"><circle cx="230" cy="800" r="26" fill="none" stroke-width="5"/><circle cx="310" cy="800" r="26" fill="none" stroke-width="5"/><path d="M230 800 L260 760 H300 L310 800 M260 760 L250 740" fill="none" stroke-width="5"/></g>
+    ${npc(400, 1000, 1, 1311, 13)}${npc(780, 1000, 1, 1312, 13, { flip: true })}
+    ${vignette(0.3)}`,
+
+  bilgisayar_odasi: () => `
+    ${interior('#c8ccd0', '#6a6e74', { beam: '#4a4e54' })}
+    ${[80, 200].map((x) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x}" y="200" width="100" height="560" fill="#3a3e46"/>${[...Array(10)].map((_, i) => `<rect x="${x + 10}" y="${220 + i * 52}" width="80" height="36" fill="#2a2e34" stroke-width="2"/><circle class="a-blink" style="animation-delay:${(i * 0.3 + x / 200).toFixed(1)}s" cx="${x + 78}" cy="${238 + i * 52}" r="4" fill="${i % 2 ? '#3aff8a' : '#ffb03a'}" stroke="none"/>`).join('')}</g>`).join('')}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M360 640 H960 V680 H360Z" fill="#8a7a62"/><path d="M380 680 V800 M940 680 V800" stroke="#5a4a3a" stroke-width="14"/></g>
+    ${crt(520, 520, 1.0)}${crt(800, 520, 0.9, '#ffb03a')}
+    <path d="M180 760 Q300 820 420 700" fill="none" stroke="#2a2a2a" stroke-width="8"/><path d="M180 700 Q260 780 380 690" fill="none" stroke="#3a6ab8" stroke-width="6"/>
+    ${npc(660, 1000, 1, 1321, 13)}
+    ${vignette(0.45)}`,
+
+  cep_dukkan: () => `
+    ${sky('#9cc6dc', '#c4dae2', '#eee8dc')}
+    ${building(-20, 600, 300, 460, '#d8c8b0', { lit: 0.3, seed: 1331 })}${building(720, 600, 300, 480, '#c8b8a8', { lit: 0.3, seed: 1332 })}
+    <g stroke="${INK}" stroke-width="${S}"><rect x="280" y="300" width="440" height="300" fill="#e8e4dc"/><rect x="300" y="300" width="400" height="60" fill="#e8402a"/><rect x="310" y="390" width="380" height="200" fill="#a8d0e0"/></g>
+    <text x="500" y="342" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="34" fill="#fff">GSM · CEP</text>
+    ${[0, 1, 2, 3, 4].map((i) => `<g transform="translate(${350 + i * 70} 500)" stroke="${INK}" stroke-width="3"><rect x="-14" y="-40" width="28" height="70" rx="4" fill="#2a2a2e"/><rect x="-10" y="-30" width="20" height="18" fill="#9ad0a0"/><path d="M8 -40 v-20" stroke-width="4"/></g>`).join('')}
+    <path d="M0 600 H1000 V1000 H0Z" fill="#a8a094" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="${INK}" stroke-width="5"><path d="M860 600 V180" stroke="#8a8e96" stroke-width="10"/>${[200, 240, 280].map((y) => `<path d="M830 ${y} H890" stroke="#8a8e96" stroke-width="6"/>`).join('')}</g>
+    ${npc(280, 1000, 1, 1341, 13)}${npc(720, 1000, 1, 1342, 13, { flip: true })}
+    ${vignette(0.3)}`,
+
+  internet_kafe: () => `
+    ${interior('#2a2a3a', '#3a3440', { beam: '#1a1a24' })}
+    ${[0, 1, 2].map((i) => `${crt(220 + i * 290, 520, 0.85, ['#7ad0ff', '#3aff8a', '#ffb03a'][i])}${light(220 + i * 290, 500, 160, '#7ad0ff', 0.25)}`).join('')}
+    <path d="M60 640 H940 V670 H60Z" fill="#5a4a3a" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="${INK}" stroke-width="4"><rect x="380" y="200" width="240" height="70" rx="10" fill="#1a1a24"/></g>
+    <text x="500" y="246" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="30" fill="#3ad1ff">İNTERNET</text>
+    ${npc(220, 1000, 1, 1351, 13)}${npc(500, 990, 0.95, 1352, 13)}${npc(790, 1000, 1, 1353, 13, { flip: true })}
+    ${vignette(0.5)}`,
+
+  korfez_gece: () => `
+    ${sky('#0e1430', '#1e2448', '#3a3858')}
+    ${stars(40, 1361, 380)}
+    <circle cx="780" cy="200" r="40" fill="#f6f0d8" stroke="${INK}" stroke-width="4"/>
+    ${hill('M0 440 Q300 380 600 420 T1000 400 L1000 520 L0 520Z', '#1e2a3a')}
+    ${[...Array(30)].map((_, i) => `<circle cx="${20 + i * 33}" cy="${450 + (i % 4) * 12}" r="3" fill="#ffd98a"/>`).join('')}
+    ${sea(510, '#1e3a5a', '#0e1e30')}
+    ${building(-20, 820, 240, 280, '#4a4a5a', { lit: 0.5, seed: 1362 })}${building(240, 820, 200, 220, '#5a5468', { lit: 0.4, seed: 1363 })}${building(760, 820, 260, 300, '#4a4a5a', { lit: 0.35, seed: 1364 })}
+    <path d="M0 820 H1000 V1000 H0Z" fill="#2a2a32" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(560, 1000, 1, 1365, 13)}
+    ${vignette(0.55)}`,
+
+  deprem_gece: () => `
+    ${sky('#1a1a24', '#2a2a32', '#4a4440')}
+    <g opacity=".45" fill="#8a847a">${[0, 1, 2, 3].map((i) => `<circle class="a-smoke" style="animation-delay:${i * 0.7}s" cx="${200 + i * 200}" cy="${380 - (i % 2) * 40}" r="${90 + i * 10}"/>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
+      <path d="M40 760 L60 420 L260 380 L300 760Z" fill="#5a5450" transform="rotate(-6 170 600)"/>
+      <path d="M640 760 L700 360 L900 420 L920 760Z" fill="#4a4642" transform="rotate(8 780 560)"/>
+      <path d="M200 860 L320 700 L480 740 L560 660 L700 720 L820 860Z" fill="#6a645e"/>
+    </g>
+    ${[[300, 760, 30], [420, 720, -20], [600, 740, 12], [520, 800, -40], [700, 790, 25]].map(([x, y, a]) => `<rect x="${x}" y="${y}" width="90" height="14" fill="#8a8e96" stroke="${INK}" stroke-width="3" transform="rotate(${a} ${x} ${y})"/>`).join('')}
+    <path d="M0 860 H1000 V1000 H0Z" fill="#3a3632" stroke="${INK}" stroke-width="${S}"/>
+    ${[[260, 600], [720, 560], [480, 640]].map(([x, y], i) => `<path d="M${x} ${y} L${x + 180 - i * 60} ${y + 260}" stroke="#fff6c8" stroke-width="40" opacity=".12"/><circle cx="${x}" cy="${y}" r="8" fill="#fff6c8"/>`).join('')}
+    ${[...Array(5)].map((_, i) => silhouette(180 + i * 160, 960 - (i % 2) * 20, 0.6, '#1a1612')).join('')}
+    ${vignette(0.6)}`,
+
+  cadir_kent: () => `
+    ${sky('#f0c898', '#f4dcb8', '#f2ead8')}
+    ${hill('M0 460 Q500 420 1000 460 L1000 1000 L0 1000Z', '#a8a07a')}
+    ${haze(400, 520, '#f2ead8', 0.4)}
+    ${(() => { let o = ''; for (let r = 0; r < 4; r++) for (let i = 0; i < 6; i++) { const sc = 0.5 + r * 0.25, x = 80 + i * 170 + (r % 2) * 80, y = 520 + r * 110; o += `<g transform="translate(${x} ${y}) scale(${sc})" stroke="${INK}" stroke-width="4"><path d="M-80 0 L0 -90 L80 0Z" fill="${['#e8e4dc', '#d8d0c0', '#c8d0d8'][(r + i) % 3]}"/><path d="M0 -90 L0 0" stroke-width="3"/><path d="M-14 0 L0 -40 L14 0Z" fill="#5a5450"/><path d="M-12 -110 h24 v12 h-24Z" fill="#d81e2c" stroke-width="2"/></g>`; } return o; })()}
+    <g stroke="${INK}" stroke-width="4"><rect x="700" y="700" width="220" height="90" fill="#f2f2ea"/><path d="M780 720 h40 v14 h14 v40 h-14 v14 h-40 v-14 h-14 v-40 h14Z" fill="#d81e2c"/></g>
+    ${npc(260, 1000, 1, 1371, 13)}${npc(560, 1000, 1, 1372, 13, { flip: true })}
+    ${vignette(0.3)}`,
+
+  ofis2000: () => `
+    ${interior('#e4e8ec', '#8a8e94', { beam: '#c8ccd0', window: true })}
+    ${building(640, 460, 140, 220, '#8a9aa8', { lit: 0.3, seed: 1381 })}
+    ${[0, 1, 2].map((i) => `<g stroke="${INK}" stroke-width="4"><rect x="${140 + i * 260}" y="640" width="220" height="24" fill="#c8b896"/><path d="M${150 + i * 260} 664 V780 M${350 + i * 260} 664 V780" stroke-width="8"/><rect x="${190 + i * 260}" y="540" width="120" height="84" rx="6" fill="#1a1a22"/><rect x="${198 + i * 260}" y="548" width="104" height="66" fill="${['#7ad0ff', '#a8e8c8', '#ffe39a'][i]}" class="a-glow"/><path d="M${240 + i * 260} 624 v16 h20 v-16" fill="#3a3a42"/></g>`).join('')}
+    ${npc(330, 1000, 1, 1382, 13)}${npc(720, 1000, 1, 1383, 13, { flip: true })}
+    ${vignette(0.35)}`,
+
+  ev2008: () => `
+    ${interior('#d8ccb8', '#9a7a5a', { beam: '#6b5a48', window: true })}
+    ${building(180, 420, 120, 180, '#5a6a7a', { lit: 0.6, seed: 1391 })}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M360 760 V600 Q360 560 400 560 H860 Q900 560 900 600 V760Z" fill="#3a6a8a"/><rect x="340" y="660" width="580" height="100" rx="20" fill="#2a5a7a"/>${[460, 640, 800].map((x) => `<rect x="${x - 60}" y="600" width="120" height="70" rx="16" fill="#4a7a9a"/>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="4"><rect x="120" y="760" width="200" height="16" fill="#8a6440"/><path d="M140 776 V840 M300 776 V840" stroke-width="8"/><path d="M150 760 L170 700 H270 L290 760Z" fill="#c8ccd4"/><rect x="176" y="706" width="88" height="48" fill="#7ad0ff" class="a-glow"/></g>
+    <rect x="560" y="300" width="300" height="180" rx="10" fill="#1a1a22" stroke="${INK}" stroke-width="${S}"/><rect x="574" y="314" width="272" height="152" fill="#3a5a8a"/>
+    ${npc(640, 1000, 1, 1392, 13)}
+    ${vignette(0.4)}`,
+});
+Object.assign(FOCUS, {
+  kampus: [520, 560, 860], bilgisayar_odasi: [480, 520, 860], cep_dukkan: [500, 480, 860], internet_kafe: [500, 480, 860],
+  korfez_gece: [500, 560, 860], deprem_gece: [500, 600, 860], cadir_kent: [500, 640, 820], ofis2000: [480, 560, 860], ev2008: [560, 560, 860],
+});
+
 export { wall, interior, horse, chariot, lion };

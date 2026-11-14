@@ -749,6 +749,8 @@ const EXTRA_HANDS = {
   mors: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
     + `<g transform="translate(500 250)" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"><rect x="-150" y="-20" width="300" height="60" rx="8" fill="#6b4529"/><path d="M-110 -20 V-60 H-70 V-20 M70 -20 V-50 H110 V-20" fill="#b08a3a"/><path d="M-100 -64 L90 -90" stroke="#c9a24a" stroke-width="16" stroke-linecap="round"/><circle cx="90" cy="-96" r="22" fill="#2a2a2a"/></g>`
     + arm(era, F, 'translate(630 330) rotate(-24) scale(1.5)'),
+  telefon: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
+    + arm(era, O, 'translate(640 400) rotate(-14) scale(1.6)', '', `<g transform="translate(-6 -96) rotate(6)"><rect x="-40" y="-74" width="80" height="150" rx="14" fill="#1a1a22" stroke="${INK}" stroke-width="${S}"/><rect x="-32" y="-62" width="64" height="122" rx="6" fill="#7ad0ff" class="a-glow"/>${[-40, -20, 0, 20].map((y) => `<rect x="-24" y="${y}" width="${40 + (y % 3) * 4}" height="10" rx="3" fill="#e8f6ff"/>`).join('')}</g>`),
   kese: (era, O, F) => mirror(arm(era, O, POSE.rightLow, '', `<g transform="translate(0 -90)"><path d="M-46 -30 Q-60 50 0 60 Q60 50 46 -30 Q20 -44 0 -40 Q-20 -44 -46 -30Z" fill="#8a5a34" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M-30 -36 Q0 -20 30 -36" fill="none" stroke="${INK}" stroke-width="4"/>${[-24, 0, 24].map((x) => `<ellipse cx="${x}" cy="-46" rx="14" ry="7" fill="#d8dce4" stroke="${INK}" stroke-width="3"/>`).join('')}</g>`))
     + arm(era, O, POSE.right),
 };
