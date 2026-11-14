@@ -2,5 +2,16 @@
   "appId": "tr.caglarboyuinsan.oyun",
   "appName": "Çağlar Boyu İnsan",
   "webDir": "dist",
-  "android": { "backgroundColor": "#14110f" }
+  "android": {
+    "backgroundColor": "#14110f"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "disable"
+    }
+  },
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#14110f"
+  }
 }
