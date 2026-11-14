@@ -431,4 +431,171 @@ Object.assign(SCENES, {
 });
 Object.assign(FOCUS, { tapinak_efes: [500, 520, 860] });
 
+// ---------- ÇAĞ 6: BERGAMA, EFES ----------
+function shelves(x, y, w, h, rows, seed = 7) {
+  const r = rnd(seed); let o = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#5a3e2a" stroke="${INK}" stroke-width="${S}"/>`;
+  const rh = h / rows;
+  for (let i = 0; i < rows; i++) {
+    const yy = y + i * rh;
+    o += `<path d="M${x} ${yy + rh} H${x + w}" stroke="${INK}" stroke-width="4"/>`;
+    for (let k = 0; k < Math.floor(w / 26); k++) {
+      const cx = x + 14 + k * 26 + r() * 4, cy = yy + rh - 14 - r() * 6;
+      o += `<circle cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" r="11" fill="${['#e8dcc0', '#d8c8a0', '#f2ead4'][k % 3]}" stroke="${INK}" stroke-width="2.5"/><circle cx="${cx.toFixed(0)}" cy="${cy.toFixed(0)}" r="3" fill="#8a6a44"/>`;
+    }
+  }
+  return o;
+}
+function statueW(x, y, s, c = '#efe8d8') {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="4" stroke-linejoin="round">
+    <path d="M-30 0 Q-36 -90 -22 -150 L22 -150 Q36 -90 30 0Z" fill="${c}"/>
+    <path d="M-16 -140 Q-20 -80 -14 -6 M4 -140 Q0 -70 6 -6 M18 -130 Q24 -70 20 -6" fill="none" stroke="${shade(c, -0.25)}" stroke-width="3"/>
+    <circle cx="0" cy="-168" r="18" fill="${c}"/><path d="M-18 -172 Q0 -196 18 -172" fill="${shade(c, -0.12)}"/>
+    <path d="M22 -140 Q40 -110 30 -90" fill="none" stroke-width="8" stroke="${c}"/><path d="M22 -140 Q40 -110 30 -90" fill="none" stroke-width="2"/>
+  </g>`;
+}
+function steepTheatre(cx, top, bottom, w1, w2, c = '#d8ccb4', rows = 14) {
+  let o = `<path d="M${cx - w1} ${top} L${cx + w1} ${top} L${cx + w2} ${bottom} L${cx - w2} ${bottom}Z" fill="${c}" stroke="${INK}" stroke-width="${S}"/>`;
+  for (let i = 1; i < rows; i++) {
+    const t = i / rows, y = top + (bottom - top) * t, w = w1 + (w2 - w1) * t;
+    o += `<path d="M${cx - w} ${y} Q${cx} ${y + 16 * (1 - t) + 6} ${cx + w} ${y}" fill="none" stroke="${shade(c, -0.3)}" stroke-width="3"/>`;
+  }
+  o += `<path d="M${cx} ${top} V${bottom} M${cx - w1 * 0.5} ${top} L${cx - w2 * 0.5} ${bottom} M${cx + w1 * 0.5} ${top} L${cx + w2 * 0.5} ${bottom}" stroke="${shade(c, -0.35)}" stroke-width="4"/>`;
+  return o;
+}
+
+Object.assign(SCENES, {
+  bergama_akropol: () => `
+    ${sky('#82b8d8', '#b0d4e4', '#f0ece0')}
+    ${cloud(200, 140, 1, '#fbf8f0')}${cloud(780, 110, 1.2, '#fbf8f0')}
+    <path d="M-20 1000 L-20 520 L120 420 L300 260 L520 200 L740 280 L900 400 L1020 470 L1020 1000Z" fill="#a8987e" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    ${texture(60, 300, 960, 900, 40, '#8a7a62', 71, 26)}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M380 230 L520 170 L660 230Z" fill="#efe8d8"/><rect x="370" y="230" width="300" height="16" fill="#e2d8c4"/></g>
+    ${columns(380, 660, 330, 84, 6, '#efe8d8')}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M700 330 H860 V300 H700Z" fill="#e2d8c4"/>${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${708 + i * 26} 300 v-30 h14 v30" fill="#efe8d8" stroke-width="3"/>`).join('')}</g>
+    ${steepTheatre(330, 400, 820, 210, 90, '#d8ccb4', 16)}
+    <path d="M200 820 H460 V860 H200Z" fill="#c8bca4" stroke="${INK}" stroke-width="${S}"/>
+    ${hill('M-20 1000 L-20 880 Q300 850 600 880 Q800 900 1020 860 L1020 1000Z', '#8a9a62')}
+    ${npc(720, 1000, 1.05, 601, 6, { flip: true })}
+    ${vignette(0.3)}`,
+
+  kutuphane: () => `
+    ${interior('#d8c8a8', '#a8946e', { beam: '#6b4a30' })}
+    ${light(500, 300, 520, '#fff2cc', 0.4)}
+    ${shelves(30, 210, 300, 520, 5, 81)}${shelves(670, 210, 300, 520, 5, 82)}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M400 760 V250 Q500 170 600 250 V760Z" fill="#c8b48e"/></g>
+    ${statueW(500, 700, 2.2)}
+    <path d="M380 700 H620 V760 H380Z" fill="#b8a684" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(270, 960, 1.05, 611, 6)}
+    ${vignette(0.45)}`,
+
+  bergama_cadde: () => `
+    ${sky('#8ac0dc', '#b4d6e4', '#f0ece0')}
+    ${hill('M0 380 L300 240 L520 200 L740 260 L1000 340 L1000 560 L0 560Z', '#a8987e')}
+    ${haze(320, 560, '#f0ece0', 0.45)}
+    <path d="M0 560 H1000 V1000 H0Z" fill="#d8ccb4" stroke="${INK}" stroke-width="${S}"/>
+    ${[600, 680, 780, 900].map((y) => `<path d="M0 ${y} H1000" stroke="#b8ac94" stroke-width="3"/>`).join('')}
+    ${columns(0, 300, 620, 220, 3, '#efe8d8')}${columns(700, 1000, 620, 220, 3, '#efe8d8')}
+    <path d="M-10 380 H310 V400 H-10Z M690 380 H1010 V400 H690Z" fill="#e2d8c4" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="${INK}" stroke-width="${S}"><rect x="40" y="470" width="220" height="150" fill="#6a4a30"/>${shelves(50, 480, 200, 130, 3, 91)}</g>
+    <g stroke="${INK}" stroke-width="${S}"><rect x="740" y="480" width="220" height="140" fill="#8a6440"/>${[0, 1, 2].map((i) => `<path d="M${770 + i * 64} 610 q-14 -60 0 -110 q14 50 0 110Z" fill="${['#c94a3a', '#3a7aa8', '#d9a83a'][i]}"/>`).join('')}</g>
+    ${npc(500, 820, 0.8, 621, 6)}${npc(320, 1000, 1.05, 622, 6)}${npc(700, 1000, 1, 623, 6, { flip: true })}
+    ${vignette(0.3)}`,
+
+  parsomen: () => `
+    ${sky('#a8c8d8', '#cfe0e4', '#f2eedc')}
+    ${hill('M0 460 Q500 400 1000 460 L1000 1000 L0 1000Z', '#b8a678')}
+    ${[[160, 420], [400, 400], [640, 410], [860, 430]].map(([x, y], i) => `<g stroke="${INK}" stroke-width="${S}" transform="translate(${x} ${y})"><rect x="-90" y="-110" width="180" height="220" fill="none" stroke="#6b4529" stroke-width="12"/><path d="M-70 -90 Q0 -100 70 -90 Q80 0 70 90 Q0 100 -70 90 Q-80 0 -70 -90Z" fill="${i % 2 ? '#f2e8d0' : '#e8dcc0'}" stroke-width="4"/>${[-90, -45, 0, 45, 90].map((k) => `<path d="M-90 ${k} L-70 ${k * 0.95} M90 ${k} L70 ${k * 0.95}" stroke="#8a6a44" stroke-width="3"/>`).join('')}<path d="M-90 110 L-100 190 M90 110 L100 190" stroke="#6b4529" stroke-width="10"/></g>`).join('')}
+    <g stroke="${INK}" stroke-width="${S}" transform="translate(500 760)"><path d="M-160 -60 L-140 60 H140 L160 -60Z" fill="#8a6a4a"/><ellipse cx="0" cy="-60" rx="160" ry="26" fill="#e8ecee"/><path d="M-120 -64 q40 -10 80 0 t80 0" fill="none" stroke="#c8d0d4" stroke-width="5"/></g>
+    ${npc(820, 990, 1.05, 631, 6, { flip: true })}
+    ${vignette(0.3)}`,
+
+  asklepion: () => `
+    ${sky('#9cc6dc', '#c4dde6', '#f2eee2')}
+    ${cloud(300, 140, 1, '#fbf8f0')}
+    ${hill('M0 420 Q500 340 1000 420 L1000 600 L0 600Z', '#9aa882')}
+    <path d="M0 560 H1000 V1000 H0Z" fill="#d8ccb4" stroke="${INK}" stroke-width="${S}"/>
+    ${(() => { let o = ''; for (let i = 0; i < 7; i++) { const t = i / 6, x = 60 + t * 300, h = 360 - t * 200, y = 900 - t * 330; o += columns(x - 30, x + 30, y, h, 1, '#efe8d8'); const x2 = 940 - t * 300; o += columns(x2 - 30, x2 + 30, y, h, 1, '#efe8d8'); } return o; })()}
+    <g stroke="${INK}" stroke-width="${S}" transform="translate(500 760)"><ellipse cx="0" cy="0" rx="150" ry="40" fill="#5aa8c4"/><ellipse cx="0" cy="-6" rx="130" ry="28" fill="#7ac4d8" stroke-width="3"/>${[-60, 0, 60].map((x) => `<path class="a-ripple" d="M${x - 24} -6 q12 -6 24 0 t24 0" fill="none" stroke="#e8f8fc" stroke-width="3"/>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="5" transform="translate(500 560)"><path d="M0 -150 V140" stroke="#8a6440" stroke-width="12"/><path d="M0 120 Q-34 100 0 70 Q34 40 0 10 Q-34 -20 0 -50 Q30 -76 6 -110" fill="none" stroke="#5a7a3a" stroke-width="12"/><circle cx="6" cy="-114" r="10" fill="#5a7a3a"/></g>
+    ${npc(220, 1000, 1, 641, 6)}${npc(800, 1000, 1, 642, 6, { flip: true })}
+    ${vignette(0.3)}`,
+
+  efes_cadde: () => `
+    ${sky('#7eb6d8', '#acd2e4', '#f0ece2')}
+    ${hill('M0 420 Q240 320 480 380 Q700 300 1000 380 L1000 560 L0 560Z', '#9aa882')}
+    ${haze(360, 560, '#f0ece2', 0.45)}
+    <path d="M0 540 H1000 V1000 H0Z" fill="#e2d8c4" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M380 540 L80 1000 H920 L620 540Z" fill="#efe6d4" stroke="${INK}" stroke-width="4"/>
+    ${[600, 680, 780, 900].map((y, i) => `<path d="M${380 - (y - 540) * 0.65} ${y} H${620 + (y - 540) * 0.65}" stroke="#c8bca4" stroke-width="3"/>`).join('')}
+    ${(() => { let o = ''; for (let i = 0; i < 6; i++) { const t = i / 5, xl = 40 + t * 300, xr = 960 - t * 300, y = 880 - t * 320, h = 300 - t * 170, w = 34 - t * 18; o += columns(xl - w, xl + w, y, h, 1, '#efe8d8') + columns(xr - w, xr + w, y, h, 1, '#efe8d8'); } return o; })()}
+    <g stroke="${INK}" stroke-width="${S}"><rect x="430" y="400" width="140" height="150" fill="#efe8d8"/>${[450, 480, 510, 540].map((x) => `<path d="M${x} 420 V540" stroke-width="3"/>`).join('')}<path d="M420 400 H580 L560 380 H440Z" fill="#e2d8c4"/></g>
+    ${npc(500, 700, 0.6, 651, 6)}${npc(300, 1000, 1.05, 652, 6)}${npc(720, 1000, 1, 653, 6, { flip: true })}
+    ${vignette(0.3)}`,
+
+  celsus: () => `
+    ${sky('#f2b07a', '#f6cfa0', '#f6e8cc')}
+    <path d="M0 0 H1000 V1000 H0Z" fill="none"/>
+    <g stroke="${INK}" stroke-width="${S}">
+      <rect x="140" y="200" width="720" height="560" fill="#e8dcc4"/>
+      <path d="M120 200 H880 V170 H120Z M120 480 H880 V450 H120Z" fill="#efe6d4"/>
+      ${[0, 1, 2].map((i) => `<path d="M${240 + i * 260} 760 V610 Q${300 + i * 260} 560 ${360 + i * 260} 610 V760Z" fill="#3a2a22"/>`).join('')}
+      ${[0, 1, 2, 3].map((i) => `<rect x="${196 + i * 200}" y="${520}" width="70" height="${110}" fill="#d8ccb4"/>`).join('')}
+      <path d="M280 170 L360 120 L440 170Z M560 170 L640 120 L720 170Z" fill="#efe6d4"/>
+      <path d="M440 450 Q500 400 560 450Z" fill="#efe6d4"/>
+    </g>
+    ${columns(150, 850, 760, 270, 8, '#f2ead8', { cap: true })}
+    ${columns(200, 800, 450, 240, 6, '#f2ead8', { cap: true })}
+    ${[0, 1, 2, 3].map((i) => statueW(231 + i * 200, 625, 0.55, '#f8f2e4')).join('')}
+    <path d="M100 760 H900 V800 H100Z M80 800 H920 V840 H80Z M60 840 H940 V880 H60Z" fill="#d8ccb4" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M0 880 H1000 V1000 H0Z" fill="#e2d8c4" stroke="${INK}" stroke-width="${S}"/>
+    ${light(500, 300, 520, '#ffd8a0', 0.35)}
+    ${npc(300, 1000, 0.95, 661, 6)}${npc(700, 1000, 1, 662, 6, { flip: true })}
+    ${vignette(0.35)}`,
+
+  efes_tiyatro: () => `
+    ${sky('#9ac2d8', '#c2dbe4', '#f2ece0')}
+    ${hill('M-20 1000 L-20 260 Q500 140 1020 260 L1020 1000Z', '#a8987e')}
+    <path d="M60 300 Q500 160 940 300 L860 760 Q500 700 140 760Z" fill="#d8ccb4" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(12)].map((_, i) => { const t = (i + 1) / 13; const y1 = 300 - 140 * (1 - Math.abs(0.5 - 0.5) * 2) * 0; const xa = 60 + 80 * t, xb = 940 - 80 * t, ya = 300 + 460 * t, ym = 160 + 540 * t; return `<path d="M${xa} ${ya} Q500 ${ym} ${xb} ${ya}" fill="none" stroke="#b0a48c" stroke-width="4"/>`; }).join('')}
+    ${[0.25, 0.5, 0.75].map((f) => `<path d="M${60 + 880 * f} ${300 - (f === 0.5 ? 140 : 70)} L${140 + 720 * f} 760" stroke="#9a8e76" stroke-width="5"/>`).join('')}
+    <path d="M100 760 H900 V830 H100Z" fill="#c8bca4" stroke="${INK}" stroke-width="${S}"/>
+    ${columns(160, 840, 900, 120, 10, '#efe8d8', { cap: false })}
+    <path d="M140 770 H860 V780 H140Z" fill="#b8ac94"/>
+    <g opacity=".7">${(() => { let o = ''; const r = rnd(97); for (let i = 0; i < 70; i++) { const t = r(); const ya = 300 + 440 * t; const xa = 80 + 70 * t + r() * (840 - 140 * t); o += `<circle cx="${xa.toFixed(0)}" cy="${(ya - 10 + r() * 6).toFixed(0)}" r="7" fill="${['#c94a3a', '#3a7aa8', '#e8dcc0', '#d9a83a', '#5a8a3a'][i % 5]}" stroke="${INK}" stroke-width="2"/>`; } return o; })()}</g>
+    ${npc(500, 1000, 1.05, 671, 6)}
+    ${vignette(0.3)}`,
+
+  arena: () => `
+    ${sky('#e8b078', '#f2cc98', '#f4e2c0')}
+    <path d="M-20 520 Q500 360 1020 520 L1020 620 Q500 470 -20 620Z" fill="#c8b48e" stroke="${INK}" stroke-width="${S}"/>
+    <g opacity=".75">${(() => { let o = ''; const r = rnd(101); for (let i = 0; i < 60; i++) { const x = r() * 1000; const y = 520 - 160 * (1 - Math.pow((x - 500) / 520, 2)) + r() * 60; o += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="7" fill="${['#c94a3a', '#3a7aa8', '#e8dcc0', '#d9a83a'][i % 4]}" stroke="${INK}" stroke-width="2"/>`; } return o; })()}</g>
+    <path d="M-20 600 Q500 460 1020 600 L1020 640 Q500 500 -20 640Z" fill="#8a6a4a" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M-20 640 Q500 500 1020 640 L1020 1000 L-20 1000Z" fill="#e2c890" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 660, 1000, 1000, 50, '#c8ac74', 103, 14)}
+    <g transform="translate(360 780)" stroke="${INK}" stroke-width="5"><path d="M-40 -120 Q-60 -40 -40 20 H40 Q60 -40 40 -120Z" fill="#a83a2a"/><rect x="-70" y="-110" width="50" height="100" rx="10" fill="#d9a83a"/><path d="M40 -100 L110 -170" stroke="#c8ccd4" stroke-width="10"/><circle cx="0" cy="-150" r="30" fill="#8a8e96"/><path d="M-20 -160 h40 M-20 -148 h40" stroke-width="3"/></g>
+    <g transform="translate(640 790) scale(-1 1)" stroke="${INK}" stroke-width="5"><path d="M-40 -120 Q-60 -40 -40 20 H40 Q60 -40 40 -120Z" fill="#3a5a8a"/><path d="M-80 -60 L-20 -60 L-30 -10Z" fill="#8a8e96"/><path d="M40 -100 L100 -190 M86 -200 l14 10 l10 -14" stroke="#9a9ea6" stroke-width="8" fill="none"/><circle cx="0" cy="-150" r="28" fill="#e0b088"/></g>
+    ${vignette(0.4)}`,
+});
+Object.assign(FOCUS, {
+  bergama_akropol: [460, 400, 860], kutuphane: [500, 480, 860], bergama_cadde: [500, 600, 820], parsomen: [500, 520, 860],
+  asklepion: [500, 600, 820], efes_cadde: [500, 560, 820], celsus: [500, 480, 900], efes_tiyatro: [500, 500, 860], arena: [500, 640, 820],
+});
+
+Object.assign(SCENES, {
+  amasya: () => `
+    ${sky('#8cc0d8', '#b6d6e2', '#eef0e2')}
+    ${cloud(780, 140, 1.1, '#fbf8f0')}
+    <path d="M-20 640 L-20 160 Q120 100 260 160 L420 120 Q600 80 760 150 L1020 120 L1020 640Z" fill="#a8987a" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/>
+    ${texture(20, 200, 980, 600, 40, '#8a7a5e', 111, 26)}
+    ${[[240, 300], [480, 260], [720, 300]].map(([x, y]) => `<g stroke="${INK}" stroke-width="${S}"><path d="M${x - 80} ${y + 160} V${y} H${x + 80} V${y + 160}" fill="#8a7a5e"/><path d="M${x - 60} ${y + 150} V${y + 50} L${x} ${y + 10} L${x + 60} ${y + 50} V${y + 150}Z" fill="#c8b896"/><rect x="${x - 26}" y="${y + 80}" width="52" height="70" fill="#3a2a22"/><path d="M${x - 64} ${y + 52} L${x} ${y + 6} L${x + 64} ${y + 52}" fill="none" stroke-width="3"/></g>`).join('')}
+    <path d="M-20 640 H1020 V700 H-20Z" fill="#7a8a5a" stroke="${INK}" stroke-width="${S}"/>
+    ${[60, 180, 300, 620, 760, 900].map((x, i) => house2(x, 610 - (i % 2) * 20, 110, 90 + (i % 2) * 20, ['#e8dcc0', '#d8c8a0', '#f2e8d4'][i % 3], { win: true })).join('')}
+    <path d="M-20 720 H1020 V880 H-20Z" fill="#4a9a8a" stroke="${INK}" stroke-width="${S}"/>
+    ${[0, 1, 2].map((i) => `<path class="a-ripple" style="animation-delay:${i * 0.5}s" d="M${100 + i * 280} ${770 + i * 30} q40 -10 80 0 t80 0" fill="none" stroke="#bfe8de" stroke-width="5" stroke-linecap="round"/>`).join('')}
+    <path d="M-20 880 H1020 V1000 H-20Z" fill="#8aa45a" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(640, 1000, 0.9, 681, 6, { flip: true })}
+    ${vignette(0.3)}`,
+});
+Object.assign(FOCUS, { amasya: [480, 450, 860] });
+
 export { wall, interior, horse, chariot, lion };
