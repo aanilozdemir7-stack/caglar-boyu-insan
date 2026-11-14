@@ -1,7 +1,7 @@
 // Çağ 4-10 sahneleri. Ortak çizim parçaları scenes.js'ten gelir.
 import {
   SCENES, FOCUS, S, INK, shade, sky, vignette, light, haze, rnd, stars, milkyway, cloud, hill, texture, grass, rock,
-  shadow, fire, npc, silhouette, donkey, house2, tablets,
+  shadow, fire, npc, silhouette, donkey, house2, tablets, erciyes,
 } from './scenes.js';
 
 // ---------- Ortak parçalar ----------
@@ -713,6 +713,136 @@ Object.assign(SCENES, {
 Object.assign(FOCUS, {
   mese: [500, 560, 860], hipodrom: [500, 560, 820], saray_biz: [500, 440, 860], yangin_sehir: [500, 560, 860],
   ayasofya_insa: [500, 520, 900], ayasofya: [500, 420, 900], sarnic: [520, 600, 860], veba: [500, 600, 820],
+});
+
+// ---------- ÇAĞ 8: SELÇUKLU ----------
+function camel(x, y, s, c = '#c8a06a', flip = false, load = true) {
+  return `<g transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})" stroke="${INK}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M-70 0 l-6 80 M-44 4 l2 78 M50 4 l-4 78 M74 0 l6 78" fill="none" stroke-width="9"/>
+    <path d="M-100 -10 Q-110 -60 -60 -70 Q-40 -130 0 -110 Q30 -140 60 -90 Q90 -80 100 -40 L130 -110 Q140 -140 170 -130 Q186 -122 176 -110 L160 -100 Q140 -40 110 0 Q80 14 -80 12 Q-100 8 -100 -10Z" fill="${c}"/>
+    <circle cx="164" cy="-122" r="3" fill="${INK}" stroke="none"/>
+    ${load ? `<path d="M-60 -100 Q0 -150 60 -100 L70 -60 H-70Z" fill="#a8342a"/><path d="M-60 -80 H60" stroke="#e8c45a" stroke-width="5"/>${[-40, -10, 20, 50].map((xx) => `<path d="M${xx} -60 v14" stroke="#e8c45a" stroke-width="4"/>`).join('')}` : ''}
+  </g>`;
+}
+function selcukStar(cx, cy, r, c = '#d8c8a8') {
+  let p = '';
+  for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8; const rr = i % 2 ? r * 0.55 : r; p += `${i ? 'L' : 'M'}${(cx + Math.cos(a) * rr).toFixed(1)} ${(cy + Math.sin(a) * rr).toFixed(1)} `; }
+  return `<path d="${p}Z" fill="${c}" stroke="${INK}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${r * 0.3}" fill="${shade(c, -0.2)}" stroke="${INK}" stroke-width="2"/>`;
+}
+function portal(cx, y, w, h, c = '#d8c8a8') {
+  let o = `<rect x="${cx - w / 2}" y="${y - h}" width="${w}" height="${h}" fill="${c}" stroke="${INK}" stroke-width="${S}"/>`;
+  o += `<rect x="${cx - w / 2 + 20}" y="${y - h + 20}" width="${w - 40}" height="${h - 20}" fill="none" stroke="${shade(c, -0.3)}" stroke-width="10"/>`;
+  o += `<path d="M${cx - w * 0.3} ${y} V${y - h * 0.62} Q${cx} ${y - h * 0.86} ${cx + w * 0.3} ${y - h * 0.62} V${y}Z" fill="${shade(c, -0.15)}" stroke="${INK}" stroke-width="4"/>`;
+  for (let r = 0; r < 4; r++) for (let k = 0; k <= r + 2; k++) { const xx = cx - w * 0.22 + (k / (r + 2)) * w * 0.44; o += `<path d="M${xx - 10} ${y - h * 0.62 + r * 22} q10 -16 20 0" fill="none" stroke="${shade(c, -0.4)}" stroke-width="3"/>`; }
+  o += `<path d="M${cx - w * 0.16} ${y} V${y - h * 0.36} Q${cx} ${y - h * 0.46} ${cx + w * 0.16} ${y - h * 0.36} V${y}Z" fill="#2a2018" stroke="${INK}" stroke-width="4"/>`;
+  o += selcukStar(cx - w * 0.38, y - h * 0.5, w * 0.06, shade(c, -0.08)) + selcukStar(cx + w * 0.38, y - h * 0.5, w * 0.06, shade(c, -0.08));
+  return o;
+}
+
+Object.assign(SCENES, {
+  kayseri_carsi: () => `
+    ${sky('#8cbcd8', '#b8d4e0', '#efe6d4')}
+    ${erciyes('#8a90a8', '#f6f3ee', 500, 1.1)}
+    ${haze(380, 520, '#efe6d4', 0.5)}
+    <g stroke="${INK}" stroke-width="${S}"><rect x="140" y="320" width="34" height="200" fill="#c88a5a"/><path d="M134 320 h46 l-23 -40Z" fill="#3a8a8a"/><rect x="820" y="340" width="30" height="180" fill="#c88a5a"/><path d="M814 340 h42 l-21 -36Z" fill="#3a8a8a"/></g>
+    ${dome(320, 500, 70, '#a8a8a0')}${dome(700, 500, 60, '#a8a8a0')}
+    <path d="M0 520 H1000 V1000 H0Z" fill="#c8b896" stroke="${INK}" stroke-width="${S}"/>
+    ${[[30, '#c94a3a'], [250, '#3a8a8a'], [690, '#d9a83a'], [880, '#6a4a8a']].map(([x, c]) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x - 20}" y="520" width="200" height="180" fill="#d8c8a8"/><path d="M${x - 20} 520 Q${x + 80} 470 ${x + 180} 520" fill="#c8b896"/><rect x="${x + 10}" y="580" width="140" height="120" fill="#4a3426"/><path d="M${x - 30} 580 L${x + 190} 580 L${x + 170} 610 L${x - 10} 610Z" fill="${c}"/>${[0, 1, 2].map((i) => `<rect x="${x + 22 + i * 44}" y="640" width="32" height="40" fill="${['#a8784a', '#e8dcc0', '#c94a3a'][i]}"/>`).join('')}</g>`).join('')}
+    ${npc(500, 800, 0.75, 801, 8)}${npc(300, 1000, 1.05, 802, 8)}${npc(720, 1000, 1.05, 803, 8, { flip: true })}
+    ${vignette(0.3)}`,
+
+  debbag: () => `
+    ${sky('#a8c8d8', '#cadde2', '#f0e8d8')}
+    ${hill('M0 420 Q500 360 1000 420 L1000 560 L0 560Z', '#a8987a')}
+    <path d="M0 540 H1000 V1000 H0Z" fill="#b8a684" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="#6b4529" stroke-width="8">${[100, 400, 700].map((x) => `<path d="M${x} 560 V320 M${x + 220} 560 V320 M${x - 10} 330 H${x + 230}"/>`).join('')}</g>
+    ${[120, 180, 240, 420, 480, 540, 720, 780, 840].map((x, i) => `<path d="M${x - 24} 332 Q${x - 30} 420 ${x - 20} 470 Q${x} 490 ${x + 20} 470 Q${x + 30} 420 ${x + 24} 332Z" fill="${['#c89a6a', '#a8784a', '#e0c49a'][i % 3]}" stroke="${INK}" stroke-width="4"/>`).join('')}
+    ${[[200, 720, '#e8ecee'], [500, 760, '#8a6a3a'], [800, 720, '#a8342a']].map(([x, y, c]) => `<g stroke="${INK}" stroke-width="${S}"><ellipse cx="${x}" cy="${y}" rx="130" ry="40" fill="#8a7a62"/><ellipse cx="${x}" cy="${y - 6}" rx="110" ry="30" fill="${c}"/></g>`).join('')}
+    ${npc(500, 1000, 1.05, 811, 8)}
+    ${vignette(0.3)}`,
+
+  sifahane: () => `
+    ${sky('#8cbcd8', '#b6d2de', '#efe6d4')}
+    <path d="M0 0 H1000 V1000 H0Z" fill="none"/>
+    <rect x="60" y="260" width="880" height="560" fill="#d8c8a8" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(12)].map((_, i) => `<path d="M60 ${300 + i * 44} H940" stroke="#b8a888" stroke-width="3"/>`).join('')}
+    ${portal(500, 820, 360, 520, '#e0d0b0')}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M880 260 V140 L920 100 L960 140 V260" fill="#c8b896"/><path d="M880 140 L920 60 L960 140Z" fill="#8a7a6a"/></g>
+    <path d="M0 820 H1000 V1000 H0Z" fill="#b8a888" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(220, 1000, 1, 821, 8)}${npc(780, 1000, 1, 822, 8, { flip: true })}
+    ${vignette(0.3)}`,
+
+  bozkir_yol: () => `
+    ${sky('#f0b878', '#f4d4a0', '#f2e6c8')}
+    <circle cx="760" cy="300" r="60" fill="#fff0c0" stroke="${INK}" stroke-width="${S}"/>${light(760, 300, 240, '#ffe0a0', 0.45)}
+    ${hill('M0 500 Q250 460 500 490 T1000 480 L1000 1000 L0 1000Z', '#c8b06a')}
+    ${haze(440, 560, '#f2e6c8', 0.5)}
+    <path d="M488 500 Q470 720 320 1000 H680 Q540 720 512 500Z" fill="#d8c08a" stroke="${INK}" stroke-width="4"/>
+    <g class="a-run">${camel(260, 640, 0.75, '#c8a06a')}${camel(480, 600, 0.55, '#b8905a')}${camel(640, 575, 0.42, '#c8a06a', false, true)}</g>
+    ${texture(0, 700, 1000, 1000, 50, '#a8904a', 831, 16)}
+    ${npc(820, 1000, 1.05, 832, 8, { flip: true })}
+    ${vignette(0.3)}`,
+
+  ahi_zaviye: () => `
+    ${interior('#e0d0b0', '#a8342a', { beam: '#6b4529', window: true })}
+    ${[...Array(8)].map((_, i) => `<path d="M${i * 130} 800 l30 -16 l30 16 l-30 16Z" fill="#e8c45a" stroke="${INK}" stroke-width="2"/>`).join('')}
+    <path d="M0 860 H1000" stroke="#e8c45a" stroke-width="10"/>
+    ${selcukStar(500, 300, 80, '#3a8a8a')}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M300 700 Q500 660 700 700 L680 760 Q500 730 320 760Z" fill="#e8dcc0"/>${[360, 440, 560, 640].map((x) => `<ellipse cx="${x}" cy="712" rx="26" ry="10" fill="#c8a06a"/>`).join('')}</g>
+    ${npc(220, 900, 1, 841, 8)}${npc(500, 880, 1, 842, 8)}${npc(780, 900, 1, 843, 8, { flip: true })}
+    ${vignette(0.45)}`,
+
+  kervansaray: () => `
+    ${sky('#8cbcd8', '#b8d6e2', '#f0e6d0')}
+    ${cloud(160, 140, 1, '#fbf8f0')}
+    ${hill('M0 560 Q500 520 1000 560 L1000 1000 L0 1000Z', '#c8b06a')}
+    <rect x="40" y="340" width="920" height="300" fill="#d8c09a" stroke="${INK}" stroke-width="${S}"/>
+    ${[100, 300, 700, 900].map((x) => `<path d="M${x - 30} 640 V320 H${x + 30} V640" fill="#cbb48c" stroke="${INK}" stroke-width="${S}"/>`).join('')}
+    ${portal(500, 640, 300, 400, '#e0caa0')}
+    <g class="a-bob">${camel(820, 760, 0.6, '#c8a06a', true)}</g>
+    ${npc(220, 1000, 1, 851, 8)}
+    ${vignette(0.3)}`,
+
+  kervansaray_ic: () => `
+    ${sky('#2a3456', '#4a4a6a', '#8a6a6a')}
+    ${stars(30, 861, 300)}
+    <path d="M0 380 H1000 V1000 H0Z" fill="#c8b490" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(7)].map((_, i) => `<path d="M${20 + i * 140} 600 V470 Q${90 + i * 140} 400 ${160 + i * 140} 470 V600Z" fill="#3a2a22" stroke="${INK}" stroke-width="4"/>`).join('')}
+    <path d="M0 600 H1000 V1000 H0Z" fill="#b8a07a" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="${INK}" stroke-width="${S}" transform="translate(500 760)"><path d="M-90 0 V-90 Q0 -130 90 -90 V0" fill="#d8c8a8"/>${[-70, 70].map((x) => `<path d="M${x - 14} 0 V-80 M${x + 14} 0 V-80" stroke-width="6"/>`).join('')}<path d="M-120 -100 H120 V-140 H-120Z" fill="#e0d0b0"/><path d="M-100 -140 Q0 -220 100 -140" fill="#c8b896"/></g>
+    ${fire(240, 820, 0.6)}
+    ${camel(820, 860, 0.55, '#b8905a', true, false)}
+    ${npc(160, 1000, 1, 862, 8)}
+    ${vignette(0.45)}`,
+
+  kosedag: () => `
+    ${sky('#6a7a8a', '#9aa0a0', '#c8c0a8')}
+    ${hill('M0 440 L200 300 L360 380 L520 280 L700 360 L860 300 L1000 360 L1000 600 L0 600Z', '#7a8a6a')}
+    ${haze(380, 600, '#c8c0a8', 0.5)}
+    ${hill('M0 580 Q500 540 1000 580 L1000 1000 L0 1000Z', '#9a9a6a')}
+    <g opacity=".85">${[...Array(16)].map((_, i) => `<g transform="translate(${80 + i * 56} ${430 + (i % 3) * 10})">${horse(0, 0, 0.18, '#3a2a22')}</g>`).join('')}</g>
+    <g fill="#d8d0c0" opacity=".7">${[0, 1, 2, 3].map((i) => `<circle class="a-dust" style="animation-delay:${i * 0.4}s" cx="${180 + i * 220}" cy="470" r="${40 + i * 6}"/>`).join('')}</g>
+    ${[...Array(10)].map((_, i) => silhouette(80 + i * 95, 760 + (i % 2) * 20, 0.6, '#3a3428')).join('')}
+    <g stroke="#3a3428" stroke-width="6">${[...Array(10)].map((_, i) => `<path d="M${100 + i * 95} 780 L${110 + i * 95} 640"/>`).join('')}</g>
+    ${vignette(0.5)}`,
+
+  cacabey: () => `
+    <rect width="1000" height="1000" fill="#1e2a3a"/>
+    <path d="M60 1000 V380 Q60 120 500 100 Q940 120 940 380 V1000Z" fill="#c8b896" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(9)].map((_, i) => `<path d="M${150 + i * 90} 140 Q500 ${280 + Math.abs(4 - i) * 10} ${500} 340" fill="none" stroke="#a8987a" stroke-width="3"/>`).join('')}
+    <ellipse cx="500" cy="240" rx="120" ry="70" fill="#1a2240" stroke="${INK}" stroke-width="${S}"/>
+    ${stars(14, 871, 300).replace(/cy="(\d+)/g, (m, y) => `cy="${180 + (+y % 110)}`).replace(/cx="(\d+)/g, (m, x) => `cx="${400 + (+x % 200)}`)}
+    ${[180, 820].map((x) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x - 40}" y="420" width="80" height="420" fill="#b8a888"/><path d="M${x - 40} 420 Q${x} 380 ${x + 40} 420" fill="#d8c8a8"/></g>`).join('')}
+    <ellipse cx="500" cy="860" rx="220" ry="60" fill="#2a4a6a" stroke="${INK}" stroke-width="${S}"/>
+    <ellipse cx="500" cy="852" rx="190" ry="44" fill="#1a2a4a"/>
+    ${[...Array(12)].map((_, i) => `<circle class="a-twinkle" style="animation-delay:${i * 0.3}s" cx="${360 + (i * 47) % 280}" cy="${830 + (i * 13) % 40}" r="3" fill="#fff6d0"/>`).join('')}
+    ${light(500, 240, 300, '#a8c8ff', 0.25)}
+    ${npc(260, 1000, 1, 881, 8)}
+    ${vignette(0.5)}`,
+});
+Object.assign(FOCUS, {
+  kayseri_carsi: [500, 480, 860], debbag: [500, 560, 820], sifahane: [500, 560, 900], bozkir_yol: [460, 600, 820],
+  ahi_zaviye: [500, 560, 860], kervansaray: [500, 500, 860], kervansaray_ic: [500, 680, 820], kosedag: [500, 540, 820], cacabey: [500, 380, 900],
 });
 
 export { wall, interior, horse, chariot, lion };
