@@ -598,4 +598,121 @@ Object.assign(SCENES, {
 });
 Object.assign(FOCUS, { amasya: [480, 450, 860] });
 
+// ---------- ÇAĞ 7: KONSTANTİNOPOLİS ----------
+function arches(x0, x1, y, h, n, c = '#d8c8a8') {
+  const w = (x1 - x0) / n; let o = `<rect x="${x0}" y="${y - h}" width="${x1 - x0}" height="${h}" fill="${c}" stroke="${INK}" stroke-width="${S}"/>`;
+  for (let i = 0; i < n; i++) { const ax = x0 + i * w; o += `<path d="M${ax + w * 0.15} ${y} V${y - h * 0.55} Q${ax + w / 2} ${y - h * 0.95} ${ax + w * 0.85} ${y - h * 0.55} V${y}Z" fill="${shade(c, -0.45)}" stroke="${INK}" stroke-width="4"/>`; }
+  for (let r = 1; r < 4; r++) o += `<path d="M${x0} ${y - h + r * h / 4} H${x1}" stroke="#b8684a" stroke-width="5" opacity=".55"/>`;
+  return o;
+}
+function domeBig(cx, y, r, c = '#8a9aa8') {
+  return `<g stroke="${INK}" stroke-width="${S}">
+    <rect x="${cx - r - 10}" y="${y}" width="${2 * r + 20}" height="${r * 0.35}" fill="${shade(c, 0.1)}"/>
+    ${[...Array(10)].map((_, i) => `<rect x="${cx - r + 6 + i * (2 * r - 12) / 10}" y="${y + 8}" width="${(2 * r - 12) / 10 - 8}" height="${r * 0.2}" fill="#3a4a5a" stroke-width="2"/>`).join('')}
+    <path d="M${cx - r} ${y} Q${cx - r} ${y - r * 0.75} ${cx} ${y - r * 0.78} Q${cx + r} ${y - r * 0.75} ${cx + r} ${y}Z" fill="${c}"/>
+    ${[-0.7, -0.35, 0, 0.35, 0.7].map((f) => `<path d="M${cx + r * f} ${y} Q${cx + r * f * 0.7} ${y - r * 0.6} ${cx} ${y - r * 0.78}" fill="none" stroke-width="2.5" opacity=".5"/>`).join('')}
+  </g>`;
+}
+
+Object.assign(SCENES, {
+  mese: () => `
+    ${sky('#8ab8d6', '#b6d2e0', '#efe8dc')}
+    ${cloud(220, 140, 1, '#fbf8f0')}${cloud(820, 170, 0.9, '#fbf8f0')}
+    ${domeBig(500, 380, 120, '#9aa8b4')}
+    <path d="M0 520 H1000 V1000 H0Z" fill="#cfc4ae" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M400 520 L120 1000 H880 L600 520Z" fill="#ddd2bc" stroke="${INK}" stroke-width="4"/>
+    ${[580, 660, 760, 880].map((y) => `<path d="M${400 - (y - 520) * 0.58} ${y} H${600 + (y - 520) * 0.58}" stroke="#bcb09a" stroke-width="3"/>`).join('')}
+    ${arches(-20, 360, 700, 280, 3, '#d8c8a8')}${arches(640, 1020, 700, 280, 3, '#d8c8a8')}
+    <path d="M-20 410 H360 L380 380 H-20Z M640 410 H1020 V380 H620Z" fill="#b8684a" stroke="${INK}" stroke-width="${S}"/>
+    ${[40, 160, 280].map((x, i) => `<rect x="${x}" y="600" width="60" height="70" fill="${['#c94a3a', '#3a7aa8', '#d9a83a'][i]}" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${npc(500, 760, 0.7, 701, 7)}${npc(260, 1000, 1.05, 702, 7)}${npc(760, 1000, 1.05, 703, 7, { flip: true })}
+    ${vignette(0.3)}`,
+
+  hipodrom: () => `
+    ${sky('#86b6d6', '#b4d2e2', '#eee6d6')}
+    <path d="M-20 300 Q500 220 1020 300 L1020 520 Q500 440 -20 520Z" fill="#c8b896" stroke="${INK}" stroke-width="${S}"/>
+    ${[0, 1, 2, 3, 4].map((i) => `<path d="M-20 ${330 + i * 38} Q500 ${250 + i * 38} 1020 ${330 + i * 38}" fill="none" stroke="#a8987a" stroke-width="3"/>`).join('')}
+    <g opacity=".75">${(() => { let o = ''; const r = rnd(711); for (let i = 0; i < 70; i++) { const x = r() * 1000, t = r(); const y = 300 + t * 200 - 80 * (1 - Math.pow((x - 500) / 520, 2)); o += `<circle cx="${x.toFixed(0)}" cy="${(y + 14).toFixed(0)}" r="7" fill="${i % 2 ? '#3a6ab8' : '#3a9a4a'}" stroke="${INK}" stroke-width="2"/>`; } return o; })()}</g>
+    <g stroke="${INK}" stroke-width="${S}"><rect x="420" y="300" width="160" height="90" fill="#c8a07a"/><path d="M410 300 H590 L570 280 H430Z" fill="#7a3a5a"/></g>
+    <path d="M-20 500 Q500 430 1020 500 L1020 1000 L-20 1000Z" fill="#d8b884" stroke="${INK}" stroke-width="${S}"/>
+    <path d="M-20 720 Q500 640 1020 720 L1020 760 Q500 680 -20 760Z" fill="#b8a07a" stroke="${INK}" stroke-width="${S}"/>
+    <g stroke="${INK}" stroke-width="${S}"><path d="M480 700 L490 400 L500 380 L510 400 L520 700Z" fill="#c8a8a0"/><rect x="460" y="700" width="80" height="40" fill="#b8a890"/>${[440, 480, 520, 560, 600, 640].map((y) => `<path d="M494 ${y} h12" stroke-width="2"/>`).join('')}</g>
+    <g class="a-run">${horse(220, 880, 0.6, '#5a3a22')}${horse(260, 900, 0.6, '#8a5a34')}<path d="M80 880 l60 -10 l10 40 h-70Z" fill="#3a6ab8" stroke="${INK}" stroke-width="4"/><circle cx="110" cy="905" r="30" fill="none" stroke="${INK}" stroke-width="6"/></g>
+    ${texture(0, 780, 1000, 1000, 40, '#b89a6a', 713, 16)}
+    ${vignette(0.3)}`,
+
+  saray_biz: () => `
+    ${interior('#5a2a4a', '#8a7a68', { beam: '#3a1a2e' })}
+    <path d="M0 150 H1000 V420 H0Z" fill="#c9a23a" opacity=".85"/>
+    ${(() => { let o = ''; const r = rnd(721); for (let i = 0; i < 160; i++) o += `<rect x="${(r() * 1000).toFixed(0)}" y="${(160 + r() * 250).toFixed(0)}" width="10" height="10" fill="${['#e8c45a', '#f6dc8a', '#b08a2a'][i % 3]}"/>`; return o; })()}
+    <g stroke="${INK}" stroke-width="4">${[250, 500, 750].map((x) => `<circle cx="${x}" cy="270" r="70" fill="#f2e2b8"/><circle cx="${x}" cy="270" r="54" fill="none" stroke="#c9a23a" stroke-width="10"/><circle cx="${x}" cy="262" r="26" fill="#e0b088"/><path d="M${x - 30} 320 Q${x} 290 ${x + 30} 320" fill="#7a3a5a"/>`).join('')}</g>
+    ${[120, 880].map((x) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x - 30}" y="420" width="60" height="340" fill="#7a3a5a"/><rect x="${x - 44}" y="410" width="88" height="20" fill="#c9a23a"/></g>`).join('')}
+    ${[...Array(8)].map((_, i) => `<path d="M${i * 130} 780 l65 40 l-65 40 l-65 -40Z" fill="${i % 2 ? '#a89a88' : '#7a6a58'}" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${npc(300, 990, 1.05, 731, 7)}${npc(700, 990, 1.05, 732, 7, { flip: true })}
+    ${vignette(0.45)}`,
+
+  yangin_sehir: () => `
+    ${sky('#3a1a1a', '#8a3a1a', '#e87a2a')}
+    ${light(500, 600, 700, '#ff8a2a', 0.5, 'a-glow')}
+    <g fill="#2a1a1a" opacity=".6">${[0, 1, 2, 3, 4].map((i) => `<path class="a-smoke" style="animation-delay:${i * 0.6}s" d="M${150 + i * 180} 500 q-40 -100 10 -200 q50 -100 0 -200" stroke="#3a2a2a" stroke-width="60" fill="none" stroke-linecap="round"/>`).join('')}</g>
+    ${domeBig(500, 480, 140, '#5a4a4a')}
+    <path d="M360 480 Q400 360 500 380 Q560 330 640 480" fill="none" stroke="#ffb040" stroke-width="10" class="a-flame"/>
+    ${[[80, 560, 160, 200], [260, 600, 140, 160], [700, 580, 160, 190], [860, 600, 160, 160]].map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#2a1a16" stroke="${INK}" stroke-width="${S}"/>${fire(x + w / 2, y + 20, 0.9)}`).join('')}
+    <path d="M-20 760 H1020 V1000 H-20Z" fill="#3a2a22" stroke="${INK}" stroke-width="${S}"/>
+    <g opacity=".85">${[...Array(10)].map((_, i) => silhouette(80 + i * 95, 860 + (i % 2) * 14, 0.6, '#1a1210')).join('')}</g>
+    ${vignette(0.6)}`,
+
+  ayasofya_insa: () => `
+    ${sky('#a8c6d8', '#cadbe2', '#f0e8d8')}
+    <g stroke="${INK}" stroke-width="${S}">
+      <rect x="180" y="420" width="640" height="440" fill="#c88a5a"/>
+      ${[...Array(16)].map((_, i) => `<path d="M180 ${440 + i * 26} H820" stroke="#e8c4a0" stroke-width="3"/>`).join('')}
+      <path d="M280 420 Q500 160 720 420Z" fill="none" stroke="#c88a5a" stroke-width="40"/>
+      <path d="M280 420 Q500 160 720 420" fill="none" stroke-width="${S}"/>
+      <path d="M240 420 Q500 120 760 420" fill="none" stroke-width="${S}"/>
+    </g>
+    <g stroke="#6b4529" stroke-width="8">${[220, 320, 420, 580, 680, 780].map((x) => `<path d="M${x} 860 V${x < 500 ? 300 + (x - 220) * 0.2 : 300 + (780 - x) * 0.2}"/>`).join('')}${[400, 500, 600, 700, 800].map((y) => `<path d="M200 ${y} H800"/>`).join('')}</g>
+    <g stroke="#6b4529" stroke-width="5">${[0, 1, 2, 3].map((i) => `<path d="M${220 + i * 100} ${500 + i * 100} L${320 + i * 100} ${400 + i * 100}"/>`).join('')}</g>
+    <path d="M-20 860 H1020 V1000 H-20Z" fill="#b8a07a" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(6)].map((_, i) => silhouette(260 + i * 90, 395 - (i % 2) * 100, 0.3, '#3a2a22')).join('')}
+    ${npc(820, 1000, 1, 741, 7, { flip: true })}
+    ${vignette(0.3)}`,
+
+  ayasofya: () => `
+    <rect width="1000" height="1000" fill="#3a2a2a"/>
+    <path d="M100 1000 V420 Q100 60 500 40 Q900 60 900 420 V1000Z" fill="#c9a23a" stroke="${INK}" stroke-width="${S}"/>
+    ${(() => { let o = ''; const r = rnd(751); for (let i = 0; i < 220; i++) { const x = 120 + r() * 760, y = 60 + r() * 360; o += `<rect x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="9" height="9" fill="${['#e8c45a', '#f6dc8a', '#b08a2a'][i % 3]}"/>`; } return o; })()}
+    <path d="M220 440 Q220 140 500 120 Q780 140 780 440Z" fill="#e8c45a" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(20)].map((_, i) => { const a = Math.PI + (i + 0.5) * Math.PI / 20; return `<rect x="${(500 + Math.cos(a) * 270 - 9).toFixed(0)}" y="${(440 + Math.sin(a) * 300 - 14).toFixed(0)}" width="18" height="28" rx="8" fill="#fff6d8" stroke="${INK}" stroke-width="3"/>`; }).join('')}
+    <circle cx="500" cy="220" r="60" fill="#f6dc8a" stroke="${INK}" stroke-width="4"/><path d="M470 220 h60 M500 190 v60" stroke="#b08a2a" stroke-width="8"/>
+    ${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${300 + i * 80} 200 L${200 + i * 120} 1000" stroke="#fff6d8" stroke-width="${28 - i * 2}" opacity=".12"/>`).join('')}
+    <g stroke="${INK}" stroke-width="${S}">${[160, 330, 670, 840].map((x) => `<rect x="${x - 34}" y="520" width="68" height="400" fill="${x < 300 || x > 700 ? '#6a8a6a' : '#7a3a5a'}"/><rect x="${x - 48}" y="500" width="96" height="26" fill="#efe8d8"/>`).join('')}</g>
+    <path d="M100 640 H900 V660 H100Z" fill="#efe8d8" stroke="${INK}" stroke-width="4"/>
+    <path d="M0 920 H1000 V1000 H0Z" fill="#8a8a7a" stroke="${INK}" stroke-width="${S}"/>
+    ${light(500, 420, 520, '#fff2c8', 0.4)}
+    ${vignette(0.5)}`,
+
+  sarnic: () => `
+    <rect width="1000" height="1000" fill="#1a1a1e"/>
+    ${light(500, 500, 600, '#ffb060', 0.35, 'a-glow')}
+    ${(() => { let o = ''; for (let row = 0; row < 4; row++) { const t = row / 3, y = 760 - t * 260, h = 520 - t * 280, w = 46 - t * 26, gap = 260 - t * 120, n = Math.ceil(1000 / gap) + 1; for (let i = 0; i < n; i++) { const x = (i * gap + (row % 2) * gap / 2) - 20; o += `<g stroke="${INK}" stroke-width="${4 - t * 2}" opacity="${1 - t * 0.55}"><rect x="${x - w / 2}" y="${y - h}" width="${w}" height="${h}" fill="${shade('#b89a7a', -t * 0.5)}"/><path d="M${x - w / 2 - 6} ${y - h} Q${x} ${y - h - 60 + t * 30} ${x + gap - w / 2 + 6} ${y - h}" fill="none" stroke="${shade('#a8786a', -t * 0.5)}" stroke-width="${12 - t * 6}"/></g>`; } } return o; })()}
+    <path d="M0 760 H1000 V1000 H0Z" fill="#1e3a44" opacity=".9" stroke="${INK}" stroke-width="${S}"/>
+    ${[0, 1, 2].map((i) => `<path class="a-ripple" style="animation-delay:${i * 0.6}s" d="M${120 + i * 280} ${820 + i * 50} q30 -8 60 0 t60 0" fill="none" stroke="#6ab4c4" stroke-width="4"/>`).join('')}
+    <g transform="translate(700 770) rotate(180)" stroke="${INK}" stroke-width="4"><circle cx="0" cy="0" r="50" fill="#8a7a6a"/><circle cx="-16" cy="-6" r="6" fill="${INK}"/><circle cx="16" cy="-6" r="6" fill="${INK}"/>${[...Array(8)].map((_, i) => { const a = i * Math.PI / 4; return `<path d="M${(Math.cos(a) * 48).toFixed(0)} ${(Math.sin(a) * 48).toFixed(0)} q${(Math.cos(a + 0.6) * 20).toFixed(0)} ${(Math.sin(a + 0.6) * 20).toFixed(0)} ${(Math.cos(a) * 30).toFixed(0)} ${(Math.sin(a) * 30).toFixed(0)}" fill="none" stroke="#5a7a3a" stroke-width="7"/>`; }).join('')}</g>
+    ${vignette(0.7)}`,
+
+  veba: () => `
+    ${sky('#4a4a52', '#6a6a70', '#8a8478')}
+    ${[[0, 300, 220, 500], [200, 340, 180, 460], [620, 320, 200, 480], [800, 280, 220, 520]].map(([x, y, w, h]) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#7a6e62"/><rect x="${x + w * 0.3}" y="${y + h - 140}" width="${w * 0.4}" height="140" fill="#2a2420"/><path d="M${x + w * 0.3} ${y + h - 140} l${w * 0.4} 140 M${x + w * 0.7} ${y + h - 140} l${-w * 0.4} 140" stroke="#c94a3a" stroke-width="6"/></g>`).join('')}
+    <path d="M-20 780 H1020 V1000 H-20Z" fill="#5a5048" stroke="${INK}" stroke-width="${S}"/>
+    <g transform="translate(500 820)" stroke="${INK}" stroke-width="${S}"><path d="M-160 -60 H160 L140 20 H-140Z" fill="#6b4529"/><circle cx="-100" cy="40" r="40" fill="none" stroke-width="8"/><circle cx="100" cy="40" r="40" fill="none" stroke-width="8"/>${[-110, -40, 30, 100].map((x) => `<path d="M${x - 30} -60 Q${x} -90 ${x + 30} -60Z" fill="#d8ccb4"/>`).join('')}</g>
+    ${silhouette(220, 880, 0.9, '#2a2420')}
+    <g opacity=".15">${[...Array(30)].map((_, i) => `<circle cx="${(i * 37) % 1000}" cy="${400 + (i * 53) % 400}" r="${20 + (i % 3) * 10}" fill="#c8c0b0"/>`).join('')}</g>
+    ${vignette(0.7)}`,
+});
+Object.assign(FOCUS, {
+  mese: [500, 560, 860], hipodrom: [500, 560, 820], saray_biz: [500, 440, 860], yangin_sehir: [500, 560, 860],
+  ayasofya_insa: [500, 520, 900], ayasofya: [500, 420, 900], sarnic: [520, 600, 860], veba: [500, 600, 820],
+});
+
 export { wall, interior, horse, chariot, lion };
