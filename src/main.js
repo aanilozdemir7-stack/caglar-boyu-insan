@@ -13,10 +13,11 @@ import { ERA6 } from './story/cag6.js';
 import { ERA7 } from './story/cag7.js';
 import { ERA8 } from './story/cag8.js';
 import { ERA9 } from './story/cag9.js';
+import { ERA10 } from './story/cag10.js';
 import { newGame, load, save, wipe, canAfford, applyEffect } from './state.js';
 import { getScene, applyChoice } from './engine.js';
 
-const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9 };
+const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9, 10: ERA10 };
 const app = document.getElementById('app');
 let st = null;
 
@@ -274,7 +275,7 @@ function endScreen() {
       <div class="era-no">ÇAĞ ${st.era} TAMAMLANDI</div>
       <h1 class="era-name outline">${up(era.name)}</h1>
       <div class="era-meta">Bu çağda çoğunlukla ${yol} kullandın.<br>Kalan: ${st.para} ${st.birim || era.currency} · %${st.enerji} enerji · ${st.history.filter((h) => h.era === st.era || !h.era).length} karar</div>
-      <p class="subtitle" style="margin:12px 0 10px">Sıradaki çağ: <b>${era.next.name}</b> — ${era.next.place}, ${era.next.year}${nextEra ? '' : '<br>Deneme sürümü burada bitiyor.'}</p>
+      <p class="subtitle" style="margin:12px 0 10px">Sıradaki çağ: <b>${era.next.name}</b> — ${era.next.place}, ${era.next.year}${nextEra ? '' : '<br>Bu sürüm burada bitiyor. Kalan çağlar sonraki güncellemede gelecek; ilerlemen kayıtlı.'}</p>
       ${nextEra ? '<button class="btn" data-a="ileri">Sonraki çağa geç</button>' : ''}
       <button class="btn ghost" data-a="bas">En baştan başla</button>
     </div>

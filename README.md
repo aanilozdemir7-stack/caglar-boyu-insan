@@ -12,8 +12,8 @@ Linki telefonda aç, dosyayı indir ve kur. İlk kurulumda telefon "bilinmeyen k
 
 ## Proje yapısı
 
-- `src/story/` — senaryolar (her çağ bir dosya)
-- `src/art/` — kodla çizilen sahneler ve avatar
+- `src/story/` — senaryolar (her çağ bir dosya; şu an 1-10. çağlar hazır)
+- `src/art/` — kodla çizilen sahneler (`scenes.js`: çağ 1-3, `scenes2.js`: çağ 4-10) ve avatar
 - `src/main.js` — oyun akışı (sahne, seçim, checkpoint)
 - `src/state.js` — cihaza kayıt
 - `android/` — Android uygulama kabı (Capacitor)

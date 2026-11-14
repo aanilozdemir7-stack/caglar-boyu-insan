@@ -964,4 +964,121 @@ Object.assign(FOCUS, {
   ahsap_mahalle: [500, 520, 860], ahsap_yangin: [500, 600, 860], matbaa: [560, 520, 860], halic: [480, 520, 860],
 });
 
+// ---------- ÇAĞ 10: MAKİNE DEVRİ ----------
+function chimney(x, y, h, w = 40, smoke = true) {
+  return `${smoke ? `<g fill="none" stroke="#3a3a3e" opacity=".55">${[0, 1].map((i) => `<path class="a-smoke" style="animation-delay:${i * 0.9}s" d="M${x} ${y - h} q-30 -80 20 -160 q50 -80 -10 -180" stroke-width="${40 + i * 20}" stroke-linecap="round"/>`).join('')}</g>` : ''}
+    <path d="M${x - w / 2} ${y} L${x - w / 2 + 6} ${y - h} H${x + w / 2 - 6} L${x + w / 2} ${y}Z" fill="#a8583a" stroke="${INK}" stroke-width="${S}"/>
+    ${[...Array(Math.floor(h / 30))].map((_, i) => `<path d="M${x - w / 2 + 4} ${y - 30 * (i + 1)} H${x + w / 2 - 4}" stroke="#7a3a2a" stroke-width="2.5"/>`).join('')}
+    <rect x="${x - w / 2 - 6}" y="${y - h - 14}" width="${w + 12}" height="16" fill="#7a3a2a" stroke="${INK}" stroke-width="4"/>`;
+}
+function factory(x, y, w, h, c = '#b8846a') {
+  const n = Math.floor(w / 70);
+  return `<g stroke="${INK}" stroke-width="${S}"><rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${c}"/>
+    ${[...Array(n)].map((_, i) => `<path d="M${x + i * w / n} ${y - h} l${w / n / 2} -40 l${w / n / 2} 40" fill="${shade(c, -0.15)}"/><rect x="${x + i * w / n + 16}" y="${y - h + 30}" width="${w / n - 32}" height="${h * 0.42}" rx="${(w / n - 32) / 2}" fill="#3a4a5a" stroke-width="3"/><path d="M${x + i * w / n + w / n / 2} ${y - h + 30} V${y - h + 30 + h * 0.42}" stroke-width="2"/>`).join('')}</g>`;
+}
+function paddleSteamer(x, y, s) {
+  return `<g transform="translate(${x} ${y}) scale(${s})" stroke="${INK}" stroke-width="${S / s}" stroke-linejoin="round">
+    <g fill="none" stroke="#3a3a3e" opacity=".5"><path class="a-smoke" d="M40 -170 q-40 -60 10 -120 q50 -60 -20 -120" stroke-width="40" stroke-linecap="round"/></g>
+    <path d="M-220 0 L-240 -40 H240 L210 0Z" fill="#2a2a32"/><path d="M-200 -40 V-80 H200 V-40" fill="#f2ead8"/>
+    ${[-160, -110, -60, 60, 110, 160].map((xx) => `<rect x="${xx - 14}" y="-72" width="28" height="22" rx="4" fill="#5a7a9a" stroke-width="3"/>`).join('')}
+    <rect x="20" y="-170" width="40" height="92" fill="#c94a3a"/><rect x="16" y="-178" width="48" height="12" fill="#2a2a32"/>
+    <path d="M-40 -40 A50 50 0 0 1 40 -40Z" fill="#8a5a34"/>${[0, 1, 2, 3, 4].map((i) => `<path d="M0 -40 L${(Math.cos(Math.PI + i * Math.PI / 4) * 48).toFixed(0)} ${(-40 + Math.sin(Math.PI + i * Math.PI / 4) * 48).toFixed(0)}" stroke-width="3"/>`).join('')}
+  </g>`;
+}
+function gasLamp(x, y, h) {
+  return `<g stroke="${INK}" stroke-width="4"><path d="M${x} ${y} V${y - h}" stroke="#2a2a32" stroke-width="10"/><path d="M${x - 22} ${y - h} L${x + 22} ${y - h} L${x + 14} ${y - h - 50} H${x - 14}Z" fill="#fff2b0"/><path d="M${x - 26} ${y - h - 50} H${x + 26} L${x} ${y - h - 70}Z" fill="#2a2a32"/></g>${light(x, y - h - 25, 140, '#ffe08a', 0.6, 'a-glow')}`;
+}
+function pole(x, y, h, s = 1) {
+  return `<g stroke="${INK}" stroke-width="${4 * s}"><path d="M${x} ${y} V${y - h}" stroke="#6b4529" stroke-width="${12 * s}"/><path d="M${x - 30 * s} ${y - h + 20 * s} H${x + 30 * s}" stroke="#6b4529" stroke-width="${8 * s}"/><circle cx="${x - 24 * s}" cy="${y - h + 12 * s}" r="${6 * s}" fill="#9ad0e0"/><circle cx="${x + 24 * s}" cy="${y - h + 12 * s}" r="${6 * s}" fill="#9ad0e0"/></g>`;
+}
+
+Object.assign(SCENES, {
+  hereke_kiyi: () => `
+    ${sky('#8cbcd8', '#b8d6e2', '#eef0e6')}
+    ${cloud(260, 150, 1.1, '#fbf8f0')}${cloud(800, 120, 0.9, '#fbf8f0')}
+    ${hill('M0 420 Q250 340 500 380 T1000 360 L1000 520 L0 520Z', '#6a9a5a')}
+    ${haze(360, 520, '#eef0e6', 0.4)}
+    ${sea(500, '#4a9ab8', '#2a5a7a')}
+    <path d="M-20 1000 V640 Q300 600 600 640 Q800 660 1020 630 V1000Z" fill="#a8a07a" stroke="${INK}" stroke-width="${S}"/>
+    ${factory(180, 660, 480, 200, '#d8c4a8')}
+    ${chimney(700, 660, 260, 46)}
+    <g class="a-bob">${paddleSteamer(140, 590, 0.35)}</g>
+    ${npc(300, 1000, 1.05, 1001, 10)}${npc(720, 1000, 1, 1002, 10, { flip: true })}
+    ${vignette(0.3)}`,
+
+  dokuma_tezgah: () => `
+    ${interior('#d8c8b0', '#8a6a4a', { beam: '#5a4030', window: true })}
+    ${[0, 1, 2].map((r) => { const y = 520 + r * 120, sc = 0.7 + r * 0.25; return [...Array(3)].map((_, i) => { const x = 180 + i * 320 + (r % 2) * 40; return `<g transform="translate(${x} ${y}) scale(${sc})" stroke="${INK}" stroke-width="4"><path d="M-110 120 V-140 M110 120 V-140 M-120 -140 H120 M-110 20 H110" stroke="#6b4529" stroke-width="12"/>${[...Array(14)].map((__, k) => `<path d="M${-100 + k * 15} -130 V20" stroke="${['#c94a3a', '#e8c45a', '#3a7aa8', '#f2ead8'][k % 4]}" stroke-width="4"/>`).join('')}<rect x="-100" y="-20" width="200" height="40" fill="${['#a8342a', '#2a5a8a', '#c9a23a'][(i + r) % 3]}"/><path d="M-90 0 l20 -12 l20 12 l20 -12 l20 12 l20 -12 l20 12 l20 -12 l20 12" fill="none" stroke="#f2ead8" stroke-width="3"/><path d="M-100 -150 h200 v-30 h-200Z" fill="#e8dcc0"/>${[...Array(10)].map((__, k) => `<circle cx="${-90 + k * 20}" cy="-166" r="4" fill="${INK}"/>`).join('')}</g>`; }).join(''); }).join('')}
+    ${npc(500, 1000, 1, 1011, 10)}
+    ${vignette(0.45)}`,
+
+  demir_fabrika: () => `
+    <rect width="1000" height="1000" fill="#2a2420"/>
+    <path d="M0 0 H1000 V140 H0Z" fill="#3a3430" stroke="${INK}" stroke-width="${S}"/>
+    ${[100, 300, 500, 700, 900].map((x) => `<path d="M${x - 100} 140 L${x} 60 L${x + 100} 140" fill="none" stroke="#5a504a" stroke-width="10"/>`).join('')}
+    ${[...Array(5)].map((_, i) => `<path d="M${i * 220 + 60} 140 V900" stroke="#4a4440" stroke-width="20"/>`).join('')}
+    ${light(300, 640, 500, '#ff7a20', 0.55, 'a-glow')}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M160 840 V420 Q300 340 440 420 V840Z" fill="#5a4a42"/><path d="M220 840 V600 Q300 540 380 600 V840Z" fill="#ff9a3a"/><path d="M240 840 V640 Q300 600 360 640 V840Z" fill="#ffd060"/></g>
+    <path d="M380 800 Q500 780 560 820 Q620 860 700 840" fill="none" stroke="#ffb040" stroke-width="22" class="a-glow"/>
+    <g stroke="${INK}" stroke-width="${S}" transform="translate(760 620)"><circle r="120" fill="none" stroke="#5a5e66" stroke-width="18"/>${[...Array(8)].map((_, i) => `<path d="M0 0 L${(Math.cos(i * Math.PI / 4) * 112).toFixed(0)} ${(Math.sin(i * Math.PI / 4) * 112).toFixed(0)}" stroke="#5a5e66" stroke-width="10"/>`).join('')}<circle r="22" fill="#8a8e96"/></g>
+    ${[...Array(14)].map((_, i) => `<circle class="a-spark" style="animation-delay:${(i * 0.17).toFixed(2)}s" cx="${280 + (i * 37) % 160}" cy="${560 + (i * 23) % 100}" r="3" fill="#ffd060"/>`).join('')}
+    <path d="M0 860 H1000 V1000 H0Z" fill="#1e1a18" stroke="${INK}" stroke-width="${S}"/>
+    ${npc(560, 1000, 1, 1021, 10)}
+    ${vignette(0.6)}`,
+
+  muhendis_oda: () => `
+    ${interior('#d8ccb8', '#7a6048', { beam: '#4a3a2a', window: true })}
+    <g stroke="${INK}" stroke-width="${S}"><path d="M120 760 L180 600 H820 L880 760Z" fill="#8a6a4a"/><path d="M220 610 L260 520 H700 L740 610Z" fill="#e8eef4"/>
+      <g stroke="#3a5a8a" stroke-width="3" fill="none"><circle cx="380" cy="565" r="34"/><circle cx="380" cy="565" r="12"/>${[...Array(12)].map((_, i) => { const a = i * Math.PI / 6; return `<path d="M${(380 + Math.cos(a) * 34).toFixed(0)} ${(565 + Math.sin(a) * 34).toFixed(0)} l${(Math.cos(a) * 8).toFixed(0)} ${(Math.sin(a) * 8).toFixed(0)}"/>`; }).join('')}<rect x="470" y="540" width="160" height="50"/><path d="M470 565 H630 M520 540 V590 M580 540 V590"/></g></g>
+    <g stroke="${INK}" stroke-width="4"><path d="M640 600 l40 -50 l10 8 l-40 50Z" fill="#c9a24a"/><path d="M700 610 l-20 -60 M700 610 l20 -60" stroke="#8a8e96" stroke-width="5"/></g>
+    <g stroke="${INK}" stroke-width="4">${[0, 1, 2].map((i) => `<rect x="${620 + i * 110}" y="200" width="90" height="120" fill="#e8eef4"/><circle cx="${665 + i * 110}" cy="260" r="26" fill="none" stroke="#3a5a8a" stroke-width="3"/>`).join('')}</g>
+    ${npc(820, 980, 1, 1031, 10, { flip: true })}
+    ${vignette(0.4)}`,
+
+  vapur_bogaz: () => `
+    ${sky('#8ab8d8', '#b8d4e0', '#f0e8d8')}
+    ${cloud(200, 140, 1, '#fbf8f0')}${cloud(740, 110, 1.2, '#fbf8f0')}
+    ${hill('M0 380 Q200 300 420 360 Q640 300 1000 350 L1000 520 L0 520Z', '#6a9a5a')}
+    ${[[80, 470], [200, 460], [700, 465], [860, 470]].map(([x, y]) => `<rect x="${x}" y="${y}" width="60" height="44" fill="#e8dcc0" stroke="${INK}" stroke-width="3"/><path d="M${x - 6} ${y} L${x + 30} ${y - 24} L${x + 66} ${y}Z" fill="#a8583a" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${haze(360, 520, '#f0e8d8', 0.4)}
+    ${sea(510, '#3a8ab0', '#1f4f6e')}
+    <g class="a-bob">${paddleSteamer(520, 700, 1.0)}</g>
+    ${[[160, 820], [860, 860]].map(([x, y], i) => `<g class="a-bob" style="animation-delay:${i * 0.5}s" stroke="${INK}" stroke-width="4"><path d="M${x - 70} ${y} Q${x} ${y + 26} ${x + 70} ${y} L${x + 90} ${y - 18} L${x - 90} ${y - 18}Z" fill="#8a5a34"/></g>`).join('')}
+    ${vignette(0.3)}`,
+
+  gaz_lamba: () => `
+    ${sky('#141a30', '#2a2a48', '#4a3a48')}
+    ${stars(20, 1041, 260)}
+    ${[[-20, 300, 260, '#6a5a52'], [230, 340, 240, '#7a6a5a'], [600, 320, 220, '#6a5a4e'], [810, 290, 220, '#7a6656']].map(([x, y, w, c]) => `<g stroke="${INK}" stroke-width="${S}"><rect x="${x}" y="${y}" width="${w}" height="${780 - y}" fill="${c}"/>${[0, 1, 2].map((r) => [0, 1].map((k) => `<rect x="${x + 30 + k * (w / 2 - 10)}" y="${y + 40 + r * 120}" width="${w / 2 - 70}" height="80" fill="${(r + k) % 2 ? '#ffd98a' : '#2a2a3a'}" stroke-width="3"/>`).join('')).join('')}</g>`).join('')}
+    <path d="M0 780 H1000 V1000 H0Z" fill="#4a4448" stroke="${INK}" stroke-width="${S}"/>
+    ${texture(0, 800, 1000, 1000, 40, '#3a3438', 1042, 20)}
+    ${gasLamp(160, 900, 260)}${gasLamp(500, 860, 220)}${gasLamp(840, 900, 260)}
+    ${npc(340, 1000, 1, 1043, 10)}${npc(680, 1000, 1, 1044, 10, { flip: true })}
+    ${vignette(0.5)}`,
+
+  telgraf_direk: () => `
+    ${sky('#9cc8e0', '#c4dce6', '#f0ead6')}
+    ${cloud(300, 150, 1, '#fbf8f0')}
+    ${hill('M0 460 Q500 400 1000 460 L1000 1000 L0 1000Z', '#b8b06a')}
+    ${haze(420, 540, '#f0ead6', 0.5)}
+    ${(() => { let o = ''; const pts = []; for (let i = 0; i < 6; i++) { const t = i / 5; const x = 900 - t * 520 - t * t * 160, y = 940 - t * 470, h = 420 - t * 360, s = 1.2 - t * 1.0; pts.push([x - 24 * s, y - h + 12 * s, x + 24 * s]); o += pole(x, y, h, s); } for (let i = 0; i < pts.length - 1; i++) { o += `<path d="M${pts[i][0]} ${pts[i][1]} Q${(pts[i][0] + pts[i + 1][0]) / 2} ${(pts[i][1] + pts[i + 1][1]) / 2 + 30} ${pts[i + 1][0]} ${pts[i + 1][1]}" fill="none" stroke="${INK}" stroke-width="2.5"/><path d="M${pts[i][2]} ${pts[i][1]} Q${(pts[i][2] + pts[i + 1][2]) / 2} ${(pts[i][1] + pts[i + 1][1]) / 2 + 30} ${pts[i + 1][2]} ${pts[i + 1][1]}" fill="none" stroke="${INK}" stroke-width="2.5"/>`; } return o; })()}
+    ${[...Array(5)].map((_, i) => `<path d="M${80 + i * 40} ${720 + (i % 2) * 10} q20 -30 40 0" fill="#c8a040" stroke="${INK}" stroke-width="3"/>`).join('')}
+    ${npc(240, 1000, 1.05, 1051, 10)}
+    ${vignette(0.3)}`,
+
+  telgraf: () => `
+    ${interior('#d8cbb4', '#6a5240', { beam: '#4a3a2a', window: true })}
+    <g stroke="${INK}" stroke-width="${S}"><rect x="140" y="600" width="720" height="40" fill="#8a6a4a"/><path d="M160 640 V780 M840 640 V780" stroke="#6b4529" stroke-width="16"/></g>
+    <g stroke="${INK}" stroke-width="4" transform="translate(360 560)"><rect x="-70" y="-10" width="140" height="50" fill="#6b4529"/><rect x="-50" y="-90" width="100" height="80" fill="#b08a3a"/><circle cx="0" cy="-50" r="26" fill="#f2ead8"/><path d="M0 -50 L14 -68" stroke-width="5"/><path d="M70 10 H200 Q260 10 260 -20" fill="none" stroke="#f2ead8" stroke-width="16"/></g>
+    <g stroke="${INK}" stroke-width="4"><rect x="560" y="520" width="160" height="80" fill="#2a2a32"/><rect x="570" y="530" width="40" height="60" fill="#8a3a2a"/><rect x="620" y="530" width="40" height="60" fill="#8a3a2a"/><rect x="670" y="530" width="40" height="60" fill="#8a3a2a"/></g>
+    <path d="M0 230 Q250 260 500 230 T1000 230" fill="none" stroke="${INK}" stroke-width="4"/>
+    <g stroke="${INK}" stroke-width="3">${[...Array(6)].map((_, i) => `<path d="M${200 + i * 30} 600 l6 -10 h8 l6 10" fill="#f2ead8"/>`).join('')}</g>
+    ${npc(760, 960, 1.05, 1061, 10, { flip: true })}
+    ${vignette(0.45)}`,
+});
+Object.assign(FOCUS, {
+  hereke_kiyi: [520, 520, 860], dokuma_tezgah: [500, 560, 860], demir_fabrika: [420, 620, 860], muhendis_oda: [480, 520, 860],
+  vapur_bogaz: [520, 560, 820], gaz_lamba: [500, 600, 860], telgraf_direk: [560, 600, 860], telgraf: [440, 520, 860],
+});
+
 export { wall, interior, horse, chariot, lion };

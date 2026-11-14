@@ -746,6 +746,9 @@ const EXTRA_HANDS = {
     + arm(era, F, POSE.right, '', `<g transform="translate(0 -60)"><path d="M0 0 V-40" stroke="${INK}" stroke-width="5"/><rect x="-40" y="-150" width="80" height="110" rx="12" fill="#ffe7a0" stroke="${INK}" stroke-width="${S}"/>${light(0, -95, 160, '#ffd070', 0.6, 'a-glow')}<path class="a-flame" d="M0 -120 C14 -100 14 -80 0 -68 C-14 -80 -14 -100 0 -120Z" fill="#f08a24"/><path d="M-46 -160 H46 L36 -150 H-36Z M-40 -40 H40" stroke="${INK}" stroke-width="${S}" fill="#5a4a3a"/></g>`),
   cekic: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
     + arm(era, F, POSE.right, `<path d="M0 -200 L0 60" stroke="${INK}" stroke-width="24" stroke-linecap="round"/><path d="M0 -200 L0 60" stroke="#8a6440" stroke-width="14" stroke-linecap="round"/><rect x="-60" y="-250" width="120" height="56" rx="8" fill="#5a5e66" stroke="${INK}" stroke-width="${S}"/><path d="M-50 -236 h90" stroke="#9aa0aa" stroke-width="5"/>`),
+  mors: (era, O, F) => mirror(arm(era, O, POSE.rightLow))
+    + `<g transform="translate(500 250)" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"><rect x="-150" y="-20" width="300" height="60" rx="8" fill="#6b4529"/><path d="M-110 -20 V-60 H-70 V-20 M70 -20 V-50 H110 V-20" fill="#b08a3a"/><path d="M-100 -64 L90 -90" stroke="#c9a24a" stroke-width="16" stroke-linecap="round"/><circle cx="90" cy="-96" r="22" fill="#2a2a2a"/></g>`
+    + arm(era, F, 'translate(630 330) rotate(-24) scale(1.5)'),
   kese: (era, O, F) => mirror(arm(era, O, POSE.rightLow, '', `<g transform="translate(0 -90)"><path d="M-46 -30 Q-60 50 0 60 Q60 50 46 -30 Q20 -44 0 -40 Q-20 -44 -46 -30Z" fill="#8a5a34" stroke="${INK}" stroke-width="${S}" stroke-linejoin="round"/><path d="M-30 -36 Q0 -20 30 -36" fill="none" stroke="${INK}" stroke-width="4"/>${[-24, 0, 24].map((x) => `<ellipse cx="${x}" cy="-46" rx="14" ry="7" fill="#d8dce4" stroke="${INK}" stroke-width="3"/>`).join('')}</g>`))
     + arm(era, O, POSE.right),
 };
