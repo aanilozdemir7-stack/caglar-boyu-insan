@@ -164,11 +164,28 @@ export function fire(x, y, s = 1) {
 
 // Arka plandaki insanlar: avatarla aynı çizim tarzında (göğüsten yukarısı).
 // Alt kısmı her zaman önündeki bir öğenin (tepe, ateş, sur) arkasına saklanır.
-export function npc(x0, y, s, seed, era = 1, { tint = 0, flip = false, bob = false, fixed = false } = {}) {
-  const x = fixed ? x0 : fitX(x0, 82 * s);
+export function npc(x0, y0, s0, seed, era = 1, { tint = 0, flip = false, bob = false, fixed = false } = {}) {
+  // Öndeki kişi (sahnenin alt kenarına oturan büst): görünen alana göre yerleştirilir ki
+  // dikey ve yatay ekranda yüzü yazının altında, ellerin üstünde kalsın; gövdesi ekranın altına uzanır.
+  let y = y0, s = s0, ext = 0, xa = x0;
+  const front = !fixed && y0 >= 940 && s0 >= 0.9;
+  if (front) {
+    const portrait = VIEW.h > VIEW.w;
+    s = Math.min(s0, (VIEW.w * (portrait ? 0.46 : 0.3)) / 200, (VIEW.h * (portrait ? 0.2 : 0.38)) / 222);
+    const top = VIEW.y + VIEW.h * (portrait ? 0.6 : 0.62);
+    // Yatay ekranda ellerin ortada durduğu bölgeye düşen kişi yana alınır.
+    const cx = VIEW.x + VIEW.w / 2;
+    if (!portrait && Math.abs(x0 - cx) < VIEW.w * 0.2) xa = cx + (x0 >= cx ? 1 : -1) * VIEW.w * 0.31;
+    y = top + 222 * s;
+    const bottom = VIEW.y + VIEW.h + 10;
+    if (y < bottom) ext = (bottom - y) / s;
+  }
+  const x = fixed ? x0 : fitX(xa, 82 * s);
   if (x === null) return '';
   const av = randomAvatar(rnd(seed));
-  const body = `<g transform="translate(${x - 100 * s * (flip ? -1 : 1)} ${y - 222 * s}) scale(${flip ? -s : s} ${s})">${avatarParts(av, era)}</g>`;
+  const oc = outfitColors(era);
+  const torso = ext ? `<rect x="18" y="220" width="164" height="${(ext + 4).toFixed(1)}" fill="${oc.base}"/><path d="M18 220 V${(222 + ext).toFixed(1)} M182 220 V${(222 + ext).toFixed(1)}" stroke="${INK}" stroke-width="5"/>` : '';
+  const body = `<g transform="translate(${x - 100 * s * (flip ? -1 : 1)} ${y - 222 * s}) scale(${flip ? -s : s} ${s})">${avatarParts(av, era)}${torso}</g>`;
   const t = tint ? `<g transform="translate(${x - 100 * s} ${y - 222 * s}) scale(${s})"><rect x="0" y="0" width="200" height="222" fill="#000" opacity="0"/></g>` : '';
   return `<g class="${bob ? 'a-bob' : ''}" style="${bob ? `animation-delay:${(seed % 10) / 7}s` : ''}">${body}${t}</g>`;
 }
