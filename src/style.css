@@ -220,3 +220,8 @@ button { font-family: inherit; }
 .muzik.off { opacity: .6; }
 .muzik.off::after { content: ''; position: absolute; left: 7px; right: 7px; top: 50%; height: 2px; background: currentColor; transform: rotate(-45deg); border-radius: 1px; }
 .title-screen .muzik { top: calc(var(--sat) + 14px); right: calc(var(--sar) + 14px); }
+
+/* "Bu gece" olayları: bir kez yaşanan akşam işleri */
+.choice.night { border-color: var(--vurgu); }
+.choice.night .star { font-style: normal; color: var(--vurgu); margin-right: 6px; }
+.choice.night .cost { color: var(--vurgu); }

@@ -5,6 +5,7 @@ import { avatarSVG, avatarThumb, CATEGORIES, DEFAULT_AVATAR, normalizeAvatar, ra
 import { sceneSVG, hands, viewBoxFor } from './art/scenes.js';
 import './art/scenes2.js';
 import { ERA1 } from './story/cag1.js';
+import { attachNights } from './story/geceler.js';
 import { ERA2 } from './story/cag2.js';
 import { ERA3 } from './story/cag3.js';
 import { ERA4 } from './story/cag4.js';
@@ -32,6 +33,7 @@ function toggleMusic(btn) {
 }
 
 const ERAS = { 1: ERA1, 2: ERA2, 3: ERA3, 4: ERA4, 5: ERA5, 6: ERA6, 7: ERA7, 8: ERA8, 9: ERA9, 10: ERA10, 11: ERA11, 12: ERA12, 13: ERA13, 14: ERA14 };
+attachNights(Object.values(ERAS));
 const app = document.getElementById('app');
 let st = null;
 
@@ -263,8 +265,8 @@ function showChoices() {
     const reqOk = !c.req || c.req(st);
     const ok = canAfford(st, c.cost) && reqOk;
     const info = !reqOk ? c.reqText || 'Koşul sağlanmadı' : c.info || costText(c.cost);
-    const b = el(`<button class="choice ${ok ? '' : 'locked'}" style="animation-delay:${i * 0.08}s">
-      <span>${esc(c.text)}</span>${info ? `<span class="cost">${ok ? '' : '🔒 '}${esc(info)}</span>` : ''}</button>`);
+    const b = el(`<button class="choice ${ok ? '' : 'locked'}${c.night ? ' night' : ''}" style="animation-delay:${i * 0.08}s">
+      <span>${c.night ? '<i class="star">✦</i>' : ''}${esc(c.text)}</span>${info ? `<span class="cost">${ok ? '' : '🔒 '}${esc(info)}</span>` : ''}</button>`);
     b.addEventListener('click', () => ok && choose(i));
     box.appendChild(b);
   });
