@@ -85,10 +85,10 @@ function endHub(era, st, rnd) {
 }
 
 // Seçimin etkisini uygular ve bir sonraki sahnenin kimliğini st.scene'e yazar.
-export function applyChoice(era, st, choiceIndex, rnd = Math.random) {
+export function applyChoice(era, st, choiceIndex, rnd = Math.random, { free = false } = {}) {
   const sc = getScene(era, st);
   const c = sc.choices[choiceIndex];
-  applyEffect(st, c.effect);
+  if (!free) applyEffect(st, c.effect);
   if (!sc.hub) st.history.push({ era: st.era, scene: st.scene, choice: choiceIndex });
   const curBg = sc.bg;
   switch (c.to) {

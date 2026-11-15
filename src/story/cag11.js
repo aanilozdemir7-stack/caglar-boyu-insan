@@ -489,6 +489,7 @@ export const ERA11 = {
       choices: [
         { text: 'Mektubu sen yaz', req: (st) => st.flags.includes('millet_mektebi') || st.flags.includes('ogretmen11'), reqText: 'Yeni harfleri bilmiyorsun', effect: { akil: 1, flags: ['comert'] }, to: '@don' },
         { text: 'Arzuhalcinin parasını öde', cost: { para: 1 }, effect: { para: -1 }, to: '@don' },
+        { text: 'Okuma bilen bir komşu bulmasına yardım et', to: '@don' },
       ],
     },
     e_pastirma: {

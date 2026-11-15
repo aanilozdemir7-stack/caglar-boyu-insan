@@ -459,6 +459,7 @@ export const ERA10 = {
       choices: [
         { text: 'Bir gazete al', cost: { para: 1 }, effect: { para: -1, akil: 1 }, to: '@don' },
         { text: 'Çocuğa bir simit al', cost: { para: 1 }, effect: { para: -1, flags: ['comert'] }, to: '@don' },
+        { text: 'Manşetleri omzunun üstünden oku', to: '@don' },
       ],
     },
     e_fotograf: {

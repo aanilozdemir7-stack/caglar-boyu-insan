@@ -251,9 +251,18 @@ function showChoices() {
     stage.classList.add('choosing');
     const box = stage.querySelector('.choices');
     box.innerHTML = '';
-    const b = el(`<button class="choice"><span>${REST.text}</span><span class="cost">+30 enerji</span></button>`);
-    b.addEventListener('click', async () => { const prev = { para: st.para, enerji: st.enerji }; applyEffect(st, REST.effect); await save(st); hud(prev); showChoices(); });
-    box.appendChild(b);
+    // Dinlenmek işe yarayacaksa (yalnızca enerji eksikse) dinlen; para ya da koşul eksikse kilitlenme: vazgeç ve yoluna devam et.
+    const restHelps = sc.choices.some((c) => (!c.show || c.show(st)) && (!c.req || c.req(st)) && canAfford({ ...st, enerji: 100 }, c.cost));
+    if (restHelps) {
+      const b = el(`<button class="choice"><span>${REST.text}</span><span class="cost">+30 enerji</span></button>`);
+      b.addEventListener('click', async () => { const prev = { para: st.para, enerji: st.enerji }; applyEffect(st, REST.effect); await save(st); hud(prev); showChoices(); });
+      box.appendChild(b);
+    } else {
+      const i = Math.max(0, sc.choices.findIndex((c) => !c.show || c.show(st)));
+      const b = el(`<button class="choice"><span>Vazgeç, yoluna devam et</span><span class="cost">gücün yetmiyor</span></button>`);
+      b.addEventListener('click', () => choose(i, { free: true }));
+      box.appendChild(b);
+    }
     return;
   }
   stage.classList.add('choosing');
@@ -272,11 +281,11 @@ function showChoices() {
   });
 }
 
-async function choose(i) {
+async function choose(i, opts = {}) {
   const era = ERAS[st.era];
   const sc = getScene(era, st);
   const prev = { para: st.para, enerji: st.enerji };
-  applyChoice(era, st, i);
+  applyChoice(era, st, i, Math.random, opts);
   await save(st); // checkpoint
   if (!sc.hub && sc.choices.filter((x) => !x.show || x.show(st)).length > 1) toast('Seçimin kaydedildi');
   startScene(prev);
