@@ -162,14 +162,14 @@ button { font-family: inherit; }
 .a-dust { animation: spark 2.4s linear infinite; }
 .a-glint { animation: twinkle 1.4s ease-in-out infinite; }
 .a-eyeblink { transform-box: fill-box; transform-origin: 50% 50%; animation: eyeblink 4.5s ease-in-out infinite; }
-.a-smoke { animation: smoke 4s ease-in infinite; }
+.a-smoke { transform-box: fill-box; transform-origin: 50% 100%; animation: smoke 4s ease-in infinite; }
 .a-rain { animation: rain .6s linear infinite; }
 .a-water { animation: ripple 3s ease-in-out infinite; }
 .a-bob { animation: bob 3.2s ease-in-out infinite; }
 .a-flash { animation: flash 5s linear infinite; }
 .a-snow { animation: snow 6s linear infinite; }
 @keyframes snow { from { transform: translate(0, -80px); } to { transform: translate(-30px, 120px); } }
-@keyframes flash { 0%, 90%, 100% { opacity: 0; } 91% { opacity: .9; } 92% { opacity: .1; } 93% { opacity: .8; } 95% { opacity: 0; } }
+@keyframes flash { 0%, 90%, 100% { opacity: 0; } 91% { opacity: .32; } 92% { opacity: .08; } 93% { opacity: .26; } 95% { opacity: 0; } }
 @keyframes eyeblink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
 @keyframes smoke { 0% { transform: translateY(0) scale(.8); opacity: .55; } 100% { transform: translateY(-120px) scale(1.6); opacity: 0; } }
 @keyframes rain { from { transform: translate(0, -60px); } to { transform: translate(-20px, 60px); } }

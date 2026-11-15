@@ -7,6 +7,29 @@ export { INK, shade, avatarParts };
 export const S = 5; // kontur kalınlığı
 let gid = 0;
 
+// Ekranda görünen sahne alanı (sceneSVG her çizimde günceller). Dar dikey ekranlarda kenara düşen
+// insanlar içeri alınır ya da gizlenir; böylece yarısı kesik kişiler görünmez.
+let VIEW = { x: 0, y: 0, w: 1000, h: 1000 };
+let PLACED = []; // bu sahnede yerleştirilen kişilerin yatay aralıkları
+export function fitX(x, hw, maxHide = 1.25) {
+  const lo = VIEW.x + 8, hi = VIEW.x + VIEW.w - 8;
+  let nx = x;
+  if (hw * 2 <= hi - lo) {
+    const outL = lo - (x - hw), outR = (x + hw) - hi;
+    if (outL > 0) nx = outL > hw * maxHide ? null : x + outL;
+    else if (outR > 0) nx = outR > hw * maxHide ? null : x - outR;
+  }
+  if (nx !== null && nx !== x) {
+    // İçeri alınan kişi başka birinin üstüne binecekse hiç gösterme.
+    const clash = PLACED.some(([a, b]) => Math.min(b, nx + hw) - Math.max(a, nx - hw) > hw * 0.6);
+    if (clash) nx = null;
+  }
+  if (nx !== null) PLACED.push([nx - hw, nx + hw]);
+  return nx;
+}
+export function inView(x, margin = 0) { return x >= VIEW.x - margin && x <= VIEW.x + VIEW.w + margin; }
+export function viewBand() { return { ...VIEW }; }
+
 // ---------- Ortak parçalar ----------
 
 export function sky(top, mid, bottom) {
@@ -141,7 +164,9 @@ export function fire(x, y, s = 1) {
 
 // Arka plandaki insanlar: avatarla aynı çizim tarzında (göğüsten yukarısı).
 // Alt kısmı her zaman önündeki bir öğenin (tepe, ateş, sur) arkasına saklanır.
-export function npc(x, y, s, seed, era = 1, { tint = 0, flip = false, bob = false } = {}) {
+export function npc(x0, y, s, seed, era = 1, { tint = 0, flip = false, bob = false, fixed = false } = {}) {
+  const x = fixed ? x0 : fitX(x0, 82 * s);
+  if (x === null) return '';
   const av = randomAvatar(rnd(seed));
   const body = `<g transform="translate(${x - 100 * s * (flip ? -1 : 1)} ${y - 222 * s}) scale(${flip ? -s : s} ${s})">${avatarParts(av, era)}</g>`;
   const t = tint ? `<g transform="translate(${x - 100 * s} ${y - 222 * s}) scale(${s})"><rect x="0" y="0" width="200" height="222" fill="#000" opacity="0"/></g>` : '';
@@ -149,7 +174,9 @@ export function npc(x, y, s, seed, era = 1, { tint = 0, flip = false, bob = fals
 }
 
 // Gece ateşinin önünde karanlıkta kalan siluet insanlar
-export function silhouette(x, y, s, color = '#1c1418') {
+export function silhouette(x0, y, s, color = '#1c1418', fixed = false) {
+  const x = fixed ? x0 : fitX(x0, 60 * s, 0.7);
+  if (x === null) return '';
   return `<g transform="translate(${x} ${y}) scale(${s})" fill="${color}" stroke="${INK}" stroke-width="4">
     <path d="M-60 0 C-58 -60 -40 -84 0 -86 C40 -84 58 -60 60 0Z"/><circle cx="0" cy="-118" r="36"/></g>`;
 }
@@ -915,9 +942,9 @@ export function hands(pose, avIn, era = 1) {
 export const FOCUS = {
   gece_ates: [500, 620, 820], karanlik: [500, 700, 760], sutun_gunduz: [480, 600, 900], av_safak: [450, 620, 760],
   dere: [500, 650, 820], toplanma: [500, 720, 800], ziyafet: [500, 730, 800], catal_damlar: [500, 600, 800],
-  ev_ici: [520, 480, 860], tarla: [500, 660, 800], yaban_sigiri: [480, 600, 780], nehir_tasma: [500, 620, 820],
-  gece_dam: [500, 620, 820], gece_dam_kisi: [500, 660, 820], karacadag: [500, 650, 800], ocak: [640, 620, 800],
-  firtina: [450, 600, 820], obsidyen_dag: [500, 640, 820], ayna: [500, 520, 900], karum_sokak: [500, 660, 820],
+  ev_ici: [520, 480, 860], tarla: [500, 660, 800], yaban_sigiri: [500, 600, 1000], nehir_tasma: [500, 620, 820],
+  gece_dam: [500, 620, 820], gece_dam_kisi: [500, 660, 820], karacadag: [500, 650, 800], ocak: [700, 620, 1000],
+  firtina: [330, 600, 1000], obsidyen_dag: [500, 640, 820], ayna: [500, 520, 900], karum_sokak: [500, 660, 820],
   arsiv: [540, 460, 860], kervan_yol: [600, 650, 800], saray_kapi: [500, 420, 900], dar_yol: [520, 640, 800],
   atolye: [500, 600, 820], gece_karum: [500, 680, 820], erciyes_ova: [500, 470, 820], kaya_oda: [500, 440, 860],
   kizilirmak: [500, 680, 800], kis: [500, 600, 800],
@@ -938,5 +965,9 @@ export function viewBoxFor(key, w, h) {
 
 export function sceneSVG(key, av, w = 1000, h = 1000) {
   const fn = SCENES[key] || SCENES.gece_ates;
-  return `<svg class="bg" data-key="${key}" viewBox="${viewBoxFor(key, w, h)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${fn(av)}</svg>`;
+  const vb = viewBoxFor(key, w, h);
+  const [vx, vy, vw, vh] = vb.split(' ').map(Number);
+  VIEW = { x: vx, y: vy, w: vw, h: vh };
+  PLACED = [];
+  return `<svg class="bg" data-key="${key}" viewBox="${vb}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${(() => { try { return fn(av); } finally { VIEW = { x: 0, y: 0, w: 1000, h: 1000 }; } })()}</svg>`;
 }

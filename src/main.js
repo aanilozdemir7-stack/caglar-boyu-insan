@@ -469,8 +469,20 @@ function show(node) {
 }
 
 // Ekran döndürülünce ya da boyutu değişince sahnenin görüş alanını yeniden hesapla.
+// Sahne yerleşimi görünen alana göre yapıldığı için (kenardaki insanlar içeri alınır) yeniden çizilir.
+let fitT = 0, lastSize = '';
 function fitScene() {
-  document.querySelectorAll('svg.bg').forEach((svg) => svg.setAttribute('viewBox', viewBoxFor(svg.dataset.key, innerWidth, innerHeight)));
+  clearTimeout(fitT);
+  fitT = setTimeout(() => {
+    const size = `${innerWidth}x${innerHeight}`;
+    if (size === lastSize) return;
+    lastSize = size;
+    document.querySelectorAll('svg.bg').forEach((svg) => {
+      const key = svg.dataset.key;
+      if (st && st.avatar) svg.outerHTML = sceneSVG(key, st.avatar, innerWidth, innerHeight);
+      else svg.setAttribute('viewBox', viewBoxFor(key, innerWidth, innerHeight));
+    });
+  }, 120);
 }
 addEventListener('resize', fitScene);
 addEventListener('orientationchange', () => setTimeout(fitScene, 250));

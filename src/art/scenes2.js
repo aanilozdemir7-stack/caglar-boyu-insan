@@ -1,11 +1,19 @@
 // Çağ 4-10 sahneleri. Ortak çizim parçaları scenes.js'ten gelir.
 import {
   SCENES, FOCUS, S, INK, shade, sky, vignette, light, haze, rnd, stars, milkyway, cloud, hill, texture, grass, rock,
-  shadow, fire, npc, silhouette, donkey, house2, tablets, erciyes, pillar,
+  shadow, fire, npc, silhouette, donkey, house2, tablets, erciyes, pillar, viewBand,
 } from './scenes.js';
+
+// Dar (dikey) ekranda mı çiziliyor? Öyleyse yan öğeler görünen alana toplanır.
+const narrowView = () => viewBand().w < 700;
 
 // ---------- Ortak parçalar ----------
 let sid = 0;
+// Yumuşak kenarlı toz / duman bulutu (düz gri daire yerine).
+function puff(cx, cy, r, color, cls = '', delay = 0, op = 0.8) {
+  const id = 'pf' + (++sid);
+  return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${color}" stop-opacity="${op}"/><stop offset=".55" stop-color="${color}" stop-opacity="${op * 0.6}"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient></defs><circle class="${cls}" style="animation-delay:${delay}s" cx="${cx}" cy="${cy}" r="${r}" fill="url(#${id})"/>`;
+}
 export function sea(y, top = '#3f86a8', bottom = '#1f4f6e') {
   const id = 'sea' + (++sid);
   return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bottom}"/></linearGradient></defs>
@@ -218,10 +226,10 @@ Object.assign(SCENES, {
     <circle cx="200" cy="260" r="60" fill="#fff0c0" stroke="${INK}" stroke-width="${S}"/>
     ${hill('M0 480 Q300 440 600 470 T1000 460 L1000 1000 L0 1000Z', '#b8955a')}
     ${haze(420, 600, '#ecd8b0', 0.6)}
-    <g fill="#d8c8a0" opacity=".7"><circle class="a-dust" cx="300" cy="560" r="30"/><circle class="a-dust" style="animation-delay:.6s" cx="700" cy="560" r="36"/><circle class="a-dust" style="animation-delay:1.2s" cx="500" cy="540" r="40"/></g>
+    ${puff(300, 560, 44, '#d8c8a0', 'a-dust', 0)}${puff(700, 560, 52, '#d8c8a0', 'a-dust', 0.6)}${puff(500, 540, 58, '#d8c8a0', 'a-dust', 1.2)}
     <g class="a-run" style="animation-delay:.5s" opacity=".85">${chariot(140, 560, 0.5)}</g>
     <g class="a-run" style="animation-delay:1s" opacity=".85">${chariot(700, 545, 0.45)}</g>
-    <g class="a-run">${npc(330, 640, 0.42, 451, 4)}${chariot(410, 720, 1.0)}</g>
+    ${(() => { const V = viewBand(), n = narrowView(), k = n ? 0.7 : 1, cx = n ? V.x + 91 + (V.w - 273) / 2 : 410; return `<g class="a-run">${npc(cx - 80 * k, 720 - 80 * k, 0.42 * k, 451, 4, { fixed: true })}${chariot(cx, 720, k)}</g>`; })()}
     ${hill('M0 820 Q500 780 1000 820 L1000 1000 L0 1000Z', '#a8854a')}
     ${vignette(0.45)}`,
 
@@ -572,8 +580,8 @@ Object.assign(SCENES, {
     <path d="M-20 600 Q500 460 1020 600 L1020 640 Q500 500 -20 640Z" fill="#8a6a4a" stroke="${INK}" stroke-width="${S}"/>
     <path d="M-20 640 Q500 500 1020 640 L1020 1000 L-20 1000Z" fill="#e2c890" stroke="${INK}" stroke-width="${S}"/>
     ${texture(0, 660, 1000, 1000, 50, '#c8ac74', 103, 14)}
-    <g transform="translate(360 780)" stroke="${INK}" stroke-width="5"><path d="M-40 -120 Q-60 -40 -40 20 H40 Q60 -40 40 -120Z" fill="#a83a2a"/><rect x="-70" y="-110" width="50" height="100" rx="10" fill="#d9a83a"/><path d="M40 -100 L110 -170" stroke="#c8ccd4" stroke-width="10"/><circle cx="0" cy="-150" r="30" fill="#8a8e96"/><path d="M-20 -160 h40 M-20 -148 h40" stroke-width="3"/></g>
-    <g transform="translate(640 790) scale(-1 1)" stroke="${INK}" stroke-width="5"><path d="M-40 -120 Q-60 -40 -40 20 H40 Q60 -40 40 -120Z" fill="#3a5a8a"/><path d="M-80 -60 L-20 -60 L-30 -10Z" fill="#8a8e96"/><path d="M40 -100 L100 -190 M86 -200 l14 10 l10 -14" stroke="#9a9ea6" stroke-width="8" fill="none"/><circle cx="0" cy="-150" r="28" fill="#e0b088"/></g>
+    <g transform="translate(${narrowView() ? viewBand().x + viewBand().w * 0.3 : 360} 780) scale(${narrowView() ? 0.8 : 1})" stroke="${INK}" stroke-width="5"><path d="M-40 -120 Q-60 -40 -40 20 H40 Q60 -40 40 -120Z" fill="#a83a2a"/><rect x="-70" y="-110" width="50" height="100" rx="10" fill="#d9a83a"/><path d="M40 -100 L110 -170" stroke="#c8ccd4" stroke-width="10"/><circle cx="0" cy="-150" r="30" fill="#8a8e96"/><path d="M-20 -160 h40 M-20 -148 h40" stroke-width="3"/></g>
+    <g transform="translate(${narrowView() ? viewBand().x + viewBand().w * 0.7 : 640} 790) scale(${narrowView() ? -0.8 : -1} ${narrowView() ? 0.8 : 1})" stroke="${INK}" stroke-width="5"><path d="M-40 -120 Q-60 -40 -40 20 H40 Q60 -40 40 -120Z" fill="#3a5a8a"/><path d="M-80 -60 L-20 -60 L-30 -10Z" fill="#8a8e96"/><path d="M40 -100 L100 -190 M86 -200 l14 10 l10 -14" stroke="#9a9ea6" stroke-width="8" fill="none"/><circle cx="0" cy="-150" r="28" fill="#e0b088"/></g>
     ${vignette(0.4)}`,
 });
 Object.assign(FOCUS, {
@@ -657,7 +665,13 @@ Object.assign(SCENES, {
     <g fill="#2a1a1a" opacity=".6">${[0, 1, 2, 3, 4].map((i) => `<path class="a-smoke" style="animation-delay:${i * 0.6}s" d="M${150 + i * 180} 500 q-40 -100 10 -200 q50 -100 0 -200" stroke="#3a2a2a" stroke-width="60" fill="none" stroke-linecap="round"/>`).join('')}</g>
     ${domeBig(500, 480, 140, '#5a4a4a')}
     <path d="M360 480 Q400 360 500 380 Q560 330 640 480" fill="none" stroke="#ffb040" stroke-width="10" class="a-flame"/>
-    ${[[80, 560, 160, 200], [260, 600, 140, 160], [700, 580, 160, 190], [860, 600, 160, 160]].map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#2a1a16" stroke="${INK}" stroke-width="${S}"/>${fire(x + w / 2, y + 20, 0.9)}`).join('')}
+    ${(() => {
+      const V = viewBand(), n = narrowView();
+      const blocks = n
+        ? [[V.x - 30, 600, V.w * 0.34, 160, 0.62], [V.x + V.w * 0.68, 590, V.w * 0.36, 170, 0.62]]
+        : [[80, 560, 160, 200, 0.9], [260, 600, 140, 160, 0.9], [700, 580, 160, 190, 0.9], [860, 600, 160, 160, 0.9]];
+      return blocks.map(([x, y, w, h, fs]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#2a1a16" stroke="${INK}" stroke-width="${S}"/>${fire(x + w / 2, y + 20, fs)}`).join('');
+    })()}
     <path d="M-20 760 H1020 V1000 H-20Z" fill="#3a2a22" stroke="${INK}" stroke-width="${S}"/>
     <g opacity=".85">${[...Array(10)].map((_, i) => silhouette(80 + i * 95, 860 + (i % 2) * 14, 0.6, '#1a1210')).join('')}</g>
     ${vignette(0.6)}`,
@@ -711,8 +725,8 @@ Object.assign(SCENES, {
     ${vignette(0.7)}`,
 });
 Object.assign(FOCUS, {
-  mese: [500, 560, 860], hipodrom: [500, 560, 820], saray_biz: [500, 440, 860], yangin_sehir: [500, 560, 860],
-  ayasofya_insa: [500, 520, 900], ayasofya: [500, 420, 900], sarnic: [520, 600, 860], veba: [500, 600, 820],
+  mese: [500, 560, 860], hipodrom: [500, 560, 820], saray_biz: [500, 440, 860], yangin_sehir: [500, 520, 860],
+  ayasofya_insa: [500, 520, 900], ayasofya: [500, 420, 900], sarnic: [600, 600, 860], veba: [500, 600, 820],
 });
 
 // ---------- ÇAĞ 8: SELÇUKLU ----------
@@ -821,8 +835,8 @@ Object.assign(SCENES, {
     ${haze(380, 600, '#c8c0a8', 0.5)}
     ${hill('M0 580 Q500 540 1000 580 L1000 1000 L0 1000Z', '#9a9a6a')}
     <g opacity=".85">${[...Array(16)].map((_, i) => `<g transform="translate(${80 + i * 56} ${430 + (i % 3) * 10})">${horse(0, 0, 0.18, '#3a2a22')}</g>`).join('')}</g>
-    <g fill="#d8d0c0" opacity=".7">${[0, 1, 2, 3].map((i) => `<circle class="a-dust" style="animation-delay:${i * 0.4}s" cx="${180 + i * 220}" cy="470" r="${40 + i * 6}"/>`).join('')}</g>
-    ${[...Array(10)].map((_, i) => silhouette(80 + i * 95, 760 + (i % 2) * 20, 0.6, '#3a3428')).join('')}
+    ${[0, 1, 2, 3].map((i) => puff(180 + i * 220, 470, 60 + i * 8, '#d8d0c0', 'a-dust', i * 0.4, 0.7)).join('')}
+    ${[...Array(10)].map((_, i) => silhouette(80 + i * 95, 760 + (i % 2) * 20, 0.6, '#3a3428', true)).join('')}
     <g stroke="#3a3428" stroke-width="6">${[...Array(10)].map((_, i) => `<path d="M${100 + i * 95} 780 L${110 + i * 95} 640"/>`).join('')}</g>
     ${vignette(0.5)}`,
 
@@ -852,14 +866,14 @@ function tulip(x, y, s, c = '#c9243a') {
     <path d="M-12 -60 Q-16 -90 -8 -104 L-2 -84 L0 -110 L4 -84 L10 -104 Q16 -90 12 -60 Q0 -54 -12 -60Z" fill="${c}"/>
   </g>`;
 }
-function woodHouse(x, y, w, h, c = '#a8784a', { cumba = true, burning = false } = {}) {
+function woodHouse(x, y, w, h, c = '#a8784a', { cumba = true, burning = false, fireScale = 1.1 } = {}) {
   let o = `<g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
     <rect x="${x}" y="${y - h}" width="${w}" height="${h}" fill="${c}"/>
     ${[...Array(Math.floor(h / 24))].map((_, i) => `<path d="M${x} ${y - h + 24 * (i + 1)} H${x + w}" stroke="${shade(c, -0.3)}" stroke-width="2.5"/>`).join('')}
     <path d="M${x - 16} ${y - h} L${x + w / 2} ${y - h - 50} L${x + w + 16} ${y - h}Z" fill="#8a3a2a"/>`;
   if (cumba) o += `<rect x="${x + w * 0.2}" y="${y - h + 30}" width="${w * 0.6}" height="${h * 0.38}" fill="${shade(c, 0.12)}"/>${[0, 1, 2].map((i) => `<rect x="${x + w * 0.26 + i * w * 0.18}" y="${y - h + 44}" width="${w * 0.12}" height="${h * 0.22}" fill="#3a2a22"/>`).join('')}`;
   o += `<rect x="${x + w * 0.38}" y="${y - h * 0.32}" width="${w * 0.24}" height="${h * 0.32}" fill="#3a2a22"/></g>`;
-  if (burning) o += fire(x + w / 2, y - h - 10, 1.1);
+  if (burning) o += fire(x + w / 2, y - h - 10, fireScale);
   return o;
 }
 function minaret(x, y, h, c = '#e8e0d0') {
@@ -929,7 +943,9 @@ Object.assign(SCENES, {
     ${sky('#3a1a14', '#8a3a1a', '#e8803a')}
     ${light(500, 500, 700, '#ff8a2a', 0.45, 'a-glow')}
     <g fill="none" stroke="#2a1a1a" opacity=".55">${[0, 1, 2].map((i) => `<path class="a-smoke" style="animation-delay:${i * 0.6}s" d="M${200 + i * 300} 380 q-40 -100 10 -200 q50 -100 0 -200" stroke-width="70" stroke-linecap="round"/>`).join('')}</g>
-    ${woodHouse(-20, 760, 220, 380, '#5a3a24', { burning: true })}${woodHouse(190, 760, 200, 330, '#6a4a2a')}${woodHouse(610, 760, 200, 340, '#5a3a24', { burning: true })}${woodHouse(800, 760, 230, 390, '#4a2a1a', { burning: true })}
+    ${narrowView()
+      ? (() => { const V = viewBand(); return `${woodHouse(V.x + V.w / 2 - 90, 760, 180, 260, '#6a4a2a')}${woodHouse(V.x - 70, 760, 200, 300, '#5a3a24', { burning: true, fireScale: 0.8 })}${woodHouse(V.x + V.w - 130, 760, 200, 280, '#4a2a1a', { burning: true, fireScale: 0.8 })}`; })()
+      : `${woodHouse(-20, 760, 220, 380, '#5a3a24', { burning: true })}${woodHouse(190, 760, 200, 330, '#6a4a2a')}${woodHouse(610, 760, 200, 340, '#5a3a24', { burning: true })}${woodHouse(800, 760, 230, 390, '#4a2a1a', { burning: true })}`}
     <path d="M0 760 H1000 V1000 H0Z" fill="#4a3a30" stroke="${INK}" stroke-width="${S}"/>
     <g transform="translate(470 880)" stroke="${INK}" stroke-width="${S}"><rect x="-80" y="-60" width="160" height="70" fill="#a8342a"/><path d="M-60 -60 V-90 H60 V-60" fill="none" stroke-width="6"/><path d="M80 -40 L200 -40 L240 -120" fill="none" stroke="#3a3a3a" stroke-width="12"/><path d="M240 -120 q20 -60 -10 -140" fill="none" stroke="#9ad0f0" stroke-width="10" opacity=".8"/><circle cx="-50" cy="20" r="22" fill="#5a3a24"/><circle cx="50" cy="20" r="22" fill="#5a3a24"/></g>
     ${[...Array(6)].map((_, i) => silhouette(100 + i * 160, 960 - (i % 2) * 20, 0.6, '#1a1210')).join('')}
@@ -1077,8 +1093,8 @@ Object.assign(SCENES, {
     ${vignette(0.45)}`,
 });
 Object.assign(FOCUS, {
-  hereke_kiyi: [520, 520, 860], dokuma_tezgah: [500, 560, 860], demir_fabrika: [420, 620, 860], muhendis_oda: [480, 520, 860],
-  vapur_bogaz: [520, 560, 820], gaz_lamba: [500, 600, 860], telgraf_direk: [560, 600, 860], telgraf: [440, 520, 860],
+  hereke_kiyi: [520, 520, 860], dokuma_tezgah: [500, 560, 860], demir_fabrika: [380, 620, 900], muhendis_oda: [480, 520, 1000],
+  vapur_bogaz: [520, 560, 820], gaz_lamba: [500, 600, 860], telgraf_direk: [560, 600, 860], telgraf: [500, 520, 1000],
 });
 
 // ---------- ÇAĞ 11: CUMHURİYET SANAYİSİ ----------
@@ -1185,7 +1201,7 @@ Object.assign(SCENES, {
 });
 Object.assign(FOCUS, {
   kasaba_meydan: [480, 520, 860], millet_mektebi: [560, 480, 860], bez_fabrika: [500, 560, 860], lojman: [460, 560, 860],
-  tren_istasyon: [420, 600, 820], celtik_tarla: [560, 560, 860], yuksek_firin: [480, 600, 860],
+  tren_istasyon: [420, 600, 1000], celtik_tarla: [560, 560, 860], yuksek_firin: [480, 600, 860],
 });
 
 Object.assign(SCENES, {
@@ -1213,7 +1229,7 @@ Object.assign(SCENES, {
     <circle cx="300" cy="640" r="10" fill="#fff2b0"/>${light(300, 640, 90, '#fff2b0', 0.7)}
     ${vignette(0.7)}`,
 });
-Object.assign(FOCUS, { maden_ocak: [480, 600, 860], maden_ic: [500, 560, 860] });
+Object.assign(FOCUS, { maden_ocak: [440, 600, 900], maden_ic: [450, 560, 860] });
 
 // ---------- ÇAĞ 12: KALKINMA YILLARI ----------
 function devrimCar(x, y, s, c = '#1a1a1e') {
@@ -1244,7 +1260,7 @@ Object.assign(SCENES, {
     <g stroke="${INK}" stroke-width="5"><path d="M760 340 V500" stroke-width="4"/><path d="M730 500 H790 L780 540 H740Z" fill="#c94a3a"/></g>
     <path d="M0 640 H1000 V1000 H0Z" fill="#7a7468" stroke="${INK}" stroke-width="${S}"/>
     ${texture(0, 660, 1000, 1000, 30, '#6a645a', 1201, 24)}
-    ${devrimCar(500, 760, 1.05)}
+    ${devrimCar(500, 760, narrowView() ? 0.78 : 1.05)}
     <g stroke="${INK}" stroke-width="4"><rect x="60" y="560" width="160" height="90" fill="#5a6a7a"/><path d="M80 560 V520 H200 V560" fill="none" stroke-width="6"/><circle cx="140" cy="600" r="24" fill="#3a4a5a"/></g>
     ${npc(860, 1000, 1, 1202, 12, { flip: true })}
     ${vignette(0.35)}`,
@@ -1257,7 +1273,7 @@ Object.assign(SCENES, {
     <path d="M0 560 H1000 V1000 H0Z" fill="#a8a094" stroke="${INK}" stroke-width="${S}"/>
     <path d="M300 560 L80 1000 H920 L700 560Z" fill="#8a8478"/>
     <g opacity=".85">${[...Array(16)].map((_, i) => silhouette(30 + i * 62, 640 + (i % 3) * 8, 0.42, '#3a3430')).join('')}</g>
-    ${devrimCar(470, 820, 0.85)}
+    ${devrimCar(narrowView() ? 490 : 470, 820, narrowView() ? 0.66 : 0.85)}
     ${npc(840, 1000, 1, 1211, 12, { flip: true })}
     ${vignette(0.3)}`,
 
@@ -1308,7 +1324,7 @@ Object.assign(SCENES, {
     ${vignette(0.3)}`,
 });
 Object.assign(FOCUS, {
-  devrim_atolye: [500, 600, 860], toren: [480, 600, 860], kahve_tv: [540, 460, 860], gecekondu: [420, 620, 820],
+  devrim_atolye: [500, 600, 1000], toren: [490, 600, 1000], kahve_tv: [540, 460, 860], gecekondu: [420, 620, 820],
   fabrika70: [500, 520, 860], bogaz_kopru: [650, 420, 880],
 });
 
@@ -1383,7 +1399,7 @@ Object.assign(SCENES, {
 
   deprem_gece: () => `
     ${sky('#1a1a24', '#2a2a32', '#4a4440')}
-    <g opacity=".45" fill="#8a847a">${[0, 1, 2, 3].map((i) => `<circle class="a-smoke" style="animation-delay:${i * 0.7}s" cx="${200 + i * 200}" cy="${380 - (i % 2) * 40}" r="${90 + i * 10}"/>`).join('')}</g>
+    <g opacity=".6">${[0, 1, 2, 3].map((i) => puff(200 + i * 200, 380 - (i % 2) * 40, 130 + i * 14, '#8a847a', 'a-smoke', i * 0.7, 0.75)).join('')}</g>
     <g stroke="${INK}" stroke-width="${S}" stroke-linejoin="round">
       <path d="M40 760 L60 420 L260 380 L300 760Z" fill="#5a5450" transform="rotate(-6 170 600)"/>
       <path d="M640 760 L700 360 L900 420 L920 760Z" fill="#4a4642" transform="rotate(8 780 560)"/>
@@ -1464,7 +1480,7 @@ Object.assign(SCENES, {
     ${hill('M-20 600 L-20 300 Q200 220 420 320 Q640 200 1020 280 V600Z', '#3a6a3a')}
     ${(() => { let o = ''; for (let r = 0; r < 9; r++) o += `<path d="M-20 ${360 + r * 70} Q300 ${330 + r * 70} 600 ${360 + r * 70} T1020 ${350 + r * 70}" fill="none" stroke="${r % 2 ? '#4a8a3a' : '#5a9a4a'}" stroke-width="44" stroke-linecap="round"/>`; return o; })()}
     ${haze(300, 500, '#e8ece4', 0.4)}
-    <g stroke="${INK}" stroke-width="4">${[[640, 560], [760, 600], [880, 640]].map(([x, y]) => `<g class="a-run"><rect x="${x - 30}" y="${y - 30}" width="60" height="40" rx="8" fill="#e8eef4"/><circle cx="${x - 18}" cy="${y + 14}" r="10" fill="#3a3a42"/><circle cx="${x + 18}" cy="${y + 14}" r="10" fill="#3a3a42"/><path d="M${x} ${y - 30} V${y - 56} L${x + 26} ${y - 66}" fill="none" stroke-width="5"/><circle cx="${x}" cy="${y - 16}" r="6" fill="#7ae8ff"/></g>`).join('')}</g>
+    <g stroke="${INK}" stroke-width="4">${(narrowView() ? [[viewBand().x + viewBand().w * 0.52, 560], [viewBand().x + viewBand().w * 0.7, 600], [viewBand().x + viewBand().w * 0.87, 640]] : [[640, 560], [760, 600], [880, 640]]).map(([x, y]) => `<g class="a-run"><rect x="${x - 30}" y="${y - 30}" width="60" height="40" rx="8" fill="#e8eef4"/><circle cx="${x - 18}" cy="${y + 14}" r="10" fill="#3a3a42"/><circle cx="${x + 18}" cy="${y + 14}" r="10" fill="#3a3a42"/><path d="M${x} ${y - 30} V${y - 56} L${x + 26} ${y - 66}" fill="none" stroke-width="5"/><circle cx="${x}" cy="${y - 16}" r="6" fill="#7ae8ff"/></g>`).join('')}</g>
     <g stroke="${INK}" stroke-width="${S}"><rect x="60" y="440" width="160" height="110" fill="#e8dcc8"/><path d="M50 440 L140 390 L230 440Z" fill="#8a3a2a"/><rect x="90" y="470" width="40" height="40" fill="#ffe39a"/></g>
     ${npc(300, 1000, 1, 1431, 14)}
     ${vignette(0.3)}`,
